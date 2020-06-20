@@ -21,9 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="files\**.*">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content> 
+    <None Include="$(SolutionDir)files\**" CopyToOutputDirectory="PreserveNewest" LinkBase="files\" />
   </ItemGroup>
 
   <ItemGroup>
