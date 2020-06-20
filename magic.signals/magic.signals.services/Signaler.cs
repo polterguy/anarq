@@ -19,9 +19,6 @@ namespace magic.signals.services
     /// </summary>
     public class Signaler : ISignaler
     {
-        static bool _validLicense;
-        static readonly DateTime _stopTime = DateTime.Now.AddHours(5);
-
         readonly IServiceProvider _provider;
         readonly ISignalsProvider _signals;
         readonly List<Tuple<string, object>> _stack = new List<Tuple<string, object>>();
