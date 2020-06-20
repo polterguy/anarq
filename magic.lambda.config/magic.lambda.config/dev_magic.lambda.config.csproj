@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>magic.lambda.config</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\magic.node\magic.node.extensions\dev_magic.node.extensions.csproj" />
+    <ProjectReference Include="..\..\magic.signals\magic.signals.contracts\dev_magic.signals.contracts.csproj" />
+  </ItemGroup>
+</Project>
