@@ -1,0 +1,167 @@
+
+
+/*
+ * Send a receipt email for vote to user.
+ */
+slots.create:wait.anarq.emails.send.vote-receipt
+
+   /*
+    * Sanity checking invocation.
+    */
+   validators.mandatory:x:@.arguments/*/old-hash
+   validators.mandatory:x:@.arguments/*/new-hash
+   validators.mandatory:x:@.arguments/*/id
+   validators.mandatory:x:@.arguments/*/email
+   validators.mandatory:x:@.arguments/*/full_name
+   validators.mandatory:x:@.arguments/*/your_vote
+   validators.mandatory:x:@.arguments/*/language
+
+   /*
+    * Loading text/plain email template file.
+    */
+   strings.concat
+      .:/modules/anarq/private/templates/
+      get-value:x:@.arguments/*/language
+      .:.vote-receipt-email.txt
+   wait.io.file.load:x:@strings.concat
+
+   /*
+    * [.email-txt] will contain text/plain email template,
+    * and arguments will be dynamically substituted with values supplied
+    * by caller.
+    */
+   unwrap:x:+
+   .email-txt:x:@wait.io.file.load
+
+   /*
+    * Loading text/html email template file.
+    */
+   strings.concat
+      .:/modules/anarq/private/templates/
+      get-value:x:@.arguments/*/language
+      .:.vote-receipt-email.html
+   wait.io.file.load:x:@strings.concat
+
+   /*
+    * [.email-html] will contain text/html email template,
+    * and arguments will be dynamically substituted with values supplied
+    * by caller.
+    */
+   unwrap:x:+
+   .email-html:x:@wait.io.file.load
+
+   /*
+    * Doing dynamic substitutions in text/plain template.
+    */
+   set-value:x:@.email-txt
+      strings.replace:x:@.email-txt
+         .:[old-hash]
+         get-value:x:@.arguments/*/old-hash
+   set-value:x:@.email-txt
+      strings.replace:x:@.email-txt
+         .:[new-hash]
+         get-value:x:@.arguments/*/new-hash
+   set-value:x:@.email-txt
+      strings.replace:x:@.email-txt
+         .:[id]
+         get-value:x:@.arguments/*/id
+   set-value:x:@.email-txt
+      strings.replace:x:@.email-txt
+         .:[your_vote]
+         get-value:x:@.arguments/*/your_vote
+   set-value:x:@.email-txt
+      strings.replace:x:@.email-txt
+         .:[full_name]
+         get-value:x:@.arguments/*/full_name
+   config.get:"anarq:domain"
+   set-value:x:@.email-txt
+      strings.replace:x:@.email-txt
+         .:[domain]
+         get-value:x:@config.get
+
+   /*
+    * Doing dynamic substitutions in text/html template.
+    */
+   set-value:x:@.email-html
+      strings.replace:x:@.email-html
+         .:[old-hash]
+         get-value:x:@.arguments/*/old-hash
+   set-value:x:@.email-html
+      strings.replace:x:@.email-html
+         .:[new-hash]
+         get-value:x:@.arguments/*/new-hash
+   set-value:x:@.email-html
+      strings.replace:x:@.email-html
+         .:[id]
+         get-value:x:@.arguments/*/id
+   set-value:x:@.email-html
+      strings.replace:x:@.email-html
+         .:[your_vote]
+         get-value:x:@.arguments/*/your_vote
+   set-value:x:@.email-html
+      strings.replace:x:@.email-html
+         .:[full_name]
+         get-value:x:@.arguments/*/full_name
+   config.get:"anarq:domain"
+   set-value:x:@.email-html
+      strings.replace:x:@.email-html
+         .:[domain]
+         get-value:x:@config.get
+
+   /*
+    * Looking up subject for email in translation database.
+    */
+   wait.mysql.scalar:"select content from translations where `key` = @key and locale = @locale"
+      @key:VoteReceiptEmailSubject
+      @locale:x:@.arguments/*/language
+
+   /*
+    * Dynamically building subject of email
+    */
+   .subject
+   set-value:x:@.subject
+      strings.concat
+         get-value:x:@wait.mysql.scalar
+         get-value:x:@.arguments/*/id
+
+   /*
+    * Substituting recipient and unwrapping recipient's email
+    * address inside of [wait.mail.smtp.send].
+    *
+    * Notice, we do NOT unwrap PGP key or password, to avoid saving
+    * PGP key or its password into our log file(s).
+    */
+   set-name:x:./*/wait.mail.smtp.send/*/message/*/to/*/name
+      get-value:x:@.arguments/*/full_name
+   unwrap:x:./*/wait.mail.smtp.send/**/to/*
+
+   /*
+    * Loading private key.
+    *
+    * Notice, we do this AFTER having logged invocation to [wait.mail.smtp.send],
+    * to avoid saving the secret PGP key into our log file(s) for security reasons.
+    */
+   wait.io.file.load:/modules/anarq/private/pgp-keys/private.txt
+   .password:8pr4ms
+
+   /*
+    * Substituting recipient and unwrapping all
+    * expressions inside of email.
+    */
+   unwrap:x:./*/wait.mail.smtp.send/**
+
+   /*
+    * Sending email to user.
+    */
+   wait.mail.smtp.send
+      message
+         to
+            name:x:@.arguments/*/email
+         subject:x:@.subject
+         entity:multipart/alternative
+            sign:x:@wait.io.file.load
+               password:x:@.password
+            entity:text/plain
+               content:x:@.email-txt
+            entity:text/html
+               content:x:@.email-html

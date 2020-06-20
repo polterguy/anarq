@@ -1,0 +1,10 @@
+.arguments
+   status:string
+auth.ticket.verify:root, admin
+add:x:./*/wait.signal/*/ids
+   get-nodes:x:@.arguments/*
+wait.signal:magic.db.mysql.delete
+   database:anarq
+   table:user_status
+   ids
+return-nodes:x:@wait.signal/*

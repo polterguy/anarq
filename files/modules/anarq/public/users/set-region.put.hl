@@ -1,0 +1,53 @@
+
+/*
+ * Sets the region for the currently logged in user.
+ *
+ * Arguments:
+ *
+ * [region] - Mandatory argument, defining which region to set user to.
+ */
+.arguments
+   region:string
+auth.ticket.verify:root, admin, moderator, user
+
+/*
+ * Sanity checking invocation.
+ */
+validators.mandatory:x:@.arguments/*/region
+
+/*
+ * Opening database connection, and selecting user from database.
+ */
+wait.mysql.connect:anarq
+
+   /*
+    * Making sure user has no regions from before.
+    */
+   auth.ticket.get
+   wait.mysql.scalar:select count(*) from users_regions where user = @username
+      @username:x:@auth.ticket.get
+   if
+      not
+         eq
+            get-value:x:@wait.mysql.scalar
+            .:long:0
+      .lambda
+         return
+            result:FAILURE
+            extra:AlreadySetRegions
+
+   /*
+    * Updating user's region(s), making sure we also apply the default,
+    * which is country of user.
+    */
+   wait.mysql.execute:insert into users_regions (user, region) values (@username, 'norge')
+      @username:x:@auth.ticket.get
+   wait.mysql.execute:insert into users_regions (user, region) values (@username, @region)
+      @username:x:@auth.ticket.get
+      @region:x:@.arguments/*/region
+
+   /*
+    * Returning result to caller.
+    */
+   return
+      result:SUCCESS

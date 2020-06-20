@@ -1,0 +1,14 @@
+.arguments
+   name:string
+   description:string
+auth.ticket.verify:root, admin
+add:x:./*/wait.signal/*/values
+   get-nodes:x:@.arguments/*
+unwrap:x:+/*/ids/*
+wait.signal:magic.db.mysql.update
+   database:anarq
+   table:roles
+   values
+   ids
+      name:x:@.arguments/*/name
+return-nodes:x:@wait.signal/*

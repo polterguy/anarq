@@ -1,0 +1,31 @@
+Velkommen som bruker hos AnarQ, vi har registrert følgende informasjon om deg.
+
+1. Brukernavn - [username]
+2. Epost - [email]
+3. Fullt navn - [full_name]
+4. Telefonnummer - [phone]
+5. Passord - (skjult)
+
+**Viktig!**
+Ingen fra AnarQ vil be deg om ditt passord.
+Ikke gi fra deg passordet ditt til noen.
+Hvis andre får tak i passordet ditt, kan de impersonere deg, og slik forfalske stemmer.
+
+Du kan ikke stemme eller åpne nye saker, før du har bekreftet epost-adressen din.
+I fremtiden kan det også hende at vi ber deg om å bekrefte telefonnummeret ditt, og sjekker opp
+navnet ditt i Folkeregisteret, for å forsikre oss om at du ikke avgir stemmer i saker hvor
+du ikke er stemmeberettiget, for slik å forhindre falske stemmer fra å bli avgitt.
+Du har kun lov til å registrere deg EN gang hos AnarQ.
+
+Hvorfor fikk jeg denne eposten?
+Noen registrerte seg med din epost adresse hos https://anarq.org.
+Hvis dette ikke var deg, kan du bare ignorere denne eposten, og slette den. Vi vil ikke sende
+deg flere eposter i fremtiden, med mindre du bekrefter at det var deg som registrerte seg, ved
+å trykke på lenken under.
+
+[domain]/verify-email/[username]/[hash]
+
+
+Ha et fint AnarQ,
+
+Thomas Hansen, Arkitekten bak AnarQ

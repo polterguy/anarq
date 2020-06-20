@@ -1,0 +1,26 @@
+.arguments
+   locale.like:string
+   locale.mt:string
+   locale.lt:string
+   locale.mteq:string
+   locale.lteq:string
+   locale.neq:string
+   locale.eq:string
+   description.like:string
+   description.mt:string
+   description.lt:string
+   description.mteq:string
+   description.lteq:string
+   description.neq:string
+   description.eq:string
+auth.ticket.verify:root, admin
+add:x:./*/wait.signal/*/args
+   get-nodes:x:@.arguments/*
+wait.signal:magic.db.mysql.read
+   database:anarq
+   table:languages
+   args
+      limit:long:1
+   columns
+      count(*) as count
+return-nodes:x:@wait.signal/*

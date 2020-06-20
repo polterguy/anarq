@@ -1,0 +1,30 @@
+
+/*
+ * Retrieves all regions registered in system
+ * associated with the currently logged in user.
+ */
+auth.ticket.verify:user, admin, root, moderator
+auth.ticket.get
+
+/*
+ * Doing some basic caching, basically caching for 3 minutes.
+ */
+http.response.headers.add
+   Cache-Control:private, max-age=30
+
+/*
+ * Opening database connection, and selecting user's regions from database.
+ */
+wait.mysql.connect:anarq
+
+   /*
+    * Returns all regions associated with user back to caller.
+    */
+   wait.mysql.select:select region from users_regions where user = @username
+      @username:x:@auth.ticket.get
+   add:x:./*/return/*
+      get-nodes:x:@wait.mysql.select/*/*
+   set-name:x:./*/return/*/*
+      .:.
+   return
+      regions

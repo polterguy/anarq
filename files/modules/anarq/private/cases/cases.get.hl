@@ -1,0 +1,24 @@
+.arguments
+   id.eq:long
+   type.eq:string
+   region.eq:string
+   user.eq:string
+   subject.like:string
+   subject.eq:string
+auth.ticket.verify:root, admin
+add:x:./*/wait.signal/*/args
+   get-nodes:x:@.arguments/*
+wait.signal:magic.db.mysql.read
+   database:anarq
+   table:cases
+   args
+   columns
+      id
+      type
+      region
+      user
+      created
+      deadline
+      subject
+      body
+return-nodes:x:@wait.signal/*

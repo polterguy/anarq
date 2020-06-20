@@ -1,0 +1,26 @@
+.arguments
+   user.like:string
+   user.mt:string
+   user.lt:string
+   user.mteq:string
+   user.lteq:string
+   user.neq:string
+   user.eq:string
+   role.like:string
+   role.mt:string
+   role.lt:string
+   role.mteq:string
+   role.lteq:string
+   role.neq:string
+   role.eq:string
+auth.ticket.verify:root, admin
+add:x:./*/wait.signal/*/args
+   get-nodes:x:@.arguments/*
+wait.signal:magic.db.mysql.read
+   database:anarq
+   table:users_roles
+   args
+      limit:long:1
+   columns
+      count(*) as count
+return-nodes:x:@wait.signal/*

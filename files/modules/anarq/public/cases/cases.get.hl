@@ -1,0 +1,236 @@
+
+
+/*
+ * Returns all open cases that are not past their deadline,
+ * and have not been rejected for some reasons by a moderator.
+ *
+ * Arguments:
+ *
+ * [offset] - Optional offset to page items.
+ * [region] - Optional region to retrieve cases for.
+ * [username] - Optional user to retrieve cases for. If given, slot will only return cases within regions user is registered within.
+ * [sorting] - Optional column to sort by, either 'popular' or 'newest'.
+ */
+.arguments
+   offset:long
+   region:string
+   username:string
+   sorting:string
+auth.ticket.get
+
+/*
+ * Doing some basic caching, basically caching for 30 seconds.
+ *
+ * The reasons we have such a short cache, is to allow for votes
+ * casted in individual cases to reflect as fast as possible to the
+ * frontend, to be visible for the end user ASAP.
+ */
+http.response.headers.add
+   Cache-Control:private, max-age=30
+
+/*
+ * Opening database connection.
+ */
+wait.mysql.connect:anarq
+
+   /*
+    * Building SQL.
+    *
+    * Notice, we never show rejected cases.
+    */
+   .sql:@"
+select c.id, c.region, c.user, c.deadline, c.subject,
+	(select count(*) from votes v where v.case = c.id) as votes,
+	(select count(*) from votes v where v.case = c.id and v.opinion = 1) as positive
+	from cases c
+	where c.type != 'rejected' "
+
+   /*
+    * Checking if caller provided a [region].
+    */
+   if
+      exists:x:@.arguments/*/region
+      .lambda
+         set-value:x:@.sql
+            strings.concat
+               get-value:x:@.sql
+               .:"and region = @region "
+         unwrap:x:+/*/*
+         add:x:@.sql
+            .
+               @region:x:@.arguments/*/region
+
+   /*
+    * Checking if caller provided a [username].
+    */
+   if
+      exists:x:@.arguments/*/username
+      .lambda
+
+         /*
+          * Sanity checking invocation.
+          */
+         if
+            not
+               eq
+                  get-value:x:@auth.ticket.get
+                  .
+            .lambda
+               if
+                  not
+                     eq
+                        get-value:x:@auth.ticket.get
+                        get-value:x:@.arguments/*/username
+                  .lambda
+                     throw:You cannot retrieve cases using this HTTP endpoint for anybody but yourself
+               set-value:x:@.sql
+                  strings.concat
+                     get-value:x:@.sql
+                     .:"and exists (select region from users_regions ur where user = @username and ur.region = c.region) "
+               unwrap:x:+/*/*
+               add:x:@.sql
+                  .
+                     @username:x:@.arguments/*/username
+
+   /*
+    * Figuring out how to sort items.
+    */
+   switch:x:@.arguments/*/sorting
+
+      /*
+       * Newest cases.
+       */
+      case:newest
+         if
+            not
+               eq
+                  get-value:x:@auth.ticket.get
+                  .
+            .lambda
+               set-value:x:@.sql
+                  strings.concat
+                     get-value:x:@.sql
+                     .:"and not exists (select id from votes v where user = @username and v.case = c.id) "
+         set-value:x:@.sql
+            strings.concat
+               get-value:x:@.sql
+               .:"and c.deadline > now() "
+         set-value:x:@.sql
+            strings.concat
+               get-value:x:@.sql
+               .:" order by created desc limit 25"
+
+      /*
+       * Sorts by most popular case first.
+       */
+      case:popular
+         if
+            not
+               eq
+                  get-value:x:@auth.ticket.get
+                  .
+            .lambda
+               set-value:x:@.sql
+                  strings.concat
+                     get-value:x:@.sql
+                     .:"and not exists (select id from votes v where user = @username and v.case = c.id) "
+         set-value:x:@.sql
+            strings.concat
+               get-value:x:@.sql
+               .:"and c.deadline > now() "
+         set-value:x:@.sql
+            strings.concat
+               get-value:x:@.sql
+               .:" order by votes desc limit 25"
+
+      /*
+       * Cases created by user.
+       */
+      case:my-cases
+         set-value:x:@.sql
+            strings.concat
+               get-value:x:@.sql
+               .:"and c.user = @username "
+         set-value:x:@.sql
+            strings.concat
+               get-value:x:@.sql
+               .:" order by votes desc limit 25"
+
+      /*
+       * Cases where the user has given his or her vote.
+       */
+      case:my-voted-cases
+         set-value:x:@.sql
+            strings.concat
+               get-value:x:@.sql
+               .:"and exists (select id from votes v where user = @username and v.case = c.id) "
+         set-value:x:@.sql
+            strings.concat
+               get-value:x:@.sql
+               .:" order by votes desc limit 25"
+
+      /*
+       * Cases that are closed, ordered by most popular case.
+       */
+      case:closed
+         set-value:x:@.sql
+            strings.concat
+               get-value:x:@.sql
+               .:"and c.deadline < now() "
+         set-value:x:@.sql
+            strings.concat
+               get-value:x:@.sql
+               .:" order by votes desc limit 25"
+
+      /*
+       * Sorts by most popular case first.
+       */
+      default
+         if
+            not
+               eq
+                  get-value:x:@auth.ticket.get
+                  .
+            .lambda
+               set-value:x:@.sql
+                  strings.concat
+                     get-value:x:@.sql
+                     .:"and not exists (select id from votes v where user = @username and v.case = c.id) "
+         set-value:x:@.sql
+            strings.concat
+               get-value:x:@.sql
+               .:"and c.deadline > now() "
+         set-value:x:@.sql
+            strings.concat
+               get-value:x:@.sql
+               .:" order by votes desc limit 25"
+
+   /*
+    * Checking if caller provided an [offset].
+    */
+   if
+      exists:x:@.arguments/*/offset
+      .lambda
+         set-value:x:@.sql
+            strings.concat
+               get-value:x:@.sql
+               .:"and offset > "
+               get-value:x:@.arguments/*/offset
+
+   /*
+    * Executing SQL.
+    */
+   add:x:./*/wait.mysql.select
+      get-nodes:x:@.sql/*
+   wait.mysql.select:x:@.sql
+
+   /*
+    * Returning above results to caller.
+    */
+   add:x:./*/return-nodes
+      get-nodes:x:@wait.mysql.select/*
+
+   /*
+    * Returning results to caller.
+    */
+   return-nodes

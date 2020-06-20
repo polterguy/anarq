@@ -1,0 +1,17 @@
+.arguments
+   region:string
+   subject:string
+   body:string
+auth.ticket.verify:root, admin
+add:x:./*/wait.signal/*/values
+   get-nodes:x:@.arguments/*
+auth.ticket.get
+unwrap:x:+/*/values/*/user
+wait.signal:magic.db.mysql.create
+   database:anarq
+   table:cases
+   return-id:bool:true
+   values
+      user:x:@auth.ticket.get
+      type:new
+return-nodes:x:@wait.signal/*

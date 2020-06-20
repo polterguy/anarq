@@ -1,0 +1,12 @@
+.arguments
+   status:string
+   description:string
+auth.ticket.verify:root, admin
+add:x:./*/wait.signal/*/values
+   get-nodes:x:@.arguments/*
+wait.signal:magic.db.mysql.create
+   database:anarq
+   table:user_status
+   return-id:bool:false
+   values
+return-nodes:x:@wait.signal/*

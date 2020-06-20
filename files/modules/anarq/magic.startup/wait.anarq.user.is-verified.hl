@@ -1,0 +1,32 @@
+
+
+/*
+ * Asserts that user is verified, and if not, throws an exception.
+ * Assumes there is an open database connection to database.
+ *
+ * Arguments:
+ *
+ * [username] - Mandatory, username of user to check.
+ */
+slots.create:wait.anarq.user.is-verified
+
+   /*
+    * Sanity checking invocation.
+    */
+   validators.mandatory:x:@.arguments/*/username
+
+   /*
+    * Checking if user is either verified or confirmed.
+    */
+   wait.mysql.scalar:"select count(*) from users where username = @username and (status = 'confirmed' or status = 'verified')"
+      @username:x:@.arguments/*/username
+   if
+      eq
+         get-value:x:@wait.mysql.scalar
+         .:long:0
+      .lambda
+
+         /*
+          * User is neither 'verified' nor 'confirmed'.
+          */
+         throw:You are not authorized to perform the action you attempted to do

@@ -1,0 +1,11 @@
+Takk [full_name] for at du er et aktivt medlem hos AnarQ, din Direkte Demokratiske oase
+på internett. Dette er din kvittering for at du har laget saken med saksnummer #[id].
+Du kan se hvordan saken din går ved å trykke på lenken under.
+
+[domain]/case/[id]
+
+**Viktig!**
+Hvis du ikke laget denne saken selv, så vennligst kontakt en administrator hos AnarQ,
+siden dette kan tyde på at passordet ditt er kompromittert. I så fall, scan klienten
+din for virus hvis mulig, og skift passord umiddelbart hos AnarQ. Det kan ta noen
+minutter før saken din er synlig under <em>"nye saker"</em> på forsiden.
