@@ -21,8 +21,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="$(SolutionDir)files\**" CopyToOutputDirectory="PreserveNewest" LinkBase="files\" />
+    <None
+      Include="$(ProjectDir)files\**"
+      CopyToOutputDirectory="PreserveNewest"
+      LinkBase="files\" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <DebugType>None</DebugType>
+  </PropertyGroup>
 
   <ItemGroup>
     <None Include="**/*" />
