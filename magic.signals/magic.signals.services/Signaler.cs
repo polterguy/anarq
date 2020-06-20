@@ -44,24 +44,6 @@ namespace magic.signals.services
         /// <param name="key">Your license key, as obtained from Server Gardens.</param>
         static public void SetLicenseKey(string key)
         {
-            // Checking if license key is valid.
-            var licenseEntities = key.Split(':');
-            if (licenseEntities.Length != 2)
-                throw new ApplicationException("Your license must contain your domain (hostname/DNS entry) and your actual key, separated by ':', e.g. 'api.some-website.com:xxxxxxx'.");
-
-            /*
-             * Salting hostname parts of license key, hashing it, and
-             * comparing it to the license key of the license key.
-             */
-            using (var sha = SHA256.Create())
-            {
-                var hashBytes = sha.ComputeHash(Encoding.UTF8.GetBytes(licenseEntities[0] + "thomas hansen is cool"));
-                var hash = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
-                if (hash == licenseEntities[1])
-                    _validLicense = true; // License is valid!
-                else
-                    throw new ApplicationException("Your license is not valid, it must contain your domain (hostname/DNS entry) and your actual key, separated by ':', e.g. 'api.some-website.com:xxxxxxx', and it mist have been obtained from https://servergardens.com/buy/");
-            }
         }
 
         #region [ -- Interface implementation -- ]
