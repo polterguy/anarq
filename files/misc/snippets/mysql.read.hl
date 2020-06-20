@@ -1,0 +1,12 @@
+/*
+ * Loads records from a MySQL table.
+ */
+wait.signal:magic.db.mysql.read
+   database:magic_auth
+   table:roles
+   args
+      limit:int:5
+      name.like:"%ue%"
+   columns
+      name
+      description
