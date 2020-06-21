@@ -167,8 +167,8 @@ insert into translations (`locale`, `key`, `content`) values ('en', 'NoSuchUserF
 insert into translations (`locale`, `key`, `content`) values ('en', 'YouCannotChangePassword', 'You do not have access to changing the user\'s password');
 insert into translations (`locale`, `key`, `content`) values ('en', 'YouAreNotHuman', 'You are not a human being');
 insert into translations (`locale`, `key`, `content`) values ('en', 'PhoneAlreadyRegistered', 'Phone is already registered');
-insert into translations (`locale`, `key`, `content`) values ('en', 'CreatedCaseInRegionLessThan24HoursAgo', 'You just recently created a case in this region less than 24 hours ago');
-insert into translations (`locale`, `key`, `content`) values ('en', 'CreatedCaseInRegionLessThan1HourAgo', 'You just recently created a case in this region less than 1 hour ago');
+insert into translations (`locale`, `key`, `content`) values ('en', 'CreatedCaseInRegionLessThan24HoursAgo', 'Du har laget en ny sak i denne regionen for mindre enn 5 minutter siden, vi tillater deg kun å lage en sak per 5 minutt i denne regionen');
+insert into translations (`locale`, `key`, `content`) values ('en', 'CreatedCaseInRegionLessThan1HourAgo', 'Du har laget en ny sak i denne regionen for mindre enn 5 minutter siden, vi tillater kun en sak 5 minutter i denne regionen');
 insert into translations (`locale`, `key`, `content`) values ('en', 'NoHtmlSubjectBody', 'You cannot use the characters [, ], < or > in neither your subject nor your body');
 insert into translations (`locale`, `key`, `content`) values ('en', 'EmailAlreadyRegistered', 'Email address is already registered');
 insert into translations (`locale`, `key`, `content`) values ('en', 'NotValidEmailAddress', 'Not a valid email address');
