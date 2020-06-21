@@ -32,6 +32,7 @@ namespace magic.lambda.mime.services
 
         public void Connect(string host, int port, bool useSsl)
         {
+            _client.Value.ServerCertificateValidationCallback = (s,c,h,e) => true;
             _client.Value.Connect(host, port, useSsl);
         }
 
