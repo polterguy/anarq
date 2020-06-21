@@ -66,7 +66,7 @@ wait.mysql.connect:anarq
    /*
     * Checking if user recently created a case.
     *
-    * Notice, if [region] is 'norge', we check the last 24 hours.
+    * Notice, if [region] is 'norge', we check the last 5 minutes.
     */
    strings.trim:x:@.arguments/*/region
    strings.to-lower:x:-
@@ -79,13 +79,13 @@ wait.mysql.connect:anarq
          /*
           * The [region] WAS 'norge'.
           *
-          * Hence, users are only allowed to create cases once every 24 hour.
+          * Hence, users are only allowed to create cases once every 5 minutes.
           */
          wait.mysql.scalar:@"
 select count(*) from cases
    where user = @username and
    region = @region and
-   created > date_add(NOW(), interval -24 hour)"
+   created > date_add(NOW(), interval -5 minute)"
             @username:x:@auth.ticket.get
             @region:x:@strings.to-lower
          if
@@ -101,13 +101,14 @@ select count(*) from cases
    wait.else
 
       /*
-       * The [region] was NOT 'norge', hence user can create one new case every hour.
+       * The [region] was NOT 'norge',
+       * hence user can create one new case every 5 minutes.
        */
       wait.mysql.scalar:@"
 select count(*) from cases
    where user = @username and
    region = @region and
-   created > date_add(NOW(), interval -1 hour)"
+   created > date_add(NOW(), interval -5 minute)"
          @username:x:@auth.ticket.get
          @region:x:@strings.to-lower
       if
