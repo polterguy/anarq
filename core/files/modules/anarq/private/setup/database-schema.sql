@@ -191,7 +191,6 @@ insert into translations (`locale`, `key`, `content`) values ('en', 'hours', 'ho
 insert into translations (`locale`, `key`, `content`) values ('en', 'days', 'days');
 insert into translations (`locale`, `key`, `content`) values ('en', 'weeks', 'weeks');
 insert into translations (`locale`, `key`, `content`) values ('en', 'months', 'months');
-insert into translations (`locale`, `key`, `content`) values ('en', 'fromNow', 'from now');
 insert into translations (`locale`, `key`, `content`) values ('en', 'ago', 'ago');
 
 insert into translations (`locale`, `key`, `content`) values ('en', 'Logout', 'Logout');
@@ -474,7 +473,6 @@ insert into translations (`locale`, `key`, `content`) values ('no', 'hours', 'ti
 insert into translations (`locale`, `key`, `content`) values ('no', 'days', 'dager');
 insert into translations (`locale`, `key`, `content`) values ('no', 'weeks', 'uker');
 insert into translations (`locale`, `key`, `content`) values ('no', 'months', 'måneder');
-insert into translations (`locale`, `key`, `content`) values ('no', 'fromNow', 'fra nå av');
 insert into translations (`locale`, `key`, `content`) values ('no', 'ago', 'siden');
 
 insert into translations (`locale`, `key`, `content`) values ('no', 'Logout', 'Logg ut');
