@@ -20,5 +20,6 @@ update translations set `content` = 'Neste' where `key` = 'Get25NextItems' and `
  */
 delete from translations where `key` = 'HomeSlogan';
 delete from translations where `key` = 'fromNow';
+delete from translations where `key` = 'StartPoliticalRally';
 
 

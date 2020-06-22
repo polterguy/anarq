@@ -222,6 +222,8 @@ select c.id, c.region, c.user, c.deadline, c.subject,
     */
    add:x:./*/wait.mysql.select
       get-nodes:x:@.sql/*
+   lambda2hyper:x:@.sql
+   log.info:x:-
    wait.mysql.select:x:@.sql
 
    /*
