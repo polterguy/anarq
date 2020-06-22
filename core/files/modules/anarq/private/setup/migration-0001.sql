@@ -11,8 +11,9 @@ insert into translations (`locale`, `key`, `content`) values ('en', 'AuditYourVo
 /*
  * Updates.
  */
-update translations set `content` = 'Registrer' where `key` = 'Register' and `locale` = 'no'
-update translations set `content` = 'Lukk' where `key` = 'Home' and `locale` = 'no'
+update translations set `content` = 'Registrer' where `key` = 'Register' and `locale` = 'no';
+update translations set `content` = 'Lukk' where `key` = 'Home' and `locale` = 'no';
+update translations set `content` = 'Neste' where `key` = 'Get25NextItems' and `locale` = 'no';
 
 /*
  * Deletions.

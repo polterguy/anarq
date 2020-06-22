@@ -214,7 +214,7 @@ select c.id, c.region, c.user, c.deadline, c.subject,
          set-value:x:@.sql
             strings.concat
                get-value:x:@.sql
-               .:"and offset > "
+               .:" offset "
                get-value:x:@.arguments/*/offset
 
    /*
