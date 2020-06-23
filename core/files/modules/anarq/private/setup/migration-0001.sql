@@ -6,6 +6,10 @@
  */
 insert into translations (`locale`, `key`, `content`) values ('no', 'AuditYourVote', 'Verifiser stemmen din');
 insert into translations (`locale`, `key`, `content`) values ('en', 'AuditYourVote', 'Audit your vote');
+insert into translations (`locale`, `key`, `content`) values ('no', 'ThereAreXRegionsInSystem', 'Det er {0} regioner i systemer');
+insert into translations (`locale`, `key`, `content`) values ('en', 'ThereAreXRegionsInSystem', 'There are {0} regions in the system');
+insert into translations (`locale`, `key`, `content`) values ('no', 'Regions', 'Regioner');
+insert into translations (`locale`, `key`, `content`) values ('en', 'Regions', 'Regions');
 
 
 /*
