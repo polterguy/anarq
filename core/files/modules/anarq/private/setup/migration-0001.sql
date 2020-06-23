@@ -29,6 +29,9 @@ update translations set `content` = 'Åpen i {0} dager' where `key` = 'CaseOpenL
 delete from translations where `key` = 'HomeSlogan';
 delete from translations where `key` = 'fromNow';
 delete from translations where `key` = 'StartPoliticalRally';
+delete from translations where `key` = 'VotesUserHasGivenPerRegion';
+delete from translations where `key` = 'YouHaveVerifiedEmail';
+
 
 
 
