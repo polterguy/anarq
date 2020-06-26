@@ -21,6 +21,7 @@ wait.mysql.connect:anarq
    wait.mysql.select:select count(*) as open from cases where deadline > now()
    wait.mysql.select:select count(*) as users from users
    wait.mysql.select:select count(*) as votes from votes
+   wait.mysql.select:select count(*) as regions from regions
 
    /*
     * Returning above results to caller.

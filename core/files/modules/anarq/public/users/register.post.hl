@@ -81,6 +81,23 @@ wait.mysql.connect:anarq
       @username:x:@.arguments/*/username
 
    /*
+    * Checking if this is our first user, at which we automatically turn the
+    * user into a "root", "admin" and "moderator" user.
+    */
+   wait.if
+      wait.eq
+         wait.mysql.scalar:select count(*) from users
+         .:long:1
+      .lambda
+         wait.mysql.execute:"insert into users_roles (user, role) values (@username, 'root')"
+            @username:x:@.arguments/*/username
+         wait.mysql.execute:"insert into users_roles (user, role) values (@username, 'admin')"
+            @username:x:@.arguments/*/username
+         wait.mysql.execute:"insert into users_roles (user, role) values (@username, 'moderator')"
+            @username:x:@.arguments/*/username
+
+
+   /*
     * Inserting user's email address, phone and full name into database.
     */
    wait.mysql.execute:"insert into users_extra (user, type, value) values (@username, 'email', @email)"

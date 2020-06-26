@@ -149,6 +149,7 @@ insert into languages (`locale`, `description`) values ('no', 'Norsk');
 /*
  * Inserting default English translation values.
  */
+insert into translations (`locale`, `key`, `content`) values ('en', 'AuditYourVote', 'Audit your vote');
 insert into translations (`locale`, `key`, `content`) values ('en', 'WhyAskMeThis', 'Why do you ask me this?');
 insert into translations (`locale`, `key`, `content`) values ('en', 'ResetPasswordEmailSubject', 'Password reset link at AnarQ');
 insert into translations (`locale`, `key`, `content`) values ('en', 'VoteReceiptEmailSubject', 'Your vote for case with ID of #');
@@ -190,7 +191,6 @@ insert into translations (`locale`, `key`, `content`) values ('en', 'hours', 'ho
 insert into translations (`locale`, `key`, `content`) values ('en', 'days', 'days');
 insert into translations (`locale`, `key`, `content`) values ('en', 'weeks', 'weeks');
 insert into translations (`locale`, `key`, `content`) values ('en', 'months', 'months');
-insert into translations (`locale`, `key`, `content`) values ('en', 'fromNow', 'from now');
 insert into translations (`locale`, `key`, `content`) values ('en', 'ago', 'ago');
 
 insert into translations (`locale`, `key`, `content`) values ('en', 'Logout', 'Logout');
@@ -432,6 +432,7 @@ insert into translations (`locale`, `key`, `content`) values ('en', 'TermsAndCon
 /*
  * Inserting default Norwegian translation values.
  */
+insert into translations (`locale`, `key`, `content`) values ('no', 'AuditYourVote', 'Sjekk stemmen din');
 insert into translations (`locale`, `key`, `content`) values ('no', 'WhyAskMeThis', 'Hvorfor spør dere?');
 insert into translations (`locale`, `key`, `content`) values ('no', 'VoteReceiptEmailSubject', 'Kvitttering for at du har stemt på sak med saksnummer #');
 insert into translations (`locale`, `key`, `content`) values ('no', 'CaseReceiptEmailSubject', 'Kvittering for saken din med saksnummer #');
@@ -472,7 +473,6 @@ insert into translations (`locale`, `key`, `content`) values ('no', 'hours', 'ti
 insert into translations (`locale`, `key`, `content`) values ('no', 'days', 'dager');
 insert into translations (`locale`, `key`, `content`) values ('no', 'weeks', 'uker');
 insert into translations (`locale`, `key`, `content`) values ('no', 'months', 'måneder');
-insert into translations (`locale`, `key`, `content`) values ('no', 'fromNow', 'fra nå av');
 insert into translations (`locale`, `key`, `content`) values ('no', 'ago', 'siden');
 
 insert into translations (`locale`, `key`, `content`) values ('no', 'Logout', 'Logg ut');
@@ -497,7 +497,7 @@ insert into translations (`locale`, `key`, `content`) values ('no', 'ThereAreXCa
 insert into translations (`locale`, `key`, `content`) values ('no', 'ThereAreXOpenCasesInSystem', 'Det er {0} åpne saker i systemet');
 insert into translations (`locale`, `key`, `content`) values ('no', 'ThereAreXVotesInSystem', 'Det er {0} stemmer i systemet');
 insert into translations (`locale`, `key`, `content`) values ('no', 'YouNeedToSetupRegions', 'Du må sette opp regionene dine');
-insert into translations (`locale`, `key`, `content`) values ('no', 'Register', 'Registrer deg');
+insert into translations (`locale`, `key`, `content`) values ('no', 'Register', 'Registrer');
 insert into translations (`locale`, `key`, `content`) values ('no', 'Login', 'Logg inn');
 insert into translations (`locale`, `key`, `content`) values ('no', 'CannotCreateCaseInRegion', 'Du kan ikke lage en ny sak i {0} siden du akkurat laget en sak der.');
 insert into translations (`locale`, `key`, `content`) values ('no', 'OnlyLoggedInUsersCanCreateCases', 'Kun brukere som er logget inn kan lage saker');
@@ -519,9 +519,8 @@ insert into translations (`locale`, `key`, `content`) values ('no', 'Submit', 'S
 insert into translations (`locale`, `key`, `content`) values ('no', 'CaseSuccessfullyCreated', 'Saken din ble lagret');
 insert into translations (`locale`, `key`, `content`) values ('no', 'CheckOutCase', 'Se hvordan saken går');
 insert into translations (`locale`, `key`, `content`) values ('no', 'PreviousReceipt', 'Forrige kvittering');
-insert into translations (`locale`, `key`, `content`) values ('no', 'Home', 'Hjem');
+insert into translations (`locale`, `key`, `content`) values ('no', 'Home', 'Lukk');
 insert into translations (`locale`, `key`, `content`) values ('no', 'AllRightBaby', 'Okey dokey, jeg er klar til å rulle!');
-insert into translations (`locale`, `key`, `content`) values ('no', 'SeeAllOpenCases', 'Gå hjem');
 insert into translations (`locale`, `key`, `content`) values ('no', 'VoteForCaseAbove', 'Stem for ovenstående sak ved å scanne QR koden over');
 insert into translations (`locale`, `key`, `content`) values ('no', 'CheckOutHowTheCaseDid', 'Se hvordan saken gjorde seg');
 insert into translations (`locale`, `key`, `content`) values ('no', 'QuestionWasAskedIn', 'Spørsmålet ble spurt i {0}');
