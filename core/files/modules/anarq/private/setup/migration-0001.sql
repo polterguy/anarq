@@ -10,6 +10,8 @@ insert into translations (`locale`, `key`, `content`) values ('no', 'ThereAreXRe
 insert into translations (`locale`, `key`, `content`) values ('en', 'ThereAreXRegionsInSystem', 'There are {0} regions in the system');
 insert into translations (`locale`, `key`, `content`) values ('no', 'Regions', 'Regioner');
 insert into translations (`locale`, `key`, `content`) values ('en', 'Regions', 'Regions');
+insert into translations (`locale`, `key`, `content`) values ('no', 'RegisterToVote', 'Registrer deg for å stemme');
+insert into translations (`locale`, `key`, `content`) values ('en', 'RegisterToVote', 'Register to vote');
 
 
 /*
