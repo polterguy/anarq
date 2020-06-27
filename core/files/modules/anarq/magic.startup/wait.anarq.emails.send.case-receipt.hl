@@ -117,6 +117,22 @@ slots.create:wait.anarq.emails.send.case-receipt
    .password:8pr4ms
 
    /*
+    * Creating cyptographically signed receipt.
+    *
+    * Notice, this is done to create a single attachment, which serves as the
+    * receipt, since some email providers tends to mess this up, by adding images
+    * and such to emails as they're beign sent, in order to track emails, etc.
+    * By doing this this way, it also becomes very easy to forward email, including
+    * attachments, to an auditing organisation.
+    */
+   unwrap:x:+/**
+   mime.create
+      entity:text/plain
+         sign:x:@wait.io.file.load
+            password:x:@.password
+         content:x:@.email-txt
+
+   /*
     * Substituting recipient and unwrapping all
     * expressions inside of email.
     */
@@ -130,10 +146,13 @@ slots.create:wait.anarq.emails.send.case-receipt
          to
             name:x:@.arguments/*/email
          subject:x:@.subject
-         entity:multipart/alternative
-            sign:x:@wait.io.file.load
-               password:x:@.password
+         entity:multipart/mixed
+            entity:multipart/alternative
+               entity:text/plain
+                  content:x:@.email-txt
+               entity:text/html
+                  content:x:@.email-html
             entity:text/plain
-               content:x:@.email-txt
-            entity:text/html
-               content:x:@.email-html
+               headers
+                  Content-Disposition:"attachment; filename=receipt.txt"
+               content:x:@mime.create
