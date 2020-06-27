@@ -166,7 +166,7 @@ namespace magic.lambda.mime.helpers
         {
             var stream = new MemoryBlockStream();
             var content = contentNode.GetEx<string>() ??
-                throw new ArgumentNullException("Noe actual [content] supplied to message");
+                throw new ArgumentNullException("No actual [content] supplied to message");
             var writer = new StreamWriter(stream);
             writer.Write(content);
             writer.Flush();
