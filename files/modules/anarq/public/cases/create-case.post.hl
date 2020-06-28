@@ -1,0 +1,183 @@
+
+/*
+ * Returns SUCCESS if currently logged in user can create a new case
+ * within the specified [region].
+ *
+ * Arguments:
+ *
+ * [region] - Mandatory argument, defining which region to check.
+ */
+.arguments
+   region:string
+   subject:string
+   body:string
+   deadline:string
+auth.ticket.verify:root, admin, moderator, user
+
+/*
+ * Sanity checking invocation.
+ */
+validators.mandatory:x:@.arguments/*/region
+validators.mandatory:x:@.arguments/*/subject
+validators.mandatory:x:@.arguments/*/body
+validators.string:x:@.arguments/*/body
+   min:50
+   max:2500
+validators.string:x:@.arguments/*/subject
+   min:15
+   max:100
+validators.mandatory:x:@.arguments/*/deadline
+auth.ticket.get
+if
+   or
+      strings.contains:x:@.arguments/*/subject
+         .:<
+      strings.contains:x:@.arguments/*/subject
+         .:>
+      strings.contains:x:@.arguments/*/body
+         .:<
+      strings.contains:x:@.arguments/*/body
+         .:>
+      strings.contains:x:@.arguments/*/subject
+         .:[
+      strings.contains:x:@.arguments/*/subject
+         .:]
+      strings.contains:x:@.arguments/*/body
+         .:[
+      strings.contains:x:@.arguments/*/body
+         .:]
+   .lambda
+      return
+         result:FAILURE
+         extra:NoHtmlSubjectBody
+
+/*
+ * Opening database connection.
+ */
+wait.mysql.connect:anarq
+
+   /*
+    * Asserting user is verified.
+    */
+   unwrap:x:+/*
+   wait.signal:wait.anarq.user.is-verified
+      username:x:@auth.ticket.get
+
+   /*
+    * Checking if user recently created a case.
+    *
+    * Notice, if [region] is 'norge', we check the last 5 minutes.
+    */
+   strings.trim:x:@.arguments/*/region
+   strings.to-lower:x:-
+   wait.if
+      eq
+         get-value:x:@strings.to-lower
+         .:norge
+      .lambda
+
+         /*
+          * The [region] WAS 'norge'.
+          *
+          * Hence, users are only allowed to create cases once every 5 minutes.
+          */
+         wait.mysql.scalar:@"
+select count(*) from cases
+   where user = @username and
+   region = @region and
+   created > date_add(NOW(), interval -5 minute)"
+            @username:x:@auth.ticket.get
+            @region:x:@strings.to-lower
+         if
+            not
+               eq
+                  get-value:x:@wait.mysql.scalar
+                  .:long:0
+            .lambda
+               return
+                  result:FAILURE
+                  extra:CreatedCaseInRegionLessThan24HoursAgo
+
+   wait.else
+
+      /*
+       * The [region] was NOT 'norge',
+       * hence user can create one new case every 5 minutes.
+       */
+      wait.mysql.scalar:@"
+select count(*) from cases
+   where user = @username and
+   region = @region and
+   created > date_add(NOW(), interval -5 minute)"
+         @username:x:@auth.ticket.get
+         @region:x:@strings.to-lower
+      if
+         not
+            eq
+               get-value:x:@wait.mysql.scalar
+               .:long:0
+         .lambda
+            return
+               result:FAILURE
+               extra:CreatedCaseInRegionLessThan1HourAgo
+
+   /*
+    * If we came this far, user is allowed to create a new case.
+    *
+    * But first calculating deadline for case, according to user's preferences.
+    */
+   .deadline
+   switch:x:@.arguments/*/deadline
+      case:short
+         set-value:x:@.deadline
+            math.add
+               date.now
+               time
+                  hours:72
+      case:medium
+         set-value:x:@.deadline
+            math.add
+               date.now
+               time
+                  days:7
+      case:long
+         set-value:x:@.deadline
+            math.add
+               date.now
+               time
+                  days:30
+      default
+         throw:Unknown deadline argument value
+
+   /*
+    * The inserting case into database, making sure we return ID of case to caller.
+    */
+   wait.mysql.scalar:insert into cases (region, user, deadline, subject, body) values (@region, @user, @deadline, @subject, @body); select last_insert_id();
+      @region:x:@.arguments/*/region
+      @user:x:@auth.ticket.get
+      @deadline:x:@.deadline
+      @subject:x:@.arguments/*/subject
+      @body:x:@.arguments/*/body
+
+   /*
+    * Sending user his case receipt.
+    */
+   wait.mysql.select:@"select
+   (select value from users_extra where type = 'full_name' and user = @username) as full_name,
+   (select value from users_extra where type = 'language' and user = @username) as language,
+   (select value from users_extra where type = 'email' and user = @username) as email"
+      @username:x:@auth.ticket.get
+   unwrap:x:+/*
+   wait.signal:wait.anarq.emails.send.case-receipt
+      id:x:@wait.mysql.scalar
+      email:x:@wait.mysql.select/*/*/email
+      full_name:x:@wait.mysql.select/*/*/full_name
+      language:x:@wait.mysql.select/*/*/language
+
+   /*
+    * Returning SUCCESS and ID of case to caller.
+    */
+   unwrap:x:+/*
+   return
+      result:SUCCESS
+      extra:x:@wait.mysql.scalar
