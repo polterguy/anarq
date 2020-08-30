@@ -1,0 +1,45 @@
+
+/*
+ * Retrieves SUCCESS if email is available and not registered from before,
+ * FAILURE if not.
+ *
+ * Arguments:
+ *
+ * [email] - Mandatory argument, defining which email address to check.
+ */
+.arguments
+   email:string
+
+/*
+ * Sanity checking invocation.
+ */
+validators.mandatory:x:@.arguments/*/email
+try
+   validators.email:x:@.arguments/*/email
+.catch
+   return
+      result:FAILURE
+      extra:NotValidEmailAddress
+
+
+/*
+ * Opening database connection, and selecting user from database.
+ */
+mysql.connect:magic
+
+   /*
+    * Checking if email is already registered.
+    */
+   mysql.scalar:"select count(*) from users_extra where type = 'email' and value = @email"
+      @email:x:@.arguments/*/email
+   if
+      eq
+         get-value:x:@mysql.scalar
+         .:long:0
+      .lambda
+         return
+            result:SUCCESS
+   else
+      return
+         result:FAILURE
+         extra:EmailAlreadyRegistered

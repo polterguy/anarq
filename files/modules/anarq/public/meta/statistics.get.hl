@@ -1,0 +1,35 @@
+
+/*
+ * Retrieves meta data about the system.
+ */
+
+/*
+ * Doing some basic caching, basically caching for 3 minutes.
+ */
+http.response.headers.add
+   Cache-Control:private, max-age=180
+
+/*
+ * Opening database connection.
+ */
+wait.mysql.connect:magic
+
+   /*
+    * Doing some counting and returning values to caller.
+    */
+   wait.mysql.select:select count(*) as cases from cases
+   wait.mysql.select:select count(*) as open from cases where deadline > now()
+   wait.mysql.select:select count(*) as users from users
+   wait.mysql.select:select count(*) as votes from votes
+   wait.mysql.select:select count(*) as regions from regions
+
+   /*
+    * Returning above results to caller.
+    */
+   add:x:./*/return-nodes
+      get-nodes:x:././*/wait.mysql.select/*/*
+
+   /*
+    * Returning results to caller.
+    */
+   return-nodes

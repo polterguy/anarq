@@ -1,0 +1,38 @@
+
+/*
+ * Retrieves SUCCESS if username is available, FAILURE if not.
+ *
+ * Arguments:
+ *
+ * [username] - Mandatory argument, defining which username to check for.
+ */
+.arguments
+   username:string
+
+/*
+ * Sanity checking invocation.
+ */
+validators.mandatory:x:@.arguments/*/username
+validators.regex:x:@.arguments/*/username
+   regex:^[a-zA-Z0-9_-]{4,30}$
+
+/*
+ * Opening database connection, and selecting user from database.
+ */
+wait.mysql.connect:magic
+
+   /*
+    * Checking if username exists.
+    */
+   wait.mysql.scalar:select count(*) from users where username = @username
+      @username:x:@.arguments/*/username
+   if
+      eq
+         get-value:x:@wait.mysql.scalar
+         .:long:0
+      .lambda
+         return
+            result:SUCCESS
+   else
+      return
+         result:FAILURE

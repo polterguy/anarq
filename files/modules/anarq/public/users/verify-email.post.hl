@@ -1,0 +1,69 @@
+
+/*
+ * Returns SUCCESS if user's email address was successfully verified,
+ * FAILURE if not.
+ *
+ * Arguments:
+ *
+ * [username] - Mandatory argument, defining which username to verify email address on behalf of.
+ * [hash] - Mandatory argument, SHA256 bit hash generated as user registered his email address.
+ */
+.arguments
+   username:string
+   hash:string
+
+/*
+ * Sanity checking invocation.
+ */
+validators.mandatory:x:@.arguments/*/username
+validators.mandatory:x:@.arguments/*/hash
+
+/*
+ * Calculating hash value for user's "verify email address link".
+ */
+config.get:"anarq:secret"
+strings.concat
+   get-value:x:@config.get
+   get-value:x:@.arguments/*/username
+crypto.hash:x:@strings.concat
+
+/*
+ * Verifying integrity of given [hash] argument.
+ */
+if
+   not
+      eq
+         get-value:x:@crypto.hash
+         get-value:x:@.arguments/*/hash
+   .lambda
+      return
+         result:FAILURE
+         extra:YourVerifyEmailTicketIsNotValid
+
+/*
+ * Opening database connection, and making sure user becomes verified.
+ */
+wait.mysql.connect:magic
+
+   /*
+    * Checking if username exists.
+    */
+   wait.mysql.execute:"update users set status = 'verified' where username = @username and status = 'new'"
+      @username:x:@.arguments/*/username
+   if
+      eq
+         get-value:x:@wait.mysql.execute
+         .:int:1
+      .lambda
+         auth.ticket.create
+            username:x:@.arguments/*/username
+            roles
+               .:user
+         unwrap:x:+/*/extra
+         return
+            result:SUCCESS
+            extra:x:@auth.ticket.create
+   else
+      return
+         result:FAILURE
+         extra:YouHaveAlreadyVerifiedEmail

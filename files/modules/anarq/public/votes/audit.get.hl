@@ -1,0 +1,114 @@
+
+/*
+ * Audits one specified vote, given the specified hash.
+ *
+ * Arguments:
+ *
+ * [hash] - Mandatory argument, being the hash value of vote to audit.
+ */
+.arguments
+   hash:string
+validators.mandatory:x:@.arguments/*/hash
+
+/*
+ * Opening database connection.
+ */
+wait.mysql.connect:magic
+
+   /*
+    * Selecting vote.
+    */
+   wait.mysql.select:"select v.case, v.id, v.user, v.opinion, v.created from votes v where v.hash = @hash"
+      @hash:x:@.arguments/*/hash
+   if
+      not
+         exists:x:@wait.mysql.select/*/*
+      .lambda
+         return
+            result:FAILURE
+            extra:YourVoteWasDeleted
+
+   /*
+    * Selecting old hash, and if there is none, we use subject + body of case
+    * to create base hash value.
+    */
+   .old-hash
+   wait.mysql.select:@"select hash from votes v where v.case = @case and v.id < @id order by v.id desc limit 1"
+      @case:x:@wait.mysql.select/@wait.mysql.select/*/*/case
+      @id:x:@wait.mysql.select/@wait.mysql.select/*/*/id
+   wait.if
+      not
+         exists:x:@wait.mysql.select/*/*/hash
+      .lambda
+
+         /*
+          * This is the first vote for case.
+          */
+         wait.mysql.select:select c.subject, c.body from cases c where c.id = @case
+            @case:x:@wait.mysql.select/@wait.mysql.select/@wait.mysql.select/*/*/case
+         strings.concat
+            get-value:x:@wait.mysql.select/*/*/subject
+            get-value:x:@wait.mysql.select/*/*/body
+         set-value:x:@.old-hash
+            crypto.hash:x:@strings.concat
+
+   wait.else
+
+      /*
+       * This is NOT the first vote for the case.
+       */
+      wait.set-value:x:@.old-hash
+         get-value:x:@wait.mysql.select/*/*/hash
+
+      /*
+       * Making sure we return previous hash to caller too, such that he
+       * can "walk the votes" backwards in time.
+       */
+      unwrap:x:+/*/*
+      add:x:../*/wait.mysql.connect/*/return
+         .
+            previous:x:@.old-hash
+   
+   /*
+    * Re-creating hash to verify it is the same as the hash given by caller.
+    *
+    * new hash ==> hash(old-hash + '-' + username + '-' + vote + '-' + datetime + '-' + secret)
+    */
+   config.get:"anarq:secret"
+   date.format:x:@wait.mysql.select/@wait.mysql.select/*/*/created
+      format:"yyyy-MM-ddTHH:mm:ss"
+   strings.concat
+      get-value:x:@.old-hash
+      .:-
+      get-value:x:@wait.mysql.select/@wait.mysql.select/*/*/user
+      .:-
+      get-value:x:@wait.mysql.select/@wait.mysql.select/*/*/opinion
+      .:-
+      get-value:x:@date.format
+      .:-
+      get-value:x:@config.get
+   log.info:x:-
+   crypto.hash:x:@strings.concat
+
+   /*
+    * If re-created hash does not match given argument hash, vote have been tampered with
+    * somehow.
+    */
+   if
+      not
+         eq
+            get-value:x:@crypto.hash
+            get-value:x:@.arguments/*/hash
+      .lambda
+         return
+            result:FAILURE
+            extra:VoteHashFailure
+
+
+   /*
+    * Returning results to caller.
+    */
+   unwrap:x:+/*
+   return
+      result:SUCCESS
+      case:x:@wait.mysql.select/@wait.mysql.select/*/*/case

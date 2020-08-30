@@ -1,0 +1,26 @@
+
+/*
+ * Retrieves all regions registered in system with description of 'Kommune'.
+ */
+
+/*
+ * Doing some basic caching, basically caching for 3 minutes.
+ */
+http.response.headers.add
+   Cache-Control:private, max-age=180
+
+/*
+ * Opening database connection, and selecting regions from database.
+ */
+mysql.connect:magic
+
+   /*
+    * Returns all regions in system back to caller.
+    */
+   mysql.select:"select region from regions where description = 'Kommune'"
+   add:x:./*/return/*
+      get-nodes:x:@mysql.select/*/*
+   set-name:x:./*/return/*/*
+      .:.
+   return
+      regions

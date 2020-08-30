@@ -1,0 +1,27 @@
+
+/*
+ * Returns true if user is allowed to set his regions.
+ */
+auth.ticket.verify:root, admin, moderator, user
+
+/*
+ * Opening database connection, and selecting regions from database.
+ */
+mysql.connect:magic
+
+   /*
+    * Returns all regions in system back to caller.
+    */
+   auth.ticket.get
+   mysql.scalar:"select count(*) from users_regions where user = @username"
+      @username:x:@auth.ticket.get
+   if
+      eq
+         get-value:x:@mysql.scalar
+         .:long:0
+      .lambda
+         return
+            result:SUCCESS
+   else
+      return
+         result:FAILURE

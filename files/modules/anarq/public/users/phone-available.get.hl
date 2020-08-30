@@ -1,0 +1,38 @@
+
+/*
+ * Retrieves SUCCESS if phone number is available and not registered from before,
+ * FAILURE if not.
+ *
+ * Arguments:
+ *
+ * [phone] - Mandatory argument, defining which phone number to check.
+ */
+.arguments
+   phone:string
+
+/*
+ * Sanity checking invocation.
+ */
+validators.mandatory:x:@.arguments/*/phone
+
+/*
+ * Opening database connection, and selecting user from database.
+ */
+mysql.connect:magic
+
+   /*
+    * Checking if email is already registered.
+    */
+   mysql.scalar:"select count(*) from users_extra where type = 'phone' and value = @phone"
+      @phone:x:@.arguments/*/phone
+   if
+      eq
+         get-value:x:@mysql.scalar
+         .:long:0
+      .lambda
+         return
+            result:SUCCESS
+   else
+      return
+         result:FAILURE
+         extra:PhoneAlreadyRegistered

@@ -1,0 +1,13 @@
+.arguments
+   case:long
+   user:string
+   opinion:bool
+auth.ticket.verify:root, admin
+add:x:./*/wait.signal/*/values
+   get-nodes:x:@.arguments/*
+wait.signal:magic.db.mysql.create
+   database:magic
+   table:votes
+   return-id:bool:true
+   values
+return-nodes:x:@wait.signal/*

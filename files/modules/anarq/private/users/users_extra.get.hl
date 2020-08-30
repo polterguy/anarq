@@ -1,0 +1,38 @@
+.arguments
+   limit:long
+   offset:long
+   order:string
+   direction:string
+   user.like:string
+   user.mt:string
+   user.lt:string
+   user.mteq:string
+   user.lteq:string
+   user.neq:string
+   user.eq:string
+   type.like:string
+   type.mt:string
+   type.lt:string
+   type.mteq:string
+   type.lteq:string
+   type.neq:string
+   type.eq:string
+   value.like:string
+   value.mt:string
+   value.lt:string
+   value.mteq:string
+   value.lteq:string
+   value.neq:string
+   value.eq:string
+auth.ticket.verify:root, admin
+add:x:./*/wait.signal/*/args
+   get-nodes:x:@.arguments/*
+wait.signal:magic.db.mysql.read
+   database:magic
+   table:users_extra
+   args
+   columns
+      user
+      type
+      value
+return-nodes:x:@wait.signal/*

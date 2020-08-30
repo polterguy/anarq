@@ -1,0 +1,29 @@
+
+
+/*
+ * Rejects a case, effectively discarding it from being possible to vote for.
+ */
+.arguments
+   id:long
+auth.ticket.verify:root, admin
+
+
+/*
+ * Verifying id was supplied.
+ */
+validators.mandatory:x:@.arguments/*/id
+
+
+/*
+ * Connecting to database.
+ */
+mysql.connect:magic
+
+   /*
+    * Updating record and returning result to caller.
+    */
+   mysql.execute:update cases set type='rejected' where type='new' and id=@id
+      @id:x:@.arguments/*/id
+   unwrap:x:+/*
+   return-nodes
+      updated-records:x:@mysql.execute

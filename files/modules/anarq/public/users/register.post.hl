@@ -1,0 +1,155 @@
+
+/*
+ * Registers a new user at the site.
+ *
+ * Arguments:
+ *
+ * [email] - Mandatory argument, email address to associate with user.
+ * [username] - Mandatory argument, username to register.
+ * [full_name] - Mandatory argument, full name of user to register.
+ * [phone] - Mandatory argument, legally registered cell phone of user to register.
+ * [password] - Mandatory argument, user's password.
+ * [captcha] - Mandatory argument, response from Google's reCAPTCHA service.
+ * [language] - Mandatory argument, user's preferred language.
+ */
+.arguments
+   username:string
+   email:string
+   password:string
+   full_name:string
+   phone:string
+   captcha:string
+   language:string
+
+/*
+ * Sanity checking invocation.
+ */
+validators.mandatory:x:@.arguments/*/username
+validators.mandatory:x:@.arguments/*/email
+validators.mandatory:x:@.arguments/*/password
+validators.mandatory:x:@.arguments/*/full_name
+validators.mandatory:x:@.arguments/*/phone
+validators.mandatory:x:@.arguments/*/captcha
+validators.mandatory:x:@.arguments/*/language
+validators.email:x:@.arguments/*/email
+validators.string:x:@.arguments/*/password
+   min:10
+validators.string:x:@.arguments/*/full_name
+   min:5
+validators.regex:x:@.arguments/*/username
+   regex:^[a-zA-Z0-9_-]{4,30}$
+
+/*
+ * Verifying the captcha from client, to verify that user is a human being.
+ */
+config.get:"anarq:recaptcha-secret"
+strings.concat
+   .:secret=
+   get-value:x:@config.get
+   .:&response=
+   get-value:x:@.arguments/*/captcha
+wait.http.post:"https://www.google.com/recaptcha/api/siteverify"
+   headers
+      Content-Type:application/x-www-form-urlencoded
+   payload:x:@strings.concat
+json2lambda:x:@wait.http.post/*/content
+if
+   not
+      get-value:x:@json2lambda/*/success
+   .lambda
+      return
+         result:FAILURE
+         extra:YouAreNotHuman
+
+/*
+ * Opening database connection, and inserting user into database.
+ */
+wait.mysql.connect:magic
+
+   /*
+    * Inserting user into database, making sure we hash user's password.
+    */
+   crypto.password.hash:x:@.arguments/*/password
+   wait.mysql.execute:"insert into users (username, password, status) values (@username, @password, 'new')"
+      @username:x:@.arguments/*/username
+      @password:x:@crypto.password.hash
+
+   /*
+    * Inserting default role into database.
+    */
+   wait.mysql.execute:"insert into users_roles (user, role) values (@username, 'user')"
+      @username:x:@.arguments/*/username
+
+   /*
+    * Checking if this is our first user, at which we automatically turn the
+    * user into a "root", "admin" and "moderator" user.
+    */
+   wait.if
+      wait.eq
+         wait.mysql.scalar:select count(*) from users
+         .:long:1
+      .lambda
+         wait.mysql.execute:"insert into users_roles (user, role) values (@username, 'root')"
+            @username:x:@.arguments/*/username
+         wait.mysql.execute:"insert into users_roles (user, role) values (@username, 'admin')"
+            @username:x:@.arguments/*/username
+         wait.mysql.execute:"insert into users_roles (user, role) values (@username, 'moderator')"
+            @username:x:@.arguments/*/username
+
+
+   /*
+    * Inserting user's email address, phone and full name into database.
+    */
+   wait.mysql.execute:"insert into users_extra (user, type, value) values (@username, 'email', @email)"
+      @username:x:@.arguments/*/username
+      @email:x:@.arguments/*/email
+   wait.mysql.execute:"insert into users_extra (user, type, value) values (@username, 'full_name', @full_name)"
+      @username:x:@.arguments/*/username
+      @full_name:x:@.arguments/*/full_name
+   wait.mysql.execute:"insert into users_extra (user, type, value) values (@username, 'phone', @phone)"
+      @username:x:@.arguments/*/username
+      @phone:x:@.arguments/*/phone
+   wait.mysql.execute:"insert into users_extra (user, type, value) values (@username, 'language', @language)"
+      @username:x:@.arguments/*/username
+      @language:x:@.arguments/*/language
+
+   /*
+    * Calculating hash value for user's "verify email address link".
+    */
+   config.get:"anarq:secret"
+   if
+      lt
+         strings.length:x:@config.get
+         .:int:50
+      .lambda
+         throw:"Your 'anarq:secret' is too short. It must be at least 50 characters in length, to provide sufficient entropy to avoid brute force rainbow dictionary attacks guessing vote values."
+
+   /*
+    * Creating hash for confirm email link, sent to user's registered email address.
+    */
+   strings.concat
+      get-value:x:@config.get
+      get-value:x:@.arguments/*/username
+   crypto.hash:x:@strings.concat
+
+   /*
+    * Sends the user a "verify email address mail".
+    *
+    * Notice, we do this last, such that everything is done, besides
+    * the email sending itself - Which can be re-animated due to having
+    * logged the entire "send-email" invocation inside of slot.
+    */
+   unwrap:x:+/*
+   wait.signal:wait.anarq.emails.send.verify-email
+      email:x:@.arguments/*/email
+      username:x:@.arguments/*/username
+      full_name:x:@.arguments/*/full_name
+      phone:x:@.arguments/*/phone
+      hash:x:@crypto.hash
+      language:x:@.arguments/*/language
+
+   /*
+    * Returning results to caller.
+    */
+   return
+      result:SUCCESS

@@ -1,0 +1,26 @@
+
+/*
+ * Retrieves true if user has no existing cases, that have not beey rejected for some reasons.
+ */
+auth.ticket.get
+
+/*
+ * Opening database connection, and selecting user from database.
+ */
+mysql.connect:magic
+
+   /*
+    * Checking if email is already registered.
+    */
+   mysql.scalar:"select count(*) from cases where user = @username"
+      @username:x:@auth.ticket.get
+   if
+      eq
+         get-value:x:@mysql.scalar
+         .:long:0
+      .lambda
+         return
+            first:bool:true
+   else
+      return
+         first:bool:false
