@@ -7,6 +7,7 @@
    offset:long
    topic.eq:string
    user.eq:string
+   path.like
 .description:Returns all posts matching the specified argument(s) to caller allowing caller to page results
 
 
@@ -29,7 +30,7 @@ data.connect:[generic|anarq]
    /*
     * Parametrising invocation.
     */
-   add:x:+/+/+/+/+/+/+
+   add:x:./*/data.read
       get-nodes:x:@.arguments/*/limit
       get-nodes:x:@.arguments/*/offset
    remove-nodes:x:@.arguments/*/limit
