@@ -15,6 +15,7 @@
  * Sanity checking invocation.
  */
 validators.mandatory:x:@.arguments/*/limit
+validators.mandatory:x:@.arguments/*/offset
 validators.integer:x:@.arguments/*/limit
    min:1
    max:100
@@ -51,9 +52,9 @@ data.connect:[generic|anarq]
          content
          created
          user
+         path
       where
          and
-            path
 
 
    /*

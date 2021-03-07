@@ -35,7 +35,7 @@ data.connect:[generic|anarq]
     * to avoid race conditions when trying to retrieve post afterwards, resulting
     * in returning wrong path for post.
     */
-   data.transaction.begin
+   data.transaction.create
       database-type:mysql
 
 
@@ -106,6 +106,7 @@ data.connect:[generic|anarq]
             .:/
             convert:x:@data.create
                type:string
+            .:/
 
 
       /*
@@ -113,6 +114,7 @@ data.connect:[generic|anarq]
        */
       data.update
          database-type:mysql
+         table:posts
          where
             id:x:@data.create
          values
