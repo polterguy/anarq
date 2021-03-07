@@ -1,18 +1,40 @@
+
+/*
+ * Deletes the specified topic.
+ */
 .arguments
    name:string
-.description:Deletes one item from your topics table in your [generic|anarq] database matching the specified argument(s)
-.type:crud-delete
+.description:Deletes the specified topic from your database
+
+
+/*
+ * Sanity checking invocation.
+ */
 validators.mandatory:x:@.arguments/*/name
 auth.ticket.verify:root, admin
+
+
+/*
+ * Connecting to database.
+ */
 data.connect:[generic|anarq]
    database-type:mysql
-   add:x:+/*/where/*/and
-      get-nodes:x:@.arguments/*
+
+
+   /*
+    * Invoking delete slot.
+    */
    data.delete
       database-type:mysql
       table:topics
       where
          and
+            name:x:@.arguments/*/name
+
+
+   /*
+    * Returns result of invocation to caller.
+    */
    unwrap:x:+/*
    return
       affected:x:@data.delete

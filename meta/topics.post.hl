@@ -1,18 +1,43 @@
+
+/*
+ * Creates a new topic in the system.
+ */
 .arguments
    name:string
    description:string
-.description:Creates an item in your topics table in your [generic|anarq] database according to the specified arguments
-.type:crud-create
+.description:Creates a new topic in the system
+
+
+/*
+ * Sanity checks invocation
+ */
 auth.ticket.verify:root, admin
+validators.mandatory:x:@.arguments/*/name
+validators.mandatory:x:@.arguments/*/description
+
+
+/*
+ * Connects to database.
+ */
 data.connect:[generic|anarq]
    database-type:mysql
-   add:x:+/*/values
-      get-nodes:x:@.arguments/*
+
+
+   /*
+    * Invokes create slot.
+    */
    data.create
       database-type:mysql
       table:topics
       return-id:bool:false
       values
+         name:x:@.arguments/*/name
+         name:x:@.arguments/*/description
+
+
+   /*
+    * Returns result of invocation to caller.
+    */
    unwrap:x:+/*
    return
       result:success
