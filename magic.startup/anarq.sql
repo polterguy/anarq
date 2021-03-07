@@ -1,7 +1,6 @@
 /*
  * AnarQ main SQL scheme.
  */
-drop database anarq;
 create database anarq;
 use anarq;
 
