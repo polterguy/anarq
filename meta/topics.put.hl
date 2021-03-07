@@ -1,11 +1,11 @@
 
 /*
- * Updates an existing topic in the system.
+ * Updates the description of the specified name topic in your system.
  */
 .arguments
    name:string
    description:string
-.description:Updates an existing topic in the system
+.description:Updates the description of the specified name topic in your system
 
 
 /*
