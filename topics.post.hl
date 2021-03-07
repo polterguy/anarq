@@ -1,0 +1,18 @@
+.arguments
+   name:string
+   description:string
+.description:Creates an item in your topics table in your [generic|anarq] database according to the specified arguments
+.type:crud-create
+auth.ticket.verify:root, admin
+data.connect:[generic|anarq]
+   database-type:mysql
+   add:x:+/*/values
+      get-nodes:x:@.arguments/*
+   data.create
+      database-type:mysql
+      table:topics
+      return-id:bool:false
+      values
+   unwrap:x:+/*
+   return
+      result:success

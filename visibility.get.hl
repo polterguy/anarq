@@ -1,0 +1,56 @@
+.arguments
+   limit:long
+   offset:long
+   order:string
+   direction:string
+   operator:string
+   name.like:string
+   name.mt:string
+   name.lt:string
+   name.mteq:string
+   name.lteq:string
+   name.neq:string
+   name.eq:string
+   description.like:string
+   description.mt:string
+   description.lt:string
+   description.mteq:string
+   description.lteq:string
+   description.neq:string
+   description.eq:string
+.description:Returns items from your visibility table in your [generic|anarq] database according to the specified arguments
+.type:crud-read
+auth.ticket.verify:root, admin
+if
+   exists:x:@.arguments/*/operator
+   .lambda
+      switch:x:@.arguments/*/operator
+         case:and
+         case:or
+            set-name:x:../*/data.connect/*/data.read/*/where/*
+               get-value:x:@.arguments/*/operator
+         default
+            throw:"Unsupported operator, only 'and' and 'or' supported"
+data.connect:[generic|anarq]
+   database-type:mysql
+   add:x:+/+/+/+/+/+/+
+      get-nodes:x:@.arguments/*/limit
+      get-nodes:x:@.arguments/*/offset
+      get-nodes:x:@.arguments/*/order
+      get-nodes:x:@.arguments/*/direction
+   remove-nodes:x:@.arguments/*/operator
+   remove-nodes:x:@.arguments/*/limit
+   remove-nodes:x:@.arguments/*/offset
+   remove-nodes:x:@.arguments/*/order
+   remove-nodes:x:@.arguments/*/direction
+   add:x:+/*/where/*
+      get-nodes:x:@.arguments/*
+   data.read
+      database-type:mysql
+      table:visibility
+      columns
+         name
+         description
+      where
+         and
+   return-nodes:x:@data.read/*

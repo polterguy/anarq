@@ -1,0 +1,20 @@
+.arguments
+   post_id:long
+   user:string
+.description:Deletes one item from your likes table in your [generic|anarq] database matching the specified argument(s)
+.type:crud-delete
+validators.mandatory:x:@.arguments/*/user
+validators.mandatory:x:@.arguments/*/post_id
+auth.ticket.verify:root, admin
+data.connect:[generic|anarq]
+   database-type:mysql
+   add:x:+/*/where/*/and
+      get-nodes:x:@.arguments/*
+   data.delete
+      database-type:mysql
+      table:likes
+      where
+         and
+   unwrap:x:+/*
+   return
+      affected:x:@data.delete
