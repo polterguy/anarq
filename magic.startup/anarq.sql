@@ -17,6 +17,13 @@ create table topics (
 
 
 /*
+ * Inserting default topic into database.
+ */
+insert into topics (name, description) values ('general', 'General discussions for things not related to anything in particular');
+insert into topics (name, description) values ('news', 'Commentary on news and articles');
+
+
+/*
  * Visibility for posts.
  */
 create table visibility (
@@ -31,7 +38,7 @@ create table visibility (
  */
 insert into visibility (name, description) values ('public', 'Publicly visible post, implying anyone can see it');
 insert into visibility (name, description) values ('protected', 'Protected post, implying only authenticated and authorised users can see it');
-insert into visibility (name, description) values ('moderated', 'Moderated post, implying post was explicitly moderated by a moderator');
+insert into visibility (name, description) values ('moderated', 'Moderated post, implying post was explicitly moderated and removed by a moderator');
 
 
 /*
