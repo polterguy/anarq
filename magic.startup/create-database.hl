@@ -6,10 +6,11 @@
 
 
 /*
- * Making sure we're executing this after all other startup scripts have been executed.
+ * Making sure we're executing this after all other
+ * startup scripts have been executed.
  */
 fork
-   sleep:5000
+   sleep:10000
 
 
    /*
@@ -23,15 +24,31 @@ fork
             exists:x:@signal/*/*/db/=anarq
          .lambda
 
-            // Database doesn't exist, creating it.
+
+            /*
+             * Database doesn't exist, creating it.
+             */
             log.info:Creating AnarQ database
             io.file.load:/modules/anarq/magic.startup/anarq.sql
             mysql.connect:magic
                mysql.execute:x:@io.file.load
             log.info:AnarQ database successfully created
+
       else
+
+
+         /*
+          * Database already exists.
+          */
          log.info:AnarQ database already exists
+
    .catch
+
+
+      /*
+       * Oops, error - Logging message.
+       */
       log.error
-         .:"Something went wrong when initializing AnarQ module trying to create its database - "
+         .:"Something went wrong when initializing AnarQ module trying to create its database; '"
          get-value:x:@.arguments/*/message
+         .:"'"
