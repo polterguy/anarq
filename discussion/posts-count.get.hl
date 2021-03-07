@@ -1,22 +1,44 @@
+
+/*
+ * Counts posts in the system according to specified argument(s).
+ */
 .arguments
    topic.eq:string
    user.eq:string
    visibility.eq:string
    path.like:string
-.description:Counts items from your posts table in your [generic|anarq] database according to the specified arguments
-.type:crud-count
-auth.ticket.verify:root, admin
+.description:Counts posts in the system according to specified argument(s)
+
+
+/*
+ * Connecting to database.
+ */
 data.connect:[generic|anarq]
    database-type:mysql
+
+
+   /*
+    * Parametrising invocation.
+    */
    add:x:+/*/where/*
       get-nodes:x:@.arguments/*
+
+
+   /*
+    * Invoking read slot.
+    */
    data.read
       database-type:mysql
       table:posts
+      limit:long:1
       columns
          count(*)
             as:count
       where
          and
-      limit:long:1
+
+
+   /*
+    * Returning results to caller.
+    */
    return-nodes:x:-/*/*

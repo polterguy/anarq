@@ -1,22 +1,30 @@
-.arguments
-   url.eq:string
-.description:Returns items from your pages table in your [generic|anarq] database according to the specified arguments
-.type:crud-read
+
+/*
+ * Returns all pages to caller, but only their URLs and names.
+ */
+.description:Returns all pages in the system to caller, but only their URLs and their names
+
+
+/*
+ * Connects to database.
+ */
 data.connect:[generic|anarq]
    database-type:mysql
-   add:x:+/*/where/*
-      get-nodes:x:@.arguments/*
-   if
-      not
-         exists:x:@.arguments/*/url.eq
-      .lambda
-         remove-nodes:x:@data.connect/*/data.read/*/columns/*/content
+
+
+   /*
+    * Invokes read slot.
+    */
    data.read
       database-type:mysql
       table:pages
+      limit:-1
       columns
          url
-         content
-      where
-         and
+         name
+
+
+   /*
+    * Returns result to caller.
+    */
    return-nodes:x:@data.read/*

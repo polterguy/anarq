@@ -1,0 +1,42 @@
+
+/*
+ * Allows a user to lke a specified post.
+ */
+.arguments
+   post_id:long
+.description:Allows a user to create a like for a specified post
+
+
+/*
+ * Sanity checking invocation.
+ */
+validators.mandatory:x:@.arguments/*/post_id
+auth.ticket.verify
+
+
+/*
+ * Connecting to database.
+ */
+data.connect:[generic|anarq]
+   database-type:mysql
+
+
+   /*
+    * Executing create invocation, making sure we associate like with authenticated user.
+    */
+   auth.ticket.get
+   data.create
+      database-type:mysql
+      table:likes
+      return-id:bool:false
+      values
+         user:x:@auth.ticket.get
+         post_id:x:@.arguments/*/post_id
+
+
+   /*
+    * Returning result to caller.
+    */
+   unwrap:x:+/*
+   return
+      result:success

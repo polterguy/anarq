@@ -1,18 +1,40 @@
+
+/*
+ * Deletes the specified page in the system
+ */
 .arguments
    url:string
-.description:Deletes one item from your pages table in your [generic|anarq] database matching the specified argument(s)
-.type:crud-delete
+.description:Deletes the specified page from the system
+
+
+/*
+ * Sanity checking invocation, and making sure only authorised users have access to invoke endpoint.
+ */
 validators.mandatory:x:@.arguments/*/url
 auth.ticket.verify:root, admin
+
+
+/*
+ * Connects to database.
+ */
 data.connect:[generic|anarq]
    database-type:mysql
-   add:x:+/*/where/*/and
-      get-nodes:x:@.arguments/*
+
+
+   /*
+    * Delete inovacation parametrised with specified url.
+    */
    data.delete
       database-type:mysql
       table:pages
       where
          and
+            url:x:@.arguments/*/url
+
+
+   /*
+    * Returns result from invocation to caller.
+    */
    unwrap:x:+/*
    return
       affected:x:@data.delete

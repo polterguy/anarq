@@ -1,14 +1,34 @@
+
+/*
+ * Returns all top level posts matching the specified argument(s) to caller.
+ */
 .arguments
    limit:long
    offset:long
    topic.eq:string
    user.eq:string
-   path.like:string
-.description:Returns items from your posts table in your [generic|anarq] database according to the specified arguments
-.type:crud-read
-auth.ticket.verify:root, admin
+.description:Returns all posts matching the specified argument(s) to caller allowing caller to page results
+
+
+/*
+ * Sanity checking invocation.
+ */
+validators.mandatory:x:@.arguments/*/limit
+validators.integer:x:@.arguments/*/limit
+   min:1
+   max:100
+
+
+/*
+ * Connecting to database
+ */
 data.connect:[generic|anarq]
    database-type:mysql
+
+
+   /*
+    * Parametrising invocation.
+    */
    add:x:+/+/+/+/+/+/+
       get-nodes:x:@.arguments/*/limit
       get-nodes:x:@.arguments/*/offset
@@ -16,6 +36,11 @@ data.connect:[generic|anarq]
    remove-nodes:x:@.arguments/*/offset
    add:x:+/*/where/*
       get-nodes:x:@.arguments/*
+
+
+   /*
+    * Invoking read slot.
+    */
    data.read
       database-type:mysql
       table:posts
@@ -25,7 +50,12 @@ data.connect:[generic|anarq]
          content
          created
          user
-         path
       where
          and
+            path
+
+
+   /*
+    * Returns result to caller.
+    */
    return-nodes:x:@data.read/*

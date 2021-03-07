@@ -1,0 +1,99 @@
+
+/*
+ * Creates a new post according to the specified arguments.
+ */
+.arguments
+   topic:string
+   parent:long
+   content:string
+   visibility:string
+.description:Creates a new post according to the specified arguments.
+
+
+/*
+ * Sanity checking invocation.
+ */
+auth.ticket.verify
+
+
+/*
+ * Connecting to database.
+ */
+data.connect:[generic|anarq]
+   database-type:mysql
+
+
+   /*
+    * Checking if this is a comment to another post, and if so,
+    * making sure we apply the correct materialized path to it.
+    */
+   if
+      exists:x:@.arguments/*/parent
+      .lambda
+
+
+         /*
+          * Finding the materialised path of the parent post.
+          */
+         data.read
+            database-type:mysql
+            table:posts
+            columns
+               path
+            where
+               and
+                  id:x:@.arguments/*/parent
+
+
+         /*
+          * Creating the materialised path field for current insert operation.
+          */
+         .path
+         set-value:x:@.path
+            strings.concat
+               get-value:x:@data.read/*/*/path
+               .:/
+               convert:x:@.arguments/*/parent
+                  type:string
+
+
+         /*
+          * Parametrising the insert below with the correct path for the item.
+          */
+         unwrap:x:+/*/*
+         add:x:@data.connect/*/data.create/*/values
+            .
+               path:x:@.path
+
+
+   /*
+    * We'll need the username of the currently authenticated user
+    * further down as we insert item.
+    */
+   auth.ticket.get
+
+
+   /*
+    * Parametrising invocation.
+    */
+   add:x:+/*/values
+      get-nodes:x:@.arguments/*
+
+
+   /*
+    * Invoking create slot.
+    */
+   data.create
+      database-type:mysql
+      table:posts
+      return-id:bool:true
+      values
+         user:x:@auth.ticket.get
+
+
+   /*
+    * Returning results of invocation to caller.
+    */
+   unwrap:x:+/*
+   return
+      id:x:@data.create

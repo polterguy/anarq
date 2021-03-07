@@ -68,6 +68,7 @@ create table likes (
  */
 create table pages (
   url varchar(256) not null,
+  name varchar(256) not null,
   content text not null,
   primary key (url)
 );

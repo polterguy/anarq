@@ -1,18 +1,47 @@
+
+/*
+ * Creates a new page in the system.
+ */
 .arguments
    url:string
+   name:string
    content:string
-.description:Creates an item in your pages table in your [generic|anarq] database according to the specified arguments
-.type:crud-create
+.description:Creates a new page in the system
+
+
+/*
+ * Sanity checking invocation.
+ */
 auth.ticket.verify:root, admin
+
+
+/*
+ * Connecting to database.
+ */
 data.connect:[generic|anarq]
    database-type:mysql
+
+
+   /*
+    * Parametrising invocation.
+    */
    add:x:+/*/values
       get-nodes:x:@.arguments/*
+
+
+   /*
+    * Invoking create slot.
+    */
    data.create
       database-type:mysql
       table:pages
       return-id:bool:false
       values
+
+
+   /*
+    * Returning results to caller.
+    */
    unwrap:x:+/*
    return
       result:success

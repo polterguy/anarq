@@ -13,15 +13,7 @@
  * Sanity checking invocation.
  */
 validators.mandatory:x:@.arguments/*/post_id
-auth.ticket.get
-if
-   eq
-      get-value:x:@auth.ticket.get
-      .
-   .lambda
-      throw:Access denied
-         public:true
-         status:401
+auth.ticket.verify
 
 
 /*
@@ -32,14 +24,8 @@ data.connect:[generic|anarq]
 
 
    /*
-    * Parametrising delete invocation.
-    */
-   add:x:+/*/where/*/and
-      get-nodes:x:@.arguments/*
-
-
-   /*
-    * Executing delete invocation.
+    * Executing delete invocation, making sure we add user as part of criteria
+    * for which like to delete, to avoind having users delete other user's likes.
     */
    data.delete
       database-type:mysql
@@ -47,6 +33,7 @@ data.connect:[generic|anarq]
       where
          and
             user:x:@auth.ticket.get
+            post_id:x:@.arguments/*/post_id
 
 
    /*

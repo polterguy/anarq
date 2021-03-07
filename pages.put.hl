@@ -1,22 +1,51 @@
+
+/*
+ * Updating an existing page in the system.
+ */
 .arguments
    url:string
+   name:string
    content:string
-.description:Updates an existing item in your pages table in your [generic|anarq] database according to the specified arguments
-.type:crud-update
+.description:Updates an existing page in the system
+
+
+/*
+ * Sanity checking invocation.
+ */
 validators.mandatory:x:@.arguments/*/url
 auth.ticket.verify:root, admin
+
+
+/*
+ * Connecting to database.
+ */
 data.connect:[generic|anarq]
+   database-type:mysql
+
+
+   /*
+    * Parametrising invocation.
+    */
    add:x:+/+/*/where/*/and
       get-nodes:x:@.arguments/*/[0,1]
    add:x:+/*/values
       get-nodes:x:@.arguments/*/[1,1000]
-   database-type:mysql
+
+
+   /*
+    * Invoking update slot.
+    */
    data.update
       database-type:mysql
       table:pages
       values
       where
          and
+
+
+   /*
+    * Returning results to caller.
+    */
    unwrap:x:+/*
    return
       affected:x:@data.update
