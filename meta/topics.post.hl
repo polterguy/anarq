@@ -32,7 +32,7 @@ data.connect:[generic|anarq]
       return-id:bool:false
       values
          name:x:@.arguments/*/name
-         name:x:@.arguments/*/description
+         description:x:@.arguments/*/description
 
 
    /*
