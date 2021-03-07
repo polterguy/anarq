@@ -1,6 +1,0 @@
-/*
- * Changes the name of the specified node(s) to whatever the results of its
- * parameter is.
- */
-set-name:x:@.destination
-   .:foo
