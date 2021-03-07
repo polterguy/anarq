@@ -1,55 +1,85 @@
+
+/*
+ * Returns likes belonging to post.
+ */
 .arguments
-   limit:long
-   offset:long
-   order:string
-   direction:string
-   operator:string
-   post_id.mt:long
-   post_id.lt:long
-   post_id.mteq:long
-   post_id.lteq:long
-   post_id.neq:long
-   post_id.eq:long
-   user.like:string
-   user.mt:string
-   user.lt:string
-   user.mteq:string
-   user.lteq:string
-   user.neq:string
-   user.eq:string
-.description:Returns items from your likes table in your [generic|anarq] database according to the specified arguments
-.type:crud-read
-auth.ticket.verify:root, admin
-if
-   exists:x:@.arguments/*/operator
-   .lambda
-      switch:x:@.arguments/*/operator
-         case:and
-         case:or
-            set-name:x:../*/data.connect/*/data.read/*/where/*
-               get-value:x:@.arguments/*/operator
-         default
-            throw:"Unsupported operator, only 'and' and 'or' supported"
+   post_id:long
+.description:Returns users that liked the specified post
+
+
+/*
+ * Sanity checking invocation.
+ */
+validators.mandatory:x:@.arguments/*/post_id
+
+
+/*
+ * Connects to database.
+ */
 data.connect:[generic|anarq]
    database-type:mysql
-   add:x:+/+/+/+/+/+/+
-      get-nodes:x:@.arguments/*/limit
-      get-nodes:x:@.arguments/*/offset
-      get-nodes:x:@.arguments/*/order
-      get-nodes:x:@.arguments/*/direction
-   remove-nodes:x:@.arguments/*/operator
-   remove-nodes:x:@.arguments/*/limit
-   remove-nodes:x:@.arguments/*/offset
-   remove-nodes:x:@.arguments/*/order
-   remove-nodes:x:@.arguments/*/direction
+
+
+   /*
+    * Notice, if post is not public we don't allow anonymous
+    * users to retrieve likes.
+    *
+    * We do however allow anonymous users to retrieve likes by users for public posts.
+    */
+   auth.ticket.get
+   if
+      eq
+         get-value:x:@auth.ticket.get
+         .
+      .lambda
+
+
+         /*
+          * User is not authenticated, hence making sure post is public
+          * before we allow anonymous user to count its likes.
+          */
+         data.read
+            database-type:mysql
+            table:posts
+            columns
+               visibility
+         if
+            not
+               eq
+                  get-value:x:@data.read/*/*
+                  .:public
+            .lambda
+
+
+               /*
+                * Anonymous user tried to count likes for post that was not publicly visible.
+                */
+               throw:Access denied
+                  public:true
+                  status:401
+
+
+   /*
+    * Parametrising read invocation.
+    */
    add:x:+/*/where/*
       get-nodes:x:@.arguments/*
+
+
+   /*
+    * Executing read invocation.
+    */
    data.read
       database-type:mysql
       table:likes
+      limit:-1
       columns
-         post_id
          user
       where
          and
+
+
+   /*
+    * Returning results from above invocation.
+    */
    return-nodes:x:@data.read/*

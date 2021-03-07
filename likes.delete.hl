@@ -1,20 +1,57 @@
+
+/*
+ * Deletes a like for the specified post for the currently authenticated user.
+ *
+ * Notice, we only allow for users to delete their own likes.
+ */
 .arguments
    post_id:long
-   user:string
-.description:Deletes one item from your likes table in your [generic|anarq] database matching the specified argument(s)
-.type:crud-delete
-validators.mandatory:x:@.arguments/*/user
+.description:Allows an authenticated user to delete a previously created like for a post
+
+
+/*
+ * Sanity checking invocation.
+ */
 validators.mandatory:x:@.arguments/*/post_id
-auth.ticket.verify:root, admin
+auth.ticket.get
+if
+   eq
+      get-value:x:@auth.ticket.get
+      .
+   .lambda
+      throw:Access denied
+         public:true
+         status:401
+
+
+/*
+ * Connecting to database.
+ */
 data.connect:[generic|anarq]
    database-type:mysql
+
+
+   /*
+    * Parametrising delete invocation.
+    */
    add:x:+/*/where/*/and
       get-nodes:x:@.arguments/*
+
+
+   /*
+    * Executing delete invocation.
+    */
    data.delete
       database-type:mysql
       table:likes
       where
          and
+            user:x:@auth.ticket.get
+
+
+   /*
+    * Returning results from above invocation.
+    */
    unwrap:x:+/*
    return
       affected:x:@data.delete

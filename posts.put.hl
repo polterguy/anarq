@@ -1,11 +1,7 @@
 .arguments
    id:long
-   topic:string
-   parent:long
    content:string
-   user:string
    visibility:string
-   path:string
 .description:Updates an existing item in your posts table in your [generic|anarq] database according to the specified arguments
 .type:crud-update
 validators.mandatory:x:@.arguments/*/id

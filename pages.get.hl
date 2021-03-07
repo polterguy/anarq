@@ -1,50 +1,16 @@
 .arguments
-   limit:long
-   offset:long
-   order:string
-   direction:string
-   operator:string
-   url.like:string
-   url.mt:string
-   url.lt:string
-   url.mteq:string
-   url.lteq:string
-   url.neq:string
    url.eq:string
-   content.like:string
-   content.mt:string
-   content.lt:string
-   content.mteq:string
-   content.lteq:string
-   content.neq:string
-   content.eq:string
 .description:Returns items from your pages table in your [generic|anarq] database according to the specified arguments
 .type:crud-read
-auth.ticket.verify:root, admin
-if
-   exists:x:@.arguments/*/operator
-   .lambda
-      switch:x:@.arguments/*/operator
-         case:and
-         case:or
-            set-name:x:../*/data.connect/*/data.read/*/where/*
-               get-value:x:@.arguments/*/operator
-         default
-            throw:"Unsupported operator, only 'and' and 'or' supported"
 data.connect:[generic|anarq]
    database-type:mysql
-   add:x:+/+/+/+/+/+/+
-      get-nodes:x:@.arguments/*/limit
-      get-nodes:x:@.arguments/*/offset
-      get-nodes:x:@.arguments/*/order
-      get-nodes:x:@.arguments/*/direction
-   remove-nodes:x:@.arguments/*/operator
-   remove-nodes:x:@.arguments/*/limit
-   remove-nodes:x:@.arguments/*/offset
-   remove-nodes:x:@.arguments/*/order
-   remove-nodes:x:@.arguments/*/direction
    add:x:+/*/where/*
       get-nodes:x:@.arguments/*
+   if
+      not
+         exists:x:@.arguments/*/url.eq
+      .lambda
+         remove-nodes:x:@data.connect/*/data.read/*/columns/*/content
    data.read
       database-type:mysql
       table:pages
