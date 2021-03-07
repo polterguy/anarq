@@ -31,6 +31,7 @@ create table visibility (
  */
 insert into visibility (name, description) values ('public', 'Publicly visible post, implying anyone can see it');
 insert into visibility (name, description) values ('protected', 'Protected post, implying only authenticated and authorised users can see it');
+insert into visibility (name, description) values ('moderated', 'Moderated post, implying post was explicitly moderated by a moderator');
 
 
 /*
@@ -44,7 +45,7 @@ create table posts (
   created datetime not null default current_timestamp,
   user varchar(256) not null,
   visibility varchar(25) not null,
-  path varchar(2048) not null,
+  path varchar(2048) null,
   unique index idx_created (created),
   unique index idx_user (user),
   unique index idx_topic (topic),

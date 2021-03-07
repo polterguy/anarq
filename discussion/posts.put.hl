@@ -5,6 +5,7 @@
 .arguments
    id:long
    content:string
+   visibility:string
 .description:Updates an existing post according to the specified arguments
 
 

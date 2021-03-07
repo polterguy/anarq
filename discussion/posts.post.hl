@@ -24,49 +24,6 @@ data.connect:[generic|anarq]
 
 
    /*
-    * Checking if this is a comment to another post, and if so,
-    * making sure we apply the correct materialized path to it.
-    */
-   if
-      exists:x:@.arguments/*/parent
-      .lambda
-
-
-         /*
-          * Finding the materialised path of the parent post.
-          */
-         data.read
-            database-type:mysql
-            table:posts
-            columns
-               path
-            where
-               and
-                  id:x:@.arguments/*/parent
-
-
-         /*
-          * Creating the materialised path field for current insert operation.
-          */
-         .path
-         set-value:x:@.path
-            strings.concat
-               get-value:x:@data.read/*/*/path
-               .:/
-               convert:x:@.arguments/*/parent
-                  type:string
-
-
-         /*
-          * Parametrising the insert below with the correct path for the item.
-          */
-         unwrap:x:+/*/*
-         add:x:@data.connect/*/data.create/*/values
-            .
-               path:x:@.path
-
-
-   /*
     * We'll need the username of the currently authenticated user
     * further down as we insert item.
     */
@@ -74,26 +31,104 @@ data.connect:[generic|anarq]
 
 
    /*
-    * Parametrising invocation.
+    * Creating a transation object two wrap both insert and update inside of,
+    * to avoid race conditions when trying to retrieve post afterwards, resulting
+    * in returning wrong path for post.
     */
-   add:x:+/*/values
-      get-nodes:x:@.arguments/*
-
-
-   /*
-    * Invoking create slot.
-    */
-   data.create
+   data.transaction.begin
       database-type:mysql
-      table:posts
-      return-id:bool:true
-      values
-         user:x:@auth.ticket.get
 
 
-   /*
-    * Returning results of invocation to caller.
-    */
-   unwrap:x:+/*
-   return
-      id:x:@data.create
+      /*
+       * Parametrising create invocation.
+       */
+      add:x:+/*/values
+         get-nodes:x:@.arguments/*
+
+
+      /*
+       * Invoking create slot.
+       */
+      data.create
+         database-type:mysql
+         table:posts
+         return-id:bool:true
+         values
+            user:x:@auth.ticket.get
+
+      /*
+       * Figuring out materialised path for item.
+       */
+      .path
+      if
+         exists:x:@.arguments/*/parent
+         .lambda
+
+
+            /*
+             * Not a root post, hence retrieving parent's path.
+             */
+            data.select
+               database-type:mysql
+               table:posts
+               columns
+                  path
+               where
+                  and
+                     id:x:@.arguments/*/parent
+            if
+               not
+                  exists:x:@data.select/*/*/path
+               .lambda
+
+
+                  /*
+                   * Parent item doesn't exist.
+                   */
+                  throw:Not found
+                     status:404
+                     public:true
+
+
+            /*
+             * Making sure path for item is prefixed with parent's path.
+             */
+            set-value:x:@.path
+               get-value:x:@data.select/*/*/path
+
+
+      /*
+       * Concatenating current item's ID to path
+       */
+      set-value:x:@.path
+         strings.concat
+            get-value:x:@.path
+            .:/
+            convert:x:@data.create
+               type:string
+
+
+      /*
+       * Updating item now that we have its complete path.
+       */
+      data.update
+         database-type:mysql
+         where
+            id:x:@data.create
+         values
+            path:x:@.path
+
+
+      /*
+       * Committing transaction.
+       */
+      data.transaction.commit
+         database-type:mysql
+
+
+      /*
+       * Returning results of invocation to caller.
+       */
+      unwrap:x:+/*
+      return
+         id:x:@data.create
