@@ -11,7 +11,7 @@
  * Sanity checking invocation.
  */
 validators.mandatory:x:@.arguments/*/user
-.auth.ticket.verify:root, admin, moderator
+auth.ticket.verify:root, admin, moderator
 
 
 /*
