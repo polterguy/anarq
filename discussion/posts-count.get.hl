@@ -5,9 +5,7 @@
 .arguments
    topic.eq:string
    user.eq:string
-   visibility.eq:string
-   path.like:string
-.description:Counts posts in the system according to specified argument(s)
+.description:Counts top level posts in the system according to specified argument(s)
 
 
 /*
@@ -22,6 +20,37 @@ data.connect:[generic|anarq]
     */
    add:x:+/*/where/*
       get-nodes:x:@.arguments/*
+
+
+   /*
+    * Checking if user is authenticated, and if not we only return public posts.
+    */
+   auth.ticket.get
+   if
+      eq
+         get-value:x:@auth.ticket.get
+         .
+      .lambda
+
+
+         /*
+          * Making sure we only return public posts.
+          */
+         add:x:@data.connect/*/data.read/*/where/*/and
+            .
+               visibility.eq:public
+
+   else
+
+
+      /*
+       * Making sure we only return public and protected posts.
+       */
+      add:x:@data.connect/*/data.read/*/where/*/and
+         .
+            or
+               visibility.eq:public
+               visibility.eq:protected
 
 
    /*
