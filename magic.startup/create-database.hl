@@ -41,7 +41,7 @@ try
     */
    try
       log.error
-         .:"Something went wrong when initializing babelfish module - "
+         .:"Something went wrong when initializing AnarQ module - "
          get-value:x:@.arguments/*/message
    .catch
       .do-nothing

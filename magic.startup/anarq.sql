@@ -11,7 +11,7 @@ use anarq;
  */
 create table topics (
   name varchar(25) not null,
-  description varchar(2048) null,
+  description varchar(1024) null,
   primary key (name)
 );
 
@@ -28,7 +28,7 @@ insert into topics (name, description) values ('news', 'Commentary on news and a
  */
 create table visibility (
   name varchar(25) not null,
-  description varchar(2048) null,
+  description varchar(1024) null,
   primary key (name)
 );
 
@@ -52,7 +52,7 @@ create table posts (
   content text not null,
   created datetime not null default current_timestamp,
   user varchar(256) not null,
-  path varchar(2048) null,
+  path varchar(1024) null,
   index idx_created (created),
   index idx_user (user),
   index idx_topic (topic),
