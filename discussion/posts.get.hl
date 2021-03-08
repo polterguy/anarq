@@ -74,15 +74,25 @@ data.connect:[generic|anarq]
    data.read
       database-type:mysql
       table:posts
+         join:likes
+            type:left
+            on
+               and
+                  posts.id:likes.post_id
       columns
          id
          topic
          created
-         user
+         posts.user
+            as:user
          visibility
+         count(post_id)
+            as:likes
       where
          and
             parent
+      group
+         id
 
 
    /*

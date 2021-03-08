@@ -4,14 +4,14 @@
  */
 .arguments
    id:long
-.description:Deletes one item from your posts table in your [generic|anarq] database matching the specified argument(s)
+.description:Deletes a post or a comment from your database
 
 
 /*
  * Sanity checking invocation.
  */
 validators.mandatory:x:@.arguments/*/id
-auth.ticket.verify:root, admin, moderator
+auth.ticket.verify:root, admin
 
 
 /*

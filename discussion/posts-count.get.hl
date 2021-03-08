@@ -5,7 +5,7 @@
 .arguments
    topic.eq:string
    user.eq:string
-.description:Counts top level posts in the system according to specified argument(s)
+.description:Counts OP posts in the system according to specified argument(s)
 
 
 /*
@@ -65,6 +65,7 @@ data.connect:[generic|anarq]
             as:count
       where
          and
+            parent
 
 
    /*

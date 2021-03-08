@@ -91,18 +91,29 @@ data.connect:[generic|anarq]
    data.read
       database-type:mysql
       table:posts
+         join:likes
+            type:left
+            on
+               and
+                  posts.id:likes.post_id
       columns
          id
          created
-         user
+         posts.user
+            as:user
          path
          parent
+         visibility
          content
+         count(post_id)
+            as:likes
       where
          and
             path.like:x:@.path
       order:path
       direction:asc
+      group
+         id
 
 
    /*

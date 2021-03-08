@@ -6,7 +6,7 @@
    visibility:string
    topic:string
    content:string
-.description:Creates a new post according to the specified arguments.
+.description:Creates a new OP post according to the specified arguments.
 
 
 /*
