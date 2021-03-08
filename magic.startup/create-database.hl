@@ -8,8 +8,8 @@
 /*
  * Making sure we trap and log exceptions.
  */
-log.info:Initializing AnarQ module
 try
+   log.info:Initializing AnarQ module
    signal:magic.db.mysql.databases
    if
       not
@@ -36,11 +36,12 @@ try
 
 .catch
 
-
    /*
-    * Oops, error - Logging message.
+    * Notice, we might not even have database configured (correctly) at all!
     */
-   log.error
-      .:"Something went wrong when initializing AnarQ module trying to create its database; '"
-      get-value:x:@.arguments/*/message
-      .:"'"
+   try
+      log.error
+         .:"Something went wrong when initializing babelfish module - "
+         get-value:x:@.arguments/*/message
+   .catch
+      .do-nothing
