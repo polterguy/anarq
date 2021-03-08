@@ -90,7 +90,7 @@ data.connect:[generic|anarq]
             as:likes
       where
          and
-            parent
+            parent.eq
       group
          id
 

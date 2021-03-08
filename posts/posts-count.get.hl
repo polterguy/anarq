@@ -65,7 +65,7 @@ data.connect:[generic|anarq]
             as:count
       where
          and
-            parent
+            parent.eq
 
 
    /*

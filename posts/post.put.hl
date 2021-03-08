@@ -48,7 +48,6 @@ data.connect:[generic|anarq]
          and
             id.eq:x:@.arguments/*/id
             user.eq:x:@auth.ticket.get
-            parent.eq
 
 
    /*

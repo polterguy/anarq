@@ -110,6 +110,7 @@ data.connect:[generic|anarq]
       where
          and
             path.like:x:@.path
+            parent.neq
       order:path
       direction:asc
       group
