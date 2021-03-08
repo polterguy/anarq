@@ -4,7 +4,7 @@
  */
 .arguments
    id:long
-.description:Deletes a post or a comment from your database
+.description:Deletes a comment from your database
 
 
 /*
@@ -29,7 +29,8 @@ data.connect:[generic|anarq]
       table:posts
       where
          and
-            id:x:@.arguments/*/id
+            id.eq:x:@.arguments/*/id
+            parent.neq
 
 
    /*

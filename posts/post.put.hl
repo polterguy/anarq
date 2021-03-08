@@ -1,0 +1,59 @@
+
+/*
+ * Updating an existing OP post according to the specified argument(s).
+ */
+.arguments
+   id:long
+   content:string
+   visibility:string
+.description:Updates an existing OP post according to the specified arguments
+
+
+/*
+ * Sanity checking invocation.
+ */
+validators.mandatory:x:@.arguments/*/id
+auth.ticket.verify
+
+
+/*
+ * Connecting to database.
+ */
+data.connect:[generic|anarq]
+   database-type:mysql
+
+
+   /*
+    * We only allow users to update their own comments.
+    */
+   auth.ticket.get
+
+
+   /*
+    * Parametrising invocation.
+    */
+   add:x:@data.connect/*/data.update/*/values
+      get-nodes:x:@.arguments/*/visibility
+      get-nodes:x:@.arguments/*/content
+
+
+   /*
+    * Invoking update slot.
+    */
+   data.update
+      database-type:mysql
+      table:posts
+      values
+      where
+         and
+            id.eq:x:@.arguments/*/id
+            user.eq:x:@auth.ticket.get
+            parent.eq
+
+
+   /*
+    * Returning results to caller.
+    */
+   unwrap:x:+/*
+   return
+      affected:x:@data.update
