@@ -48,16 +48,75 @@ data.connect:[generic|anarq]
 
 
    /*
-    * Returns result to caller, transforming to key/value collection to reduce bandwith usage,
+    * Transforming result of above invocation to key/value collection to reduce bandwith usage,
     * and create a more semantically correct response.
     */
    for-each:x:@data.read/*
+
+      // Buffer node.
       .to-add
          .foo
+
+      // Creating key/value pair for above buffer node.
       set-name:x:@.to-add/0
          get-value:x:@.dp/#/*/type
       set-value:x:@.to-add/0
          get-value:x:@.dp/#/*/content
-      add:x:@data.connect/*/return-nodes
+
+      // Adding above buffer node to return invocation below.
+      insert-before:x:@data.connect/*/return-nodes/*/roles
          get-nodes:x:@.to-add/0
+
+
+   /*
+    * Retrieving meta data from users table in magic database.
+    */
+   data.connect:magic
+      data.read
+         table:users
+         columns
+            locked
+            created
+         where
+            and
+               username.eq:x:@.arguments/*/user
+      data.read
+         table:users_roles
+         columns
+            role
+         where
+            and
+               user.eq:x:@.arguments/*/user
+
+
+   /*
+    * Adding meta information for user retrieved from magic database to return value.
+    */
+   insert-before:x:./*/return-nodes/*/roles
+      get-nodes:x:@data.connect/*/data.read/[0,1]/*/*
+
+
+   /*
+    * Transforming result of above invocation to key/value collection to reduce bandwith usage,
+    * and create a more semantically correct response.
+    */
+   for-each:x:@data.connect/*/data.read/[1,2]/*
+
+      // Buffer node.
+      .to-add
+         .
+
+      // Creating key/value pair for above buffer node.
+      set-value:x:@.to-add/0
+         get-value:x:@.dp/#/*/role
+
+      // Adding above buffer node to return invocation below.
+      add:x:@data.connect/@data.connect/*/return-nodes/*/roles
+         get-nodes:x:@.to-add/0
+
+
+   /*
+    * Returning object in its entirety to caller.
+    */
    return-nodes
+      roles
