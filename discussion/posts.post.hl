@@ -68,7 +68,7 @@ data.connect:[generic|anarq]
             /*
              * Not a root post, hence retrieving parent's path.
              */
-            data.select
+            data.read
                database-type:mysql
                table:posts
                columns
@@ -78,7 +78,7 @@ data.connect:[generic|anarq]
                      id:x:@.arguments/*/parent
             if
                not
-                  exists:x:@data.select/*/*/path
+                  exists:x:@data.read/*/*/path
                .lambda
 
 
@@ -94,7 +94,7 @@ data.connect:[generic|anarq]
              * Making sure path for item is prefixed with parent's path.
              */
             set-value:x:@.path
-               get-value:x:@data.select/*/*/path
+               get-value:x:@data.read/*/*/path
 
 
       /*
@@ -106,7 +106,6 @@ data.connect:[generic|anarq]
             .:/
             convert:x:@data.create
                type:string
-            .:/
 
 
       /*
@@ -116,7 +115,8 @@ data.connect:[generic|anarq]
          database-type:mysql
          table:posts
          where
-            id:x:@data.create
+            and
+               id:x:@data.create
          values
             path:x:@.path
 
