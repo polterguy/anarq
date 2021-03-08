@@ -104,8 +104,8 @@ data.connect:[generic|anarq]
          strings.concat
             get-value:x:@.path
             .:/
-            convert:x:@data.create
-               type:string
+            format:x:@data.create
+               pattern:"{0:00000}"
 
 
       /*
