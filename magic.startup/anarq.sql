@@ -20,6 +20,7 @@ create table topics (
  * Inserting default topic into database.
  */
 insert into topics (name, description) values ('general', 'General discussions for things not related to anything in particular');
+insert into topics (name, description) values ('promotion', 'An article or something else that you wrote or want to share with your community');
 insert into topics (name, description) values ('news', 'Commentary on news and articles');
 
 
