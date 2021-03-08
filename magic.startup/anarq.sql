@@ -7,6 +7,21 @@ use anarq;
 
 
 /*
+ * Table containing extra information on per user level,
+ * as provided by user during registration.
+ *
+ * Typically things such as emails, and other types of information we're
+ * interested in on a per user level as users registers in our site.
+ */
+create table user_details (
+  user varchar(256) not null,
+  type varchar(50) not null,
+  content varchar(512) not null,
+  primary key (user, type)
+);
+
+
+/*
  * Topic posts belongs to.
  */
 create table topics (
