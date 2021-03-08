@@ -11,9 +11,9 @@
 /*
  * Sanity checks invocation
  */
-auth.ticket.verify:root, admin
 validators.mandatory:x:@.arguments/*/name
 validators.mandatory:x:@.arguments/*/description
+auth.ticket.verify:root, admin
 
 
 /*
