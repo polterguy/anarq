@@ -1,0 +1,64 @@
+
+/*
+ * Returns all comment posts matching the specified argument(s) to caller.
+ */
+.arguments
+   limit:long
+   offset:long
+   parent:long
+.description:Returns all comment posts matching the specified argument(s) to caller allowing caller to page results
+
+
+/*
+ * Sanity checking invocation.
+ */
+validators.mandatory:x:@.arguments/*/parent
+validators.integer:x:@.arguments/*/limit
+   min:1
+   max:100
+
+
+/*
+ * Connecting to database
+ */
+data.connect:[generic|anarq]
+   database-type:mysql
+
+
+   /*
+    * Parametrising invocation.
+    */
+   add:x:./*/data.read
+      get-nodes:x:@.arguments/*/limit
+      get-nodes:x:@.arguments/*/offset
+
+
+   /*
+    * Invoking read slot.
+    */
+   .path
+   set-value:x:@.path
+      strings.concat
+         .:/
+         get-value:x:@.arguments/*/parent
+         .:/
+         .:%
+   data.read
+      database-type:mysql
+      table:posts
+      columns
+         id
+         created
+         user
+         path
+         parent
+         content
+      where
+         and
+            path.like:x:@.path
+
+
+   /*
+    * Returns result to caller.
+    */
+   return-nodes:x:@data.read/*
