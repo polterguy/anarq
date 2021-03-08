@@ -12,6 +12,9 @@
 /*
  * Sanity checking invocation.
  */
+validators.mandatory:x:@.arguments/*/url
+validators.mandatory:x:@.arguments/*/name
+validators.mandatory:x:@.arguments/*/content
 auth.ticket.verify:root, admin
 
 
@@ -25,7 +28,7 @@ data.connect:[generic|anarq]
    /*
     * Parametrising invocation.
     */
-   add:x:+/*/values
+   add:x:@data.connect/*/data.create/*/values
       get-nodes:x:@.arguments/*
 
 

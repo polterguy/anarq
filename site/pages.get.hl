@@ -2,7 +2,7 @@
 /*
  * Returns all pages to caller, but only their URLs and names.
  */
-.description:Returns all pages in the system to caller, but only their URLs and their names
+.description:Returns all pages in the system to caller, but only their URLs and their names, not the content
 
 
 /*

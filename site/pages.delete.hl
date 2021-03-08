@@ -29,7 +29,7 @@ data.connect:[generic|anarq]
       table:pages
       where
          and
-            url:x:@.arguments/*/url
+            url.eq:x:@.arguments/*/url
 
 
    /*
