@@ -53,9 +53,9 @@ data.connect:[generic|anarq]
          created
          user
          path
-         parent
       where
          and
+            parent
 
 
    /*
