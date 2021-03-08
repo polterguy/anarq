@@ -27,7 +27,8 @@ data.connect:[generic|anarq]
    set-value:x:@.path
       strings.concat
          .:/
-         get-value:x:@.arguments/*/parent
+         format:x:@.arguments/*/parent
+            pattern:"{0:000000000}"
          .:/
          .:%
 

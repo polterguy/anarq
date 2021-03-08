@@ -62,6 +62,14 @@ create table posts (
 
 
 /*
+ * Adding referential integrity for posts pointing towards topics, visibility and parent.
+ */
+alter table posts add foreign key(topic) references topics(name) on delete cascade on update cascade;
+alter table posts add foreign key(visibility) references visibility(name) on delete cascade on update cascade;
+alter table posts add foreign key(parent) references posts(id) on delete cascade on update cascade;
+
+
+/*
  * Likes for posts.
  */
 create table likes (
@@ -80,14 +88,6 @@ create table pages (
   content text not null,
   primary key (url)
 );
-
-
-/*
- * Adding referential integrity for posts pointing towards topics, visibility and parent.
- */
-alter table posts add foreign key(topic) references topics(name) on delete cascade on update cascade;
-alter table posts add foreign key(visibility) references visibility(name) on delete cascade on update cascade;
-alter table posts add foreign key(parent) references posts(id) on delete cascade on update cascade;
 
 
 /*

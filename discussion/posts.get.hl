@@ -28,12 +28,12 @@ data.connect:[generic|anarq]
    /*
     * Parametrising invocation.
     */
-   add:x:./*/data.read
+   add:x:@data.connect/*/data.read
       get-nodes:x:@.arguments/*/limit
       get-nodes:x:@.arguments/*/offset
    remove-nodes:x:@.arguments/*/limit
    remove-nodes:x:@.arguments/*/offset
-   add:x:+/*/where/*
+   add:x:@data.connect/*/data.read/*/where/*
       get-nodes:x:@.arguments/*
 
 

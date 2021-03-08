@@ -40,7 +40,8 @@ data.connect:[generic|anarq]
    set-value:x:@.path
       strings.concat
          .:/
-         get-value:x:@.arguments/*/parent
+         format:x:@.arguments/*/parent
+            pattern:"{0:000000000}"
          .:/
          .:%
 
@@ -92,7 +93,7 @@ data.connect:[generic|anarq]
       where
          and
             path.like:x:@.path
-      order:path, created
+      order:path
       direction:asc
 
 

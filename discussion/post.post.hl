@@ -1,0 +1,95 @@
+
+/*
+ * Creates a new post according to the specified arguments.
+ */
+.arguments
+   visibility:string
+   topic:string
+   content:string
+.description:Creates a new post according to the specified arguments.
+
+
+/*
+ * Sanity checking invocation.
+ */
+auth.ticket.verify
+
+
+/*
+ * Connecting to database.
+ */
+data.connect:[generic|anarq]
+   database-type:mysql
+
+
+   /*
+    * We'll need the username of the currently authenticated user
+    * further down as we insert item.
+    */
+   auth.ticket.get
+
+
+   /*
+    * Creating a transation object two wrap both insert and update inside of,
+    * to avoid race conditions when trying to retrieve post afterwards, resulting
+    * in returning wrong path for post.
+    */
+   data.transaction.create
+      database-type:mysql
+
+
+      /*
+       * Parametrising create invocation.
+       */
+      add:x:./*/data.create/*/values
+         get-nodes:x:@.arguments/*
+
+
+      /*
+       * Invoking create slot.
+       */
+      data.create
+         database-type:mysql
+         table:posts
+         return-id:bool:true
+         values
+            user:x:@auth.ticket.get
+
+
+      /*
+       * Concatenating current item's ID to path
+       */
+      .path
+      set-value:x:@.path
+         strings.concat
+            .:/
+            format:x:@data.create
+               pattern:"{0:000000000}"
+
+
+      /*
+       * Updating item now that we have its complete path.
+       */
+      data.update
+         database-type:mysql
+         table:posts
+         where
+            and
+               id:x:@data.create
+         values
+            path:x:@.path
+
+
+      /*
+       * Committing transaction.
+       */
+      data.transaction.commit
+         database-type:mysql
+
+
+      /*
+       * Returning results of invocation to caller.
+       */
+      unwrap:x:+/*
+      return
+         id:x:@data.create
