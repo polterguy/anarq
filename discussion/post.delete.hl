@@ -1,0 +1,40 @@
+
+/*
+ * Deletes the specified comment from the system.
+ */
+.arguments
+   id:long
+.description:Deletes one item from your posts table in your [generic|anarq] database matching the specified argument(s)
+
+
+/*
+ * Sanity checking invocation.
+ */
+validators.mandatory:x:@.arguments/*/id
+auth.ticket.verify:root, admin, moderator
+
+
+/*
+ * Connecting to database.
+ */
+data.connect:[generic|anarq]
+   database-type:mysql
+
+
+   /*
+    * Invoking delete slot.
+    */
+   data.delete
+      database-type:mysql
+      table:posts
+      where
+         and
+            id:x:@.arguments/*/id
+
+
+   /*
+    * Returning results of invocation to caller.
+    */
+   unwrap:x:+/*
+   return
+      affected:x:@data.delete

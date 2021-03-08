@@ -6,7 +6,7 @@
    parent:long
    content:string
    visibility:string
-.description:Creates a new comment according to the specified arguments
+.description:Creates a new comment either for a top level OP post or as a reply to another comment
 
 
 /*

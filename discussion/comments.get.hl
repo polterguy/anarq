@@ -6,7 +6,7 @@
    limit:long
    offset:long
    parent:long
-.description:Returns all comments matching the specified argument(s) to caller allowing caller to page results
+.description:Returns all comments that are children of the top level OP post specified as [parent]
 
 
 /*
@@ -28,7 +28,7 @@ data.connect:[generic|anarq]
    /*
     * Parametrising invocation.
     */
-   add:x:./*/data.read
+   add:x:@data.connect/*/data.read
       get-nodes:x:@.arguments/*/limit
       get-nodes:x:@.arguments/*/offset
 
@@ -58,6 +58,8 @@ data.connect:[generic|anarq]
 
 
          /*
+          * Anonymous invocation.
+          *
           * Making sure we only return public posts.
           */
          add:x:@data.connect/*/data.read/*/where/*/and
@@ -68,6 +70,8 @@ data.connect:[generic|anarq]
 
 
       /*
+       * Authenticated invocation.
+       *
        * Making sure we only return public and protected posts.
        */
       add:x:@data.connect/*/data.read/*/where/*/and
@@ -79,6 +83,10 @@ data.connect:[generic|anarq]
 
    /*
     * Invoking read slot.
+    *
+    * Notice, by ordering on path, and also adding path as a like condition, we
+    * will automatically return all descendants from the specified parent OP post
+    * in the correct order.
     */
    data.read
       database-type:mysql
