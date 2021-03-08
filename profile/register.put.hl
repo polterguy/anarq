@@ -1,0 +1,47 @@
+
+/*
+ * Creates extra information associated with a user on the site required during registration.
+ */
+.arguments
+   email:string
+.description:Creates extra information associated with a user on the site required during registration
+
+
+/*
+ * Sanity checking invocation.
+ */
+validators.mandatory:x:@.arguments/*/email
+validators.email:x:@.arguments/*/email
+auth.ticket.verify
+
+
+/*
+ * Required to associate extra information with username further down in insert invocation.
+ */
+auth.ticket.get
+
+
+/*
+ * Connecting to database
+ */
+data.connect:[generic|anarq]
+   database-type:mysql
+
+
+   /*
+    * Invoking read slot.
+    */
+   data.create
+      database-type:mysql
+      table:user_details
+      values
+         user:x:@auth.ticket.get
+         type:email
+         content:x:@.arguments/*/email
+
+
+   /*
+    * Returns result to caller.
+    */
+   return-nodes
+      result:success

@@ -1,0 +1,63 @@
+
+/*
+ * Returns all meta information associated with a user in the system.
+ */
+.arguments
+   user:string
+.description:Returns all meta information associated with a user in the system, such as email address, and other fields provided during registration
+
+
+/*
+ * Sanity checking invocation.
+ */
+validators.mandatory:x:@.arguments/*/user
+.auth.ticket.verify:root, admin, moderator
+
+
+/*
+ * Connecting to database
+ */
+data.connect:[generic|anarq]
+   database-type:mysql
+
+
+   /*
+    * Invoking read slot.
+    */
+   data.read
+      database-type:mysql
+      table:user_details
+      columns
+         type
+         content
+      where
+         and
+            user.eq:x:@.arguments/*/user
+
+
+   /*
+    * Making sure user exists.
+    */
+   if
+      not
+         exists:x:@data.read/*
+      .lambda
+         throw:User was not found
+            status:404
+            public:true
+
+
+   /*
+    * Returns result to caller, transforming to key/value collection to reduce bandwith usage,
+    * and create a more semantically correct response.
+    */
+   for-each:x:@data.read/*
+      .to-add
+         .foo
+      set-name:x:@.to-add/0
+         get-value:x:@.dp/#/*/type
+      set-value:x:@.to-add/0
+         get-value:x:@.dp/#/*/content
+      add:x:@data.connect/*/return-nodes
+         get-nodes:x:@.to-add/0
+   return-nodes
