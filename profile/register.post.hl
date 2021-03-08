@@ -1,24 +1,32 @@
 
 /*
- * Creates extra information associated with a user on the site required during registration.
+ * Registers a new user on the site.
  */
 .arguments
+   username:string
+   password:string
    email:string
-.description:Creates extra information associated with a user on the site required during registration
+.description:Registers a new user on the site
 
 
 /*
  * Sanity checking invocation.
  */
+validators.mandatory:x:@.arguments/*/username
+validators.mandatory:x:@.arguments/*/password
 validators.mandatory:x:@.arguments/*/email
 validators.email:x:@.arguments/*/email
-auth.ticket.verify
 
 
 /*
- * Required to associate extra information with username further down in insert invocation.
+ * Creating user in main magic database.
  */
-auth.ticket.get
+unwrap:x:+/*
+signal:magic.auth.create-user
+   username:x:@.arguments/*/username
+   password:x:@.arguments/*/password
+   roles
+      .:unconfirmed
 
 
 /*
@@ -35,7 +43,7 @@ data.connect:[generic|anarq]
       database-type:mysql
       table:user_details
       values
-         user:x:@auth.ticket.get
+         user:x:@.arguments/*/username
          type:email
          content:x:@.arguments/*/email
 
