@@ -211,8 +211,6 @@ semaphore:anarq.user.create
             /*
              * Logging the fact that something went wrong.
              */
-            log.debug
-               lambda2hyper:x:../*
             log.error
                strings.concat
                   .:"Something went wrong as we tried to send 'confirm email' email to user, exception message was - '"
