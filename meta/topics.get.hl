@@ -18,10 +18,19 @@ data.connect:[generic|anarq]
    data.read
       database-type:mysql
       table:topics
-      limit:-1
+         join:posts
+            type:left
+            on
+               and
+                  topics.name:posts.topic
       columns
          name
          description
+         count(posts.id)
+            as:posts
+      group
+         topics.name
+      limit:-1
 
 
    /*

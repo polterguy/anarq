@@ -3,8 +3,8 @@
  * Counts posts in the system according to specified argument(s).
  */
 .arguments
-   topic.eq:string
-   user.eq:string
+   topic:string
+   user:string
 .description:Counts OP posts in the system according to specified argument(s)
 
 
@@ -16,10 +16,35 @@ data.connect:[generic|anarq]
 
 
    /*
-    * Parametrising invocation.
+    * Checking if caller wants to filter according to username.
     */
-   add:x:@data.connect/*/data.read/*/where/*
-      get-nodes:x:@.arguments/*
+   if
+      exists:x:@.arguments/*/user
+      .lambda
+
+         /*
+          * Username explicitly specified as filtering condition.
+          */
+         unwrap:x:+/*/*
+         add:x:@data.connect/*/data.read/*/where/*/and
+            .
+               posts.user.eq:x:@.arguments/*/user
+
+
+   /*
+    * Checking if caller wants to filter according to topic.
+    */
+   if
+      exists:x:@.arguments/*/topic
+      .lambda
+
+         /*
+          * Topic explicitly specified as filtering condition.
+          */
+         unwrap:x:+/*/*
+         add:x:@data.connect/*/data.read/*/where/*/and
+            .
+               posts.topic.eq:x:@.arguments/*/topic
 
 
    /*

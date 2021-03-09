@@ -5,8 +5,8 @@
 .arguments
    limit:long
    offset:long
-   topic.eq:string
-   user.eq:string
+   topic:string
+   user:string
 .description:Returns all top level posts matching the specified argument(s) to caller allowing caller to page results
 
 
@@ -31,10 +31,38 @@ data.connect:[generic|anarq]
    add:x:@data.connect/*/data.read
       get-nodes:x:@.arguments/*/limit
       get-nodes:x:@.arguments/*/offset
-   remove-nodes:x:@.arguments/*/limit
-   remove-nodes:x:@.arguments/*/offset
-   add:x:@data.connect/*/data.read/*/where/*
-      get-nodes:x:@.arguments/*
+
+
+   /*
+    * Checking if caller wants to filter according to username.
+    */
+   if
+      exists:x:@.arguments/*/user
+      .lambda
+
+         /*
+          * Username explicitly specified as filtering condition.
+          */
+         unwrap:x:+/*/*
+         add:x:@data.connect/*/data.read/*/where/*/and
+            .
+               posts.user.eq:x:@.arguments/*/user
+
+
+   /*
+    * Checking if caller wants to filter according to topic.
+    */
+   if
+      exists:x:@.arguments/*/topic
+      .lambda
+
+         /*
+          * Topic explicitly specified as filtering condition.
+          */
+         unwrap:x:+/*/*
+         add:x:@data.connect/*/data.read/*/where/*/and
+            .
+               posts.topic.eq:x:@.arguments/*/topic
 
 
    /*
