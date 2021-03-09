@@ -6,6 +6,7 @@
    username:string
    password:string
    email:string
+   full_name:string
 .description:Registers a new user on the site
 
 
@@ -15,6 +16,7 @@
 validators.mandatory:x:@.arguments/*/username
 validators.mandatory:x:@.arguments/*/password
 validators.mandatory:x:@.arguments/*/email
+validators.mandatory:x:@.arguments/*/full_name
 validators.email:x:@.arguments/*/email
 
 
@@ -82,8 +84,7 @@ semaphore:anarq.user.create
 
 
       /*
-       * Invoking create slot to insert email and additional
-       * information associated with user.
+       * Invoking create slot to insert email address.
        */
       data.create
          database-type:mysql
@@ -92,6 +93,18 @@ semaphore:anarq.user.create
             user:x:@.arguments/*/username
             type:email
             content:x:@.arguments/*/email
+
+
+      /*
+       * Invoking create slot to insert full name.
+       */
+      data.create
+         database-type:mysql
+         table:user_details
+         values
+            user:x:@.arguments/*/username
+            type:full_name
+            content:x:@.arguments/*/full_name
 
 
       /*
