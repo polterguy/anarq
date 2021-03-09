@@ -1,0 +1,133 @@
+
+/*
+ * Returns all top level posts matching the specified argument(s) to caller.
+ */
+.arguments
+   limit:long
+   offset:long
+   topic:string
+   user:string
+.description:Returns all top level posts matching the specified argument(s) to caller allowing caller to page results, sorting by most recently created
+
+
+/*
+ * Sanity checking invocation.
+ */
+validators.integer:x:@.arguments/*/limit
+   min:1
+   max:100
+
+
+/*
+ * Connecting to database
+ */
+data.connect:[generic|anarq]
+   database-type:mysql
+
+
+   /*
+    * Parametrising invocation.
+    */
+   add:x:@data.connect/*/data.read
+      get-nodes:x:@.arguments/*/limit
+      get-nodes:x:@.arguments/*/offset
+
+
+   /*
+    * Checking if caller wants to filter according to username.
+    */
+   if
+      exists:x:@.arguments/*/user
+      .lambda
+
+         /*
+          * Username explicitly specified as filtering condition.
+          */
+         unwrap:x:+/*/*
+         add:x:@data.connect/*/data.read/*/where/*/and
+            .
+               p.user.eq:x:@.arguments/*/user
+
+
+   /*
+    * Checking if caller wants to filter according to topic.
+    */
+   if
+      exists:x:@.arguments/*/topic
+      .lambda
+
+         /*
+          * Topic explicitly specified as filtering condition.
+          */
+         unwrap:x:+/*/*
+         add:x:@data.connect/*/data.read/*/where/*/and
+            .
+               p.topic.eq:x:@.arguments/*/topic
+
+
+   /*
+    * Checking if user is authenticated, and if not we only return public posts.
+    */
+   auth.ticket.get
+   if
+      eq
+         get-value:x:@auth.ticket.get
+         .
+      .lambda
+
+
+         /*
+          * Making sure we only return public posts.
+          */
+         add:x:@data.connect/*/data.read/*/where/*/and
+            .
+               p.visibility.eq:public
+
+   else
+
+
+      /*
+       * Making sure we only return public and protected posts.
+       */
+      add:x:@data.connect/*/data.read/*/where/*/and
+         .
+            or
+               p.visibility.eq:public
+               p.visibility.eq:protected
+
+
+   /*
+    * Invoking read slot.
+    */
+   data.read
+      database-type:mysql
+      table:posts
+         as:p
+         join:likes
+            as:l
+            type:left
+            on
+               and
+                  p.id:l.post_id
+      columns
+         p.id
+         p.topic
+         p.created
+         p.user
+            as:user
+         p.visibility
+         count(l.post_id)
+            as:likes
+      where
+         and
+            p.parent.eq
+      group
+         p.id
+      order:p.created
+         direction:desc
+
+
+   /*
+    * Returns result to caller.
+    */
+   return-nodes:x:@data.read/*
