@@ -7,6 +7,7 @@
    offset:long
    topic:string
    user:string
+   minutes:int
 .description:Returns all top level posts matching the specified argument(s) to caller allowing caller to page results
 
 
@@ -81,7 +82,7 @@ data.connect:[generic|anarq]
           */
          add:x:@data.connect/*/data.read/*/where/*/and
             .
-               visibility.eq:public
+               p.visibility.eq:public
 
    else
 
@@ -92,8 +93,29 @@ data.connect:[generic|anarq]
       add:x:@data.connect/*/data.read/*/where/*/and
          .
             or
-               visibility.eq:public
-               visibility.eq:protected
+               p.visibility.eq:public
+               p.visibility.eq:protected
+
+
+   /*
+    * Checking if user only wants to see posts for the last n minutes.
+    */
+   if
+      exists:x:@.arguments/*/minutes
+      .lambda
+
+
+         /*
+          * User only want to see posts created during the last n minutes.
+          */
+         math.subtract
+            date.now
+            time
+               minutes:x:@.arguments/*/minutes
+         unwrap:x:+/*/*
+         add:x:@data.connect/*/data.read/*/where/*/and
+            .
+               p.created.mt:x:@math.subtract
 
 
    /*
@@ -102,25 +124,31 @@ data.connect:[generic|anarq]
    data.read
       database-type:mysql
       table:posts
+         as:p
          join:likes
+            as:l
             type:left
             on
                and
-                  posts.id:likes.post_id
+                  p.id:l.post_id
       columns
-         id
-         topic
-         created
-         posts.user
+         p.id
+         p.topic
+         p.created
+         p.user
             as:user
-         visibility
-         count(post_id)
+         p.visibility
+         count(l.post_id)
             as:likes
       where
          and
-            parent.eq
+            p.parent.eq
       group
-         id
+         p.id
+      order:likes
+         direction:desc
+      order:p.created
+         direction:desc
 
 
    /*
