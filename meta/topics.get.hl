@@ -27,10 +27,14 @@ data.connect:[generic|anarq]
          name
          description
          count(posts.id)
-            as:posts
+            as:items
+         max(posts.created)
+            as:last_activity
       group
          topics.name
       limit:-1
+      order:last_activity
+      direction:desc
 
 
    /*

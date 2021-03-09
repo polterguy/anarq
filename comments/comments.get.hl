@@ -105,6 +105,7 @@ data.connect:[generic|anarq]
          parent
          visibility
          content
+         topic
          count(post_id)
             as:likes
       where

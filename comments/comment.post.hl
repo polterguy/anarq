@@ -41,6 +41,41 @@ data.connect:[generic|anarq]
 
 
       /*
+       * Figuring out materialised path for item.
+       */
+      .path
+      data.read
+         database-type:mysql
+         table:posts
+         columns
+            path
+            topic
+         where
+            and
+               id:x:@.arguments/*/parent
+               visibility.neq:moderated
+
+
+      /*
+       * Verifying parent item exists.
+       */
+      if
+         not
+            exists:x:@data.read/*/*/path
+         .lambda
+
+
+            /*
+             * Parent item doesn't exist.
+             * Notice, this will rollback transaction.
+             */
+            response.status.set:404
+            return-nodes
+               result:false
+               message:Parent post does not exist
+
+
+      /*
        * Parametrising create invocation.
        */
       add:x:./*/data.create/*/values
@@ -56,32 +91,7 @@ data.connect:[generic|anarq]
          return-id:bool:true
          values
             user:x:@auth.ticket.get
-
-      /*
-       * Figuring out materialised path for item.
-       */
-      .path
-      data.read
-         database-type:mysql
-         table:posts
-         columns
-            path
-         where
-            and
-               id:x:@.arguments/*/parent
-      if
-         not
-            exists:x:@data.read/*/*/path
-         .lambda
-
-
-            /*
-             * Parent item doesn't exist.
-             * Notice, this will rollback transaction.
-             */
-            throw:Not found
-               status:404
-               public:true
+            topic:x:@data.read/*/*/topic
 
 
       /*

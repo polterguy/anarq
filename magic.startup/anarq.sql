@@ -62,7 +62,7 @@ insert into visibility (name, description) values ('moderated', 'Moderated post,
  */
 create table posts (
   id int(8) not null auto_increment,
-  topic varchar(25) null,
+  topic varchar(25) not null,
   visibility varchar(25) not null,
   parent int(8) null,
   content text not null,
