@@ -1,0 +1,125 @@
+
+/*
+ * Confirms an email address used during registration process, granting the user access to post, like, and comment on the site.
+ */
+.arguments
+   email:string
+   secret:string
+.description:Confirms an email address used during registration process, granting the user access to post, like, and comment on the site
+
+
+/*
+ * Sanity checking invocation.
+ */
+validators.mandatory:x:@.arguments/*/secret
+validators.mandatory:x:@.arguments/*/email
+validators.email:x:@.arguments/*/email
+
+
+/*
+ * Buffer holding username as retrieved from user_details by using email to lookup username.
+ */
+.username
+
+
+/*
+ * Before we create user, we need to check if email address is already taken,
+ * at which point we don't proceed, but rather return an error to caller.
+ */
+data.connect:[generic|anarq]
+
+
+   /*
+    * Invoking read slot to find username from email address.
+    */
+   data.read
+      database-type:mysql
+      table:user_details
+      columns
+         user
+      where
+         and
+            type:email
+            content:x:@.arguments/*/email
+
+
+   /*
+    * Checking if email address was associated with a user.
+    */
+   if
+      not
+         exists:x:@data.read/*/*
+      .lambda
+
+
+         /*
+          * No such email address registered in AnarQ.
+          */
+         response.status.set:404
+         return-nodes
+            error:No such email address registered at AnarQ
+
+
+   /*
+    * Combining email with auth secret, to create a hash, and compare to the specified secret.
+    */
+   config.get:"magic:auth:secret"
+   strings.concat
+      get-value:x:@.arguments/*/email
+      get-value:x:@config.get
+   crypto.hash:x:@strings.concat
+
+
+   /*
+    * Verifying specified secret matched expectations.
+    */
+   if
+      not
+         eq
+            get-value:x:@crypto.hash
+            get-value:x:@.arguments/*/secret
+      .lambda
+
+
+         /*
+          * Not correct secret given.
+          */
+         response.status.set:401
+         return-nodes
+            error:Sorry mate, access denied for you today
+
+
+   /*
+    * Setting username buffer above such that we can access it outside of current lambda.
+    */
+   set-value:x:@.username
+      get-value:x:@data.read/*/*/user
+
+
+/*
+ * If we come this far, we can safely associate user with confirmed role.
+ */
+data.connect:[generic|magic]
+
+
+   /*
+    * Bumping user's role such that he's allowed to interact with site.
+    */
+   data.delete
+      table:users_roles
+      where
+         and
+            user:x:@.username
+            role:unconfirmed
+   data.create
+      table:users_roles
+      values
+         user:x:@.username
+         role:guest
+
+
+/*
+ * Returns result to caller.
+ */
+return-nodes
+   result:success
