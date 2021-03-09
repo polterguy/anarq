@@ -137,7 +137,7 @@ semaphore:anarq.user.create
              */
             config.get:"anarq:emails:verify-email-subject"
             config.get:"anarq:frontend:url"
-            config.get:"magic:auth.secret"
+            config.get:"magic:auth:secret"
 
 
             /*
@@ -156,7 +156,8 @@ semaphore:anarq.user.create
             .confirm-url
             set-value:x:@.confirm-url
                strings.concat
-                  get-value:x:@try/*/config.get/[1,2]
+                  get-value:x:../*/config.get/[1,1]
+                  .:"/confirm-email"
                   .:?email=
                   strings.url-encode:x:@.email
                   .:&secret=
@@ -174,7 +175,7 @@ semaphore:anarq.user.create
              * Substituting email template.
              */
             unwrap:x:+/*/*
-            signal:anarq.file.substituteanarq.file.substitute
+            signal:anarq.file.substitute
                file:/modules/anarq/data/emails/confirm-email.txt
                substitutions
                   confirm-url:x:@.confirm-url
@@ -188,7 +189,7 @@ semaphore:anarq.user.create
                message
                   to
                      .:x:@.email
-                  subject:x:@try/*/config.get/[0,1]
+                  subject:x:../*/config.get/[0,1]
                   entity:text/plain
                      content:x:@signal
 
@@ -198,11 +199,11 @@ semaphore:anarq.user.create
              */
             log.info
                strings.concat
-                  .:"Confirm email address email successfully sent to email address '"
+                  .:"Email successfully sent to verify email address of user. Email was sent to '"
                   get-value:x:@.email
-                  .:"' with full name of '"
+                  .:"' email address, with full name of '"
                   get-value:x:@.full_name
-                  .:"'"
+                  .:"'. Email template used was '/modules/anarq/data/emails/confirm-email.txt'"
 
          .catch
 
