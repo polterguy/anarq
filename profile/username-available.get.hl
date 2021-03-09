@@ -42,7 +42,7 @@ data.connect:[generic|magic]
           */
          return-nodes
             result:bool:false
-            message:Username address already registered
+            message:Username already registered
 
 
    else
