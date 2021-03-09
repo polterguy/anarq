@@ -19,37 +19,78 @@ validators.email:x:@.arguments/*/email
 
 
 /*
- * Creating user in main magic database.
+ * To avoid "funny" race conditions, having multiple threads trying to create
+ * the same user simultaneously, registering the same email address at the same time,
+ * etc - We must synchronise access to the entirety ot the insert operation, and also
+ * double check if email address is already registered, before attempting to create user,
+ * etc.
  */
-unwrap:x:+/*
-signal:magic.auth.create-user
-   username:x:@.arguments/*/username
-   password:x:@.arguments/*/password
-   roles
-      .:unconfirmed
-
-
-/*
- * Connecting to database
- */
-data.connect:[generic|anarq]
-   database-type:mysql
+semaphore:anarq.user.create
 
 
    /*
-    * Invoking read slot.
+    * Before we create user, we need to check if email address is already taken,
+    * at which point we don't proceed, but rather return an error to caller.
     */
-   data.create
+   data.connect:[generic|anarq]
+
+
+      /*
+       * Invoking read slot to verify email is available.
+       */
+      data.read
+         database-type:mysql
+         table:user_details
+         where
+            and
+               type:email
+               content:x:@.arguments/*/email
+      if
+         exists:x:@data.read/*/*
+         .lambda
+
+
+            /*
+             * Making sure we return the correct error code to client.
+             */
+            response.status.set:400
+            return-nodes
+               error:Email address already registered
+
+
+   /*
+    * Creating user in main magic database.
+    */
+   unwrap:x:+/*
+   signal:magic.auth.create-user
+      username:x:@.arguments/*/username
+      password:x:@.arguments/*/password
+      roles
+         .:unconfirmed
+
+
+   /*
+    * Connecting to database
+    */
+   data.connect:[generic|anarq]
       database-type:mysql
-      table:user_details
-      values
-         user:x:@.arguments/*/username
-         type:email
-         content:x:@.arguments/*/email
 
 
-   /*
-    * Returns result to caller.
-    */
-   return-nodes
-      result:success
+      /*
+       * Invoking create slot to insert email and additional
+       * information associated with user.
+       */
+      data.create
+         database-type:mysql
+         table:user_details
+         values
+            user:x:@.arguments/*/username
+            type:email
+            content:x:@.arguments/*/email
+
+
+      /*
+       * Returns result to caller.
+       */
+      return-nodes
+         result:success
