@@ -152,11 +152,11 @@ semaphore:anarq.user.create
              * Creating SHA256 hash of above result to make sure only person who read email
              * can confirm his email address.
              */
-            crypto.hash:x:-
+            crypto.hash:x:@strings.concat
             .confirm-url
-            set-value:x:-
+            set-value:x:@.confirm-url
                strings.concat
-                  get-value:x:@config.get
+                  get-value:x:@try/*/config.get/[1,2]
                   .:?email=
                   strings.url-encode:x:@.email
                   .:&secret=
@@ -177,7 +177,7 @@ semaphore:anarq.user.create
             signal:anarq.file.substituteanarq.file.substitute
                file:/modules/anarq/data/emails/confirm-email.txt
                substitutions
-                   confirm-url:x:@.confirm-url
+                  confirm-url:x:@.confirm-url
 
 
             /*
