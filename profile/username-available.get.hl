@@ -1,0 +1,56 @@
+
+/*
+ * Returns true if username is available, otherwise false.
+ */
+.arguments
+   username:string
+.description:Returns true if username is available, otherwise false
+
+
+/*
+ * Sanity checking invocation.
+ */
+validators.mandatory:x:@.arguments/*/username
+
+
+/*
+ * Connecting to database.
+ */
+data.connect:[generic|magic]
+
+
+   /*
+    * Invoking read slot to verify username is available.
+    */
+   data.read
+      table:users
+      where
+         and
+            username:x:@.arguments/*/username
+
+
+   /*
+    * Checking if username is taken already.
+    */
+   if
+      exists:x:@data.read/*/*
+      .lambda
+
+
+         /*
+          * Making sure we return the correct error code to client.
+          */
+         return-nodes
+            result:bool:false
+            message:Username address already registered
+
+
+   else
+
+
+      /*
+       * Username is available.
+       */
+      return-nodes
+         result:bool:true
+         message:Username is available

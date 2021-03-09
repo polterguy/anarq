@@ -18,6 +18,7 @@ validators.email:x:@.arguments/*/email
  * Connecting to database.
  */
 data.connect:[generic|anarq]
+   database-type:mysql
 
 
    /*
