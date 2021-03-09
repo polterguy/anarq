@@ -8,7 +8,7 @@
    topic:string
    user:string
    minutes:int
-.description:Returns all top level posts matching the specified argument(s) to caller allowing caller to page results
+.description:Returns all top level posts matching the specified argument(s) to caller allowing caller to page results, sorting according to number of likes, allowing caller to extract posts not older than a specified amount of minutes
 
 
 /*
