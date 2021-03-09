@@ -1,0 +1,59 @@
+
+/*
+ * Returns true if email address is available, otherwise false.
+ */
+.arguments
+   email:string
+.description:Returns true if email address is available, otherwise false
+
+
+/*
+ * Sanity checking invocation.
+ */
+validators.mandatory:x:@.arguments/*/email
+validators.email:x:@.arguments/*/email
+
+
+/*
+ * Connecting to database.
+ */
+data.connect:[generic|anarq]
+
+
+   /*
+    * Invoking read slot to verify email is available.
+    */
+   data.read
+      database-type:mysql
+      table:user_details
+      where
+         and
+            type:email
+            content:x:@.arguments/*/email
+
+
+   /*
+    * Checking if email address is taken already.
+    */
+   if
+      exists:x:@data.read/*/*
+      .lambda
+
+
+         /*
+          * Making sure we return the correct error code to client.
+          */
+         return-nodes
+            result:bool:false
+            message:Email address already registered
+
+
+   else
+
+
+      /*
+       * Email address is available.
+       */
+      return-nodes
+         result:bool:true
+         message:Email address is available

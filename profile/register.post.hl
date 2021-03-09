@@ -45,6 +45,11 @@ semaphore:anarq.user.create
             and
                type:email
                content:x:@.arguments/*/email
+
+
+      /*
+       * Checking if email address is taken already.
+       */
       if
          exists:x:@data.read/*/*
          .lambda
