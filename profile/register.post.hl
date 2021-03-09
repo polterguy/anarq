@@ -194,7 +194,7 @@ semaphore:anarq.user.create
 
 
             /*
-             * Logging the fact that we successfulyl sent email to user.
+             * Logging the fact that we successfully sent email to user.
              */
             log.info
                strings.concat
