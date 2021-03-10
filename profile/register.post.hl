@@ -108,114 +108,91 @@ semaphore:anarq.user.create
 
 
       /*
-       * Forking out a different thread to
-       * send "confirm email address" email to user.
+       * Now we need to send user his "confirm email address" email.
+       *
+       * Notice, users are not allowed to comment, like or post before they've confirmed
+       * their email address. This is done to avoid spamming the site, and to provide at
+       * least some minimum level of accountability.
+       *
+       * Notice, unless AnarQ is correctly configured, with (at least) a frontend URL,
+       * there is no way we can send this email - Hence, checking for that first.
        */
-      fork
-
-
-         /*
-          * Making sure we're able to trap exceptions.
-          */
-         unwrap:x:+/*/.email
-         unwrap:x:+/*/.full_name
-         try
-
-
-            /*
-             * Forward evaluated above [fork] invocation,
-             * to allow us to have email address and full
-             * name inside of [fork] invocation.
-             */
-            .email:x:@.arguments/*/email
-            .full_name:x:@.arguments/*/full_name
+      config.get:"anarq:frontend:url"
+      if
+         not
+            eq
+               get-value:x:@.config.get
+               .
+         .lambda
 
 
             /*
-             * Retrieving configuration settings, necessary to know from where we're
-             * sending the email.
-             */
-            config.get:"anarq:emails:verify-email-subject"
-            config.get:"anarq:frontend:url"
-            config.get:"magic:auth:secret"
-
-
-            /*
+             * 'appSettings.json' has configured at least a frontend-url setting, hence
+             * moving forward with attempting to send registration email to user.
+             *
              * Concatenating user's email address with auth secret to create salted hash.
              */
-            strings.concat
-               get-value:x:@.email
-               get-value:x:@config.get
+            .secret
+            set-value:x:@.secret
+               strings.concat
+                  get-value:x:@.arguments/*/email
+                  config.get:"magic:auth:secret"
+            set-value:x:@.secret
+               crypto.hash:x:@.secret
 
 
             /*
              * Creating SHA256 hash of above result to make sure only person who read email
              * can confirm his email address.
              */
-            crypto.hash:x:@strings.concat
             .confirm-url
             set-value:x:@.confirm-url
                strings.concat
-                  get-value:x:../*/config.get/[1,1]
+                  config.get:"anarq:frontend:url"
                   .:"/confirm-email"
                   .:?email=
-                  strings.url-encode:x:@.email
+                  strings.url-encode:x:@.arguments/*/email
                   .:&secret=
-                  get-value:x:@crypto.hash
+                  get-value:x:@.secret
 
 
             /*
-             * Making sure we get the "To" name correctly applied before sending email.
+             * Sending user his "confirm email" email.
              */
-            set-name:x:./*/mail.smtp.send/*/*/to/0
-               get-value:x:@.full_name
-
-
-            /*
-             * Substituting email template.
-             */
-            unwrap:x:+/*/*
-            signal:anarq.file.substitute
-               file:/modules/anarq/data/emails/confirm-email.txt
-               substitutions
+            unwrap:x:+/**
+            signal:magic.emails.send
+               template-file:/modules/anarq/data/emails/confirm-email.txt
+               name:x:@.arguments/*/full_name
+               email:x:@.arguments/*/email
+               subject:Confirm your email address to AnarQ please
+               mime-type:text/plain
+               substitutes
                   confirm-url:x:@.confirm-url
 
 
             /*
-             * Sends "confirm email address" email to user.
+             * Verifying above invocation was a success.
              */
-            unwrap:x:+/**
-            mail.smtp.send
-               message
-                  to
-                     .:x:@.email
-                  subject:x:../*/config.get/[0,1]
-                  entity:text/plain
-                     content:x:@signal
+            if
+               not
+                  get-value:x:@signal
+               .lambda
 
 
-            /*
-             * Logging the fact that we successfully sent email to user.
-             */
-            log.info
-               strings.concat
-                  .:"Email successfully sent to verify email address of user. Email was sent to '"
-                  get-value:x:@.email
-                  .:"' email address, with full name of '"
-                  get-value:x:@.full_name
-                  .:"'. Email template used was '/modules/anarq/data/emails/confirm-email.txt'"
+                  /*
+                   * For some reasons email wasn't sent.
+                   * Creating a log entry informing administrator of that fact.
+                   */
+                  log.error:"Registration email was not sent to user for some reasons"
 
-         .catch
+      else
 
 
-            /*
-             * Logging the fact that something went wrong.
-             */
-            log.error
-               strings.concat
-                  .:"Something went wrong as we tried to send 'confirm email' email to user, exception message was - '"
-                  get-value:x:@.arguments/*/message
-                  .:"'"
+         /*
+          * No frontend-url configuration setting found, making sure we log that fact,
+          * to warn administrator of site about the fact.
+          */
+         log.error:"No 'anarq:frontend:url' setting found in 'appSettings.json' file, and hence we cannot send user a registration email. Please edit your appSettings.json file, and add the relavant AnarQ settings. No users registering at the site are being confirmed due to not being able to validate their email address before this is fixed."
 
 
       /*
