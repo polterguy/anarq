@@ -67,22 +67,22 @@ data.connect:[generic|anarq]
 
 
    /*
-    * Checking if user is authenticated, and if not we only return public posts.
+    * Checking if user is authenticated and has confirmed his email,
+    * and if not we only return public posts.
     */
-   auth.ticket.get
    if
-      eq
-         get-value:x:@auth.ticket.get
-         .
+      auth.ticket.in-role:root, admin, moderator, guest
       .lambda
 
 
          /*
-          * Making sure we only return public posts.
+          * Making sure we return public and protected posts.
           */
          add:x:@data.connect/*/data.read/*/where/*/and
             .
-               p.visibility.eq:public
+               or
+                  p.visibility.eq:public
+                  p.visibility.eq:protected
 
    else
 
@@ -92,9 +92,7 @@ data.connect:[generic|anarq]
        */
       add:x:@data.connect/*/data.read/*/where/*/and
          .
-            or
-               p.visibility.eq:public
-               p.visibility.eq:protected
+            p.visibility.eq:public
 
 
    /*
@@ -138,6 +136,8 @@ data.connect:[generic|anarq]
          p.user
             as:user
          p.visibility
+         substring(p.content, 1, 50)
+            as:excerpt
          count(l.post_id)
             as:likes
       where

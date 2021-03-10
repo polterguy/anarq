@@ -1,50 +1,23 @@
 
 /*
- * Counts posts in the system according to specified argument(s).
+ * Returns a single OP post.
  */
 .arguments
-   topic:string
-   user:string
-.description:Counts OP posts in the system according to specified argument(s)
+   id:long
+.description:Returns a single OP post.
 
 
 /*
- * Connecting to database.
+ * Sanity checking invocation.
+ */
+validators.mandatory:x:@.arguments/*/id
+
+
+/*
+ * Connecting to database
  */
 data.connect:[generic|anarq]
    database-type:mysql
-
-
-   /*
-    * Checking if caller wants to filter according to username.
-    */
-   if
-      exists:x:@.arguments/*/user
-      .lambda
-
-         /*
-          * Username explicitly specified as filtering condition.
-          */
-         unwrap:x:+/*/*
-         add:x:@data.connect/*/data.read/*/where/*/and
-            .
-               posts.user.eq:x:@.arguments/*/user
-
-
-   /*
-    * Checking if caller wants to filter according to topic.
-    */
-   if
-      exists:x:@.arguments/*/topic
-      .lambda
-
-         /*
-          * Topic explicitly specified as filtering condition.
-          */
-         unwrap:x:+/*/*
-         add:x:@data.connect/*/data.read/*/where/*/and
-            .
-               posts.topic.eq:x:@.arguments/*/topic
 
 
    /*
@@ -94,16 +67,33 @@ data.connect:[generic|anarq]
       database-type:mysql
       table:posts
          as:p
-      limit:long:1
+         join:likes
+            as:l
+            type:left
+            on
+               and
+                  p.id:l.post_id
       columns
-         count(*)
-            as:count
+         p.id
+         p.topic
+         p.created
+         p.user
+            as:user
+         p.visibility
+         p.content
+         count(l.post_id)
+            as:likes
       where
          and
             p.parent.eq
+            p.id.eq:x:@.arguments/*/id
+      group
+         p.id
+      order:p.created
+         direction:desc
 
 
    /*
-    * Returning results to caller.
+    * Returns result to caller.
     */
    return-nodes:x:@data.read/*/*

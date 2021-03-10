@@ -12,7 +12,7 @@
 /*
  * Sanity checking invocation.
  */
-auth.ticket.verify
+auth.ticket.verify:root, admin, guest, moderator
 
 
 /*
