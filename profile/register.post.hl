@@ -7,7 +7,8 @@
    password:string
    email:string
    full_name:string
-.description:Registers a new user on the site
+   email-type:string
+.description:Registers a new user on the site. Notice the user will not be allowed to post, comment or vote before he or she has confirmed the email address used to register on the page
 
 
 /*
@@ -18,6 +19,9 @@ validators.mandatory:x:@.arguments/*/password
 validators.mandatory:x:@.arguments/*/email
 validators.mandatory:x:@.arguments/*/full_name
 validators.email:x:@.arguments/*/email
+validators.enum:x:@.arguments/*/email-type
+   .:web
+   .:client
 
 
 /*
@@ -157,17 +161,36 @@ semaphore:anarq.user.create
 
 
             /*
+             * Notice, we need to send different emails, depending upon what type of client the user
+             * used to register. If the user came in through a web/HTML based client, we can send an
+             * email with a hyperlink, leading him to a page allowing him to confirm his email.
+             * If the user registered from a fat client, such as an iOS or Android app, we cannot
+             * assume there even exists a webpage allowing him to verify his email address, hence
+             * we send a different email, only with the secret.
+             */
+            .template-file
+            switch:x:@.arguments/*/email-type
+               case:web
+                  set-value:x:@.template-file
+                     .:/modules/anarq/data/emails/confirm-email.web.html
+               case:client
+                  set-value:x:@.template-file
+                     .:/modules/anarq/data/emails/confirm-email.client.html
+
+
+            /*
              * Sending user his "confirm email" email.
              */
             unwrap:x:+/**
             signal:magic.emails.send
-               template-file:/modules/anarq/data/emails/confirm-email.txt
+               template-file:x:@.template-file
                name:x:@.arguments/*/full_name
                email:x:@.arguments/*/email
                subject:Confirm your email address to AnarQ please
                mime-type:text/plain
                substitutes
                   confirm-url:x:@.confirm-url
+                  secret:x:@.secret
 
 
             /*

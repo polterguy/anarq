@@ -408,7 +408,7 @@ Creates a new page in your system. Pass in a payload resembling the following.
 
 ### PUT magic/modules/anarq/site/pages
 
-Updates an existing page in your system. Takes the following payload.
+Updates an existing page in your system. The endpoint requires the following payload.
 
 ```json
 {

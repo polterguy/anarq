@@ -4,7 +4,7 @@
  */
 .arguments
    id:long
-.description:Deletes the specified OP post
+.description:Deletes the specified OP post. The OP posting must have been created by the same user performing the request.
 
 
 /*

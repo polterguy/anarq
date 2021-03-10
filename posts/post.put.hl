@@ -13,6 +13,9 @@
  * Sanity checking invocation.
  */
 validators.mandatory:x:@.arguments/*/id
+validators.enum:x:@.arguments/*/visibility
+   .:public
+   .:protected
 auth.ticket.verify
 
 
@@ -24,7 +27,7 @@ data.connect:[generic|anarq]
 
 
    /*
-    * We only allow users to update their own comments.
+    * We only allow users to update their own posts.
     */
    auth.ticket.get
 

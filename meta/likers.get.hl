@@ -4,13 +4,13 @@
  */
 .description:Returns all users that liked a specific OP post or comment
 .arguments
-   post_id:long
+   id:long
 
 
 /*
  * Sanity checking invocation.
  */
-validators.mandatory:x:@.arguments/*/post_id
+validators.mandatory:x:@.arguments/*/id
 
 
 /*
@@ -31,7 +31,7 @@ data.connect:[generic|anarq]
          user
       where
          and
-            post_id:x:@.arguments/*/post_id
+            post_id:x:@.arguments/*/id
 
 
    /*

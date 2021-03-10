@@ -5,14 +5,14 @@
  * Notice, will associate the like with the currently authenticated user.
  */
 .arguments
-   post_id:long
+   id:long
 .description:Allows a user to create a like for a specified post
 
 
 /*
  * Sanity checking invocation.
  */
-validators.mandatory:x:@.arguments/*/post_id
+validators.mandatory:x:@.arguments/*/id
 auth.ticket.verify
 
 
@@ -33,7 +33,7 @@ data.connect:[generic|anarq]
       return-id:bool:false
       values
          user:x:@auth.ticket.get
-         post_id:x:@.arguments/*/post_id
+         post_id:x:@.arguments/*/id
 
 
    /*
