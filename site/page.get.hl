@@ -1,0 +1,41 @@
+
+/*
+ * Returns all pages to caller, but only their URLs and names.
+ */
+.description:Returns all pages in the system to caller, but only their URLs and their names, not the content
+.arguments
+   url:string
+
+
+/*
+ * Sanity checking invocation.
+ */
+validators.mandatory:x:@.arguments/*/url
+
+
+/*
+ * Connects to database.
+ */
+data.connect:[generic|anarq]
+   database-type:mysql
+
+
+   /*
+    * Invokes read slot.
+    */
+   data.read
+      database-type:mysql
+      table:pages
+      columns
+         url
+         name
+         content
+      where
+         and
+            url.eq:x:@.arguments/*/url
+
+
+   /*
+    * Returns result to caller.
+    */
+   return-nodes:x:@data.read/*/*

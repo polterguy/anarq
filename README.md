@@ -387,6 +387,13 @@ allowing you to use this endpoint as the foundation for creating a navigation sy
 visiting users to navigate your site. Endpoint does not take any arguments, and will return
 all pages in your system.
 
+To retrieve one specific page, including its content, use the `site/page` endpoint (singular form) instead.
+
+### GET magic/modules/anarq/site/page
+
+Returns one single page from the system back to the caller, as specified by its `url` QUERY parameter.
+This endpoint _also_ returns the content of the page, in addition to its URL and name parts.
+
 ### POST magic/modules/anarq/site/pages
 
 Creates a new page in your system. Pass in a payload resembling the following.
