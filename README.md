@@ -333,7 +333,84 @@ its content. It can only be invoked by the user creating the comment. An example
 }
 ```
 
-The endpoint works similarly to the 
+The endpoint works similarly to the POST equivalent above, except of course instead of taking a `parent` it
+requires an `id` to a previously created comment, and the comment _must_ have been created by the same
+authenticated user trying to update it.
+
+### DELETE magic/modules/anarq/comments/comment
+
+This endpoint works similarly to the above PUt equivalent, but instead of changing its visibility, and/or content,
+it marks the comment as deleted. The endpoint can only be invoked by the user originally having created the
+comment.
 
 
+## Meta
 
+This section contains meta information endpoints, such as listing all topics in the system, allowing
+users to like, and/or unlike existing posts and comments, etc.
+
+### DELETE magic/modules/anarq/meta/like
+
+Deletes a previously created like for either an OP post or a comment. The endpoint can only be invoked by a
+user having previously liked a comment or an OP post. The endpoint requires one single QUERY parameter
+being `id`, which is the ID for the comment, and/or post the user previously liked.
+
+### POST magic/modules/anarq/meta/like
+
+Creates a like for an OP posting or a comment. The like will automatically be asssociated with the currently
+authenticated user.
+
+### GET magic/modules/anarq/meta/likers
+
+Returns all usernames for all users that liked a specific comment or an OP posting as a string array.
+
+### GET magic/modules/anarq/meta/topics
+
+Returns all topics that exists in the system, together with how many posts topic has, and when the
+last activity within the topic was.
+
+## Site
+
+This section contains the endpoints needed to administrate the pages in the system, that allows you
+to create CMS page types of pages, describing the purpose with your server installation, etc.
+
+### DELETE magic/modules/anarq/site/pages
+
+Deletes the specified page entirely from the system. Notice, this action cannot be undone!
+Pass in `url` as what page to delete. Endpoint can only be invoked by an administrator, and/or a
+root account in the system.
+
+### GET magic/modules/anarq/site/pages
+
+Returns a list of all pages in the system, but not their content, only their names and URLs,
+allowing you to use this endpoint as the foundation for creating a navigation system, allowing
+visiting users to navigate your site. Endpoint does not take any arguments, and will return
+all pages in your system.
+
+### POST magic/modules/anarq/site/pages
+
+Creates a new page in your system. Pass in a payload resembling the following.
+
+```json
+{
+  "url": "relative-url",
+  "name": "About these forums",
+  "content": "This is the content of your page. This might include Markdown AND HTML, since it's not for anyone but administrators and root accounts to invoke."
+}
+```
+
+### PUT magic/modules/anarq/site/pages
+
+Updates an existing page in your system. Takes the following payload.
+
+```json
+{
+  "url": "relative-url",
+  "name": "About these forums",
+  "content": "This is the NEW content of your page. This might include Markdown AND HTML, since it's not for anyone but administrators and root accounts to invoke."
+}
+```
+
+The `url` above will be used to determine which page to update. The endpoint can only be invoked by an admin account or a root account
+in your system. Notice, once created, you _cannot_ change the URL of a page. If you need to do this, you'll have to create a _new_ page,
+and delete the old page.

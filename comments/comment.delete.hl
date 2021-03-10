@@ -1,0 +1,50 @@
+
+/*
+ * Deletes the specified comment.
+ */
+.arguments
+   id:long
+.description:Deletes the specified comment. The comment must have been created by the same user performing the request.
+
+
+/*
+ * Sanity checking invocation.
+ */
+validators.mandatory:x:@.arguments/*/id
+auth.ticket.verify
+
+
+/*
+ * Connecting to database.
+ */
+data.connect:[generic|anarq]
+   database-type:mysql
+
+
+   /*
+    * We only allow users to update their own comments.
+    */
+   auth.ticket.get
+
+
+   /*
+    * Invoking update slot.
+    */
+   data.update
+      database-type:mysql
+      table:posts
+      values
+         visibility:deleted
+      where
+         and
+            id.eq:x:@.arguments/*/id
+            user.eq:x:@auth.ticket.get
+            parent.neq
+
+
+   /*
+    * Returning results to caller.
+    */
+   unwrap:x:+/*
+   return
+      affected:x:@data.update
