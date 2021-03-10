@@ -170,12 +170,12 @@ semaphore:anarq.user.create
              */
             .template-file
             switch:x:@.arguments/*/email-type
-               case:web
-                  set-value:x:@.template-file
-                     .:/modules/anarq/data/emails/confirm-email.web.html
                case:client
                   set-value:x:@.template-file
                      .:/modules/anarq/data/emails/confirm-email.client.html
+               default
+                  set-value:x:@.template-file
+                     .:/modules/anarq/data/emails/confirm-email.web.html
 
 
             /*

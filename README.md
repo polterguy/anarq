@@ -56,12 +56,28 @@ This endpoint registers a new user in the system. It takes the following payload
   "username": "username_on_site",
   "password": "password_on_site",
   "email": "john@doe.com",
-  "full_name": "John Doe"
+  "full_name": "John Doe",
+  "email-type": "web|client"
 }
 ```
 
 If the username or email address is already registered on the site, the endpoint will return failure,
-explaining you exactly what went wrong.
+explaining you more or less exactly what went wrong.
+
+Notice, the exact flow of the registration process depends upon what client type you choose to use
+in the optional `email-type` in the payload you choose to create as you invoke endpoint. This field
+can have two different values.
+
+* web
+* client
+
+The value of `web` implies you have a web based HTML frontend somewhere, where you can accept people
+clicking links towards, somehow resolving to a URL that will invoke the `confirm-email` endpoint as
+the user visits it, being able to retrieve the secret from a QUERY parameter named `secret`.
+
+The default value for `email-type` if omitted is `web`.
+
+#### Web frontends
 
 The system will attempt to send an email to the registered email address, using configuration settings found
 from your configuration file, allowing the user to confirm his email address. If you wish to edit this
@@ -73,10 +89,18 @@ the following query parameters.
 * email
 * secret
 
-The secret needs to be supplied to the `confirm-email` endpoint later before the user can post, comment or
+The secret needs to be supplied to the `profile/confirm-email` endpoint later before the user can post, comment or
 like posts/comments in the system.
 
 This endpoint does not require the user to be authenticated.
+
+#### Client frontends
+
+If you don't have a web based HTML capable frontend, due to maybe creating only an iOS or Android client -
+Then sending the user a hyperlink he clicks to confirm his email is obviously not a choice. Hence, you can
+therefor use the `client` type of email sent during registrations, which simply sends the user the generated
+secret, allowing him to copy and paste it into your app/client, for then to submit it to your backend somehow
+by invoking the `profile/confirm-email` endpoint from within your app.
 
 ### GET magic/modules/anarq/profile/username-available
 
