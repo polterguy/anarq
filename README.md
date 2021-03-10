@@ -26,17 +26,12 @@ In addition AnarQ requires its own configuration settings. You can find an examp
 Paste in the above into your configuration file, just above the `magic` parts, and modify it as needed.
 Modify the actual frontend `url` according to where you have your frontend running.
 
-## HTTP REST endpoints
-
-AnarQ is a pure HTTP REST web API, allowing you to integrate it with any frontend client system you wish.
-Below is te documentation for each endpoint in the system, grouped by section.
-
-### Profile
+## Profile
 
 This section contains everything related to authentication, registration, and public retrieval of profiles
 for existing registered users in the system.
 
-#### GET magic/modules/anarq/profile/authenticate
+### GET magic/modules/anarq/profile/authenticate
 
 This endpoint allows you to authenticate a user with a username/password combination, provided as URL
 encoded query parameters. Below is an example.
@@ -52,7 +47,7 @@ your backend.
 
 This endpoint does not require the user to be authenticated.
 
-#### POST magic/modules/anarq/profile/register
+### POST magic/modules/anarq/profile/register
 
 This endpoint registers a new user in the system. It takes the following payload.
 
@@ -83,7 +78,7 @@ like posts/comments in the system.
 
 This endpoint does not require the user to be authenticated.
 
-#### GET magic/modules/anarq/profile/username-available
+### GET magic/modules/anarq/profile/username-available
 
 This endpoint returns true if the specified username is available. An example invocation can be found below.
 
@@ -104,7 +99,7 @@ If the username is available, the above `result` field will have a value of `tru
 
 This endpoint does not require the user to be authenticated.
 
-#### GET magic/modules/anarq/profile/email-available
+### GET magic/modules/anarq/profile/email-available
 
 This endpoint works exactly as the above username-available endpoint, except it of course
 expects an `email` query parameter, and checks to see if the specified email address is registered
@@ -122,7 +117,7 @@ If the email address is available, the above `result` field will have a value of
 
 This endpoint does not require the user to be authenticated.
 
-#### POST magic/modules/anarq/profile/confirm-email
+### POST magic/modules/anarq/profile/confirm-email
 
 This endpoints confirms a previously registered email address in the system, allowing the
 registered user to prove he owns the email address specified as he or she registered at the site.
@@ -141,18 +136,18 @@ secret in your appSettings.json configuration file.
 
 This endpoint does not require the user to be authenticated.
 
-#### GET magic/modules/anarq/profile/me
+### GET magic/modules/anarq/profile/me
 
 This endpoint returns information about the currently authenticated user, and can be used
 to retrieve meta data about the currently logged in user, such as his username, email, full name, etc.
 
 This endpoint requires the user to be authenticated.
 
-### Posts
+## Posts
 
 This section contains everything related to retrieving OP posts from the backend.
 
-#### GET magic/modules/anarq/posts/feed
+### GET magic/modules/anarq/posts/feed
 
 Returns the most popular items according to the specified query parameters supplied. Popular
 here meaning items having the most likes. The endpoint takes 5 QUERY parameters, all of which are
@@ -192,14 +187,13 @@ The endpoint will return something resembling the following.
     "excerpt": "The vaccine for Covid19 has a higher fatality rate than the disease",
     "likes": 37
   },
-  /* ... etc ... */
 ]
 ```
 
 Notice, the endpoint does _not_ return the actual contents of the posts, only an excerpt including its first 50 characters. If you want to retrieve
 the entire content of a post, you'll have to use the GET `posts/post` invocation instead.
 
-#### GET magic/modules/anarq/posts/post
+### GET magic/modules/anarq/posts/post
 
 This endpoint returns a single post, including its entire content, and number of likes it currently has.
 It takes one single QUERY parameter being the `id` of the post to return. Invoking it with the following
@@ -234,7 +228,7 @@ to users belonging to one of the following roles.
 All other users can only see posts that are either _"public"_ or "_protected"_. Protected implies
 only visible for registered users at the site, having confirmed their email address.
 
-#### POST magic/modules/anarq/posts/post
+### POST magic/modules/anarq/posts/post
 
 This endpoint creates a new OP post, and requires the user to be authenticated, and having confirmed his email address.
 It takes the following payload.
@@ -243,7 +237,7 @@ It takes the following payload.
 {
   "visibility": "public",
   "topic": "news",
-  "content": "Actual content of your post. Can be Markdown"
+  "content": "Actual content of your post. Can contain Markdown but NOT HTML"
 }
 ```
 
@@ -277,11 +271,13 @@ exists such that users can edit their existing posts, after having saved them. A
 
 A user can change both the content of the post, and the visibility of the post using this endpoint.
 
-#### DELETE magic/modules/anarq/posts/post
+### DELETE magic/modules/anarq/posts/post
 
-TODO: Implement with similar semantics as its PUT counterparts ...
+Deletes a previously created OP post. Notice, endpoint can only be invoked by the user that originally created
+the OP post. And the post is not actually deleted, but only flagged as deleted, making it publicly invisible on
+the site for everyone except root accounts, admin accounts and moderator accounts.
 
-#### GET magic/modules/anarq/posts/posts-count
+### GET magic/modules/anarq/posts/posts-count
 
 This endpoint returns the number of OP posts in the system. If invoked by an authenticated user having confirmed
 his or her email address, the endpoint will return count of both public and protected posts given the specified
@@ -293,7 +289,7 @@ The endpoint takes the following optional filtering conditions.
 * topic - Only show posts from within the specified topic
 * user - Only show posts created by the specified user
 
-#### GET magic/modules/anarq/posts/posts
+### GET magic/modules/anarq/posts/posts
 
 This endpoint works similarly to the above `posts/feed` endpoint, except it will not sort by popularity, but
 rather when the post was created. This allows you to retrieve all posts in the system, and page through them as
@@ -302,3 +298,42 @@ you see fit, sorted by when the posts were created.
 Notice, the endpoint will only return public posts unless invoked by an authenticated user having confirmed
 his or her email address. And if invoked by a moderator, admin or root account, the endpoint will return also
 moderated posts.
+
+## Comments
+
+This section contains everything related to comments.
+
+### POST magic/modules/anarq/comments/comment
+
+This endpoint allows you to post a comment to either an OP posting, or another comment. Its payload is
+as follows.
+
+```json
+{
+  "parent": 67777,
+  "content": "Actual content of comment. Can include Markdown but not HTML.",
+  "visibility": "public"
+}
+```
+
+The visibility of comments are similar to the visibility of OP posts, implying unless you've authenticated
+at the site, and confirmed your email address, only public posts will be visible for you.
+The `parent` above is the ID of the OP posting or another comment.
+
+### PUT magic/modules/anarq/comments/comment
+
+This endpoint allows a user to edit his existing comment, either changing its visibility, and/or changing
+its content. It can only be invoked by the user creating the comment. An example payload can be found below.
+
+```json
+{
+  "id": 67777,
+  "content": "Some new comment here. May include Markdown but not HTML.",
+  "visibility": "public"
+}
+```
+
+The endpoint works similarly to the 
+
+
+
