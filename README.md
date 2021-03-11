@@ -1,5 +1,5 @@
 
-# AnarQ - An Open Source alternative to Facebook, Reddit, Disqus, etc
+# AnarQ - An Open Source Social Media Platform
 
 AnarQ is an Open Source social media platform that you can install on your local server,
 providing you with feeds, posts, profiles, the ability to moderate posts, etc. Its most basic functionality
