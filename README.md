@@ -2,8 +2,21 @@
 # AnarQ - An Open Source alternative to Facebook, Reddit, Disqus, etc
 
 AnarQ is an Open Source social media platform that you can install on your local server,
-providing you with feeds, posts, the ability to moderate posts, etc. Its most basic functionality
-is that of serving as a forum HTTP backend web API.
+providing you with feeds, posts, profiles, the ability to moderate posts, etc. Its most basic functionality
+is that of serving as a forum HTTP backend web API, but it goes way beyond the capabilities of a plain
+forum, by including social gaming elements, such as likes, popularity, etc. It's arguably in such a regard
+more a social media platform, than a traditional forum, competing with social media platforms such
+as Reddit, Facebook and Twitter.
+
+Its name is a play upon the two Greek words _"an"_ and _"archy"_ implying _"no leaders"_ or _"no hierarchy"_,
+adding the Q in its name simply for fun. It's Open Source, but you will need a license
+of [Magic](https://github.com/polterguy/magic) to run it.
+
+## Implementation details
+
+The system is implemented in Hyperlambda, on top of .Net 5, and uses MySQL or MariaDB as its backing
+database. The system is a 100% pure HTML Web API, allowing you to implement any client technology you see fit
+on top of it.
 
 ## Configuring
 
