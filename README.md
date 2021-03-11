@@ -47,6 +47,33 @@ see fit, according to your specific needs. These can be found in the folder _"/a
 This section contains everything related to authentication, registration, and public retrieval of profiles
 for registered users in the system.
 
+### GET magic/modules/anarq/profile/user
+
+This endpoint allows you to retrieve meta data about an individual user. The endpoint does not require
+authentication, but can be invoked anonymously. The endpoint will return a response resembling the following.
+
+```json
+{
+  "karma": 0,
+  "licks": 2,
+  "comments": 0,
+  "posts": 0,
+  "full_name": "Thomas Hansen",
+  "roles": [
+    "guest",
+    "moderator"
+  ]
+}
+```
+
+The `karma` above are how many likes the user has _received_, while the `licks` above is how many likes
+the user has _given_ in total. Comments are how many comments the user has posted, and posts are the number
+of OP posts the user has submitted to the system. The `roles` is the list of roles the user belongs to, and
+typically only contains one value, being _"guest"_, implying a default registered user having confirmed
+his or her email address. If the user is a moderator, the roles will contain a _"moderator"_ value, and
+if the user is an admin, it will contain the role of _"admin"_. Users not having confirmed their email address
+will belong to _only_ the role of _"unconfirmed"_.
+
 ### GET magic/modules/anarq/profile/authenticate
 
 This endpoint allows you to authenticate a user with a username/password combination, provided as URL

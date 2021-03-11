@@ -110,7 +110,77 @@ data.connect:[generic|anarq]
 
 
    /*
+    * Retrieving count of likes from user.
+    */
+   data.read
+      database-type:mysql
+      table:likes
+      columns
+         count(*)
+            as:count
+      where
+         and
+            user.eq:x:@.arguments/*/user
+
+
+   /*
+    * Retrieving comment count user has provided to system.
+    */
+   data.read
+      database-type:mysql
+      table:posts
+      columns
+         count(*)
+            as:count
+      where
+         and
+            user.eq:x:@.arguments/*/user
+            parent.eq
+
+
+   /*
+    * Retrieving posts count user has provided to system.
+    */
+   data.read
+      database-type:mysql
+      table:posts
+      columns
+         count(*)
+            as:count
+      where
+         and
+            user.eq:x:@.arguments/*/user
+            parent.eq
+
+
+   /*
+    * Retrieving how many likes user has received on his comments, and/or posts.
+    */
+   data.read
+      database-type:mysql
+      table:likes
+         as:l
+         join:posts
+            as:p
+            type:left
+            on
+               and
+                  l.post_id:p.id
+      columns
+         count(*)
+            as:count
+      where
+         and
+            p.user.eq:x:@.arguments/*/user
+
+
+   /*
     * Returning object in its entirety to caller.
     */
+   unwrap:x:+/*
    return-nodes
+      karma:x:@data.read/*/*
+      licks:x:@data.read/@data.read/@data.read/@data.read/*/*
+      comments:x:@data.read/@data.read/@data.read/*/*
+      posts:x:@data.read/@data.read/*/*
       roles
