@@ -1,20 +1,10 @@
 
 /*
- * Returns profile information related to currently authenticated user.
+ * Returns profile information for the specified user.
  */
-.description:Returns profile information related to currently authenticated user
-
-
-/*
- * Sanity checking invocation.
- */
-auth.ticket.verify
-
-
-/*
- * Needed to parametrise read invocation(s) further down.
- */
-auth.ticket.get
+.description:Returns profile information for the specified user
+.arguments
+   user:string
 
 
 /*
@@ -35,7 +25,8 @@ data.connect:[generic|anarq]
          content
       where
          and
-            user.eq:x:@auth.ticket.get
+            user.eq:x:@.arguments/*/user
+            type.eq:full_name
 
 
    /*
@@ -89,7 +80,7 @@ data.connect:[generic|anarq]
             role
          where
             and
-               user.eq:x:@auth.ticket.get
+               user.eq:x:@.arguments/*/user
 
 
    /*

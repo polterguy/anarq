@@ -489,3 +489,88 @@ Updates an existing page in your system. The endpoint requires the following pay
 The `url` above will be used to determine which page to update. The endpoint can only be invoked by an admin account or a root account
 in your system. Notice, once created, you _cannot_ change the URL of a page. If you need to do this, you'll have to create a _new_ page,
 and delete the old page.
+
+## Admin
+
+This section contains mostly everything related to administering your site, such as moderating comments, administering your
+topics, etc.
+
+### DELETE magic/modules/anarq/admin/comment
+
+This endpoint allows you to hard delete a comment. Notice, the endpoint can only be invoked by a root or an
+admin account, and _physically deletes_ the comment from your database. As an alternative, you might consider
+simply invoking the `moderate` endpoint, which only marks the post or comment as moderated instead of physically
+deleting it from your database. The endpoint takes one QUERY parameter named `id`, being the id of the comment
+you want to delete.
+
+**Warning** - Deleting a comment will also recursively _delete all descendant comments_ beneath the comment you're
+currently deleting, while moderating a comment will keep all descendant comments.
+
+### DELETE magic/modules/anarq/admin/moderate-comment
+
+This endpoint will moderate a comment, making it invisible on the site, but keep the actual data in your database,
+only performing a _"soft delete"_. The endpoint requires one QUERY parameter named `id`, being the ID to the
+comment you wish to moderate.
+
+### DELETE magic/modules/anarq/admin/moderate-post
+
+This endpoint will moderate an OP post, making it invisible on the site, but keep the actual data in your database,
+only performing a _"soft delete"_. The endpoint requires one QUERY parameter named `id`, being the ID to the
+comment you wish to moderate.
+
+### DELETE magic/modules/anarq/admin/post
+
+This endpoint will perform a _hard delete_ of an OP post from your database, and requires one QUERY parameter named `id`.
+
+### DELETE magic/modules/anarq/admin/topic
+
+This endpoint will delete a single topic given as a `name` QUERY parameter to its invocation.
+
+### POST magic/modules/anarq/admin/topic
+
+This will create a new topic in your site, and takes a payload resembling the following.
+
+```json
+{
+  "name": "topic_name",
+  "description": "This is the descriptive text explaining what your topic is about"
+}
+```
+
+Name being the primary key for your topic.
+
+### PUT magic/modules/anarq/admin/topic
+
+This will update the description of an existing topic. Notice, you cannot update the name after creating your topic,
+only its description. It requires a payload resembling the following.
+
+```json
+{
+  "name": "foo",
+  "description": "This is the NEW descriptive text explaining what your topic is about"
+}
+```
+
+### GET magic/modules/anarq/admin/user
+
+This endpoint returns profile information for the specified `user` QUERY parameter. The returned
+response might resemble the following.
+
+```json
+{
+  "email": "thomas@servergardens.com",
+  "full_name": "Thomas Hansen",
+  "locked": false,
+  "created": "2021-03-09T14:14:30.000Z",
+  "roles": [
+    "guest",
+    "root"
+  ]
+}
+```
+
+This endpoint can only be invoked by an admin account, root account, or moderator account, and is not
+publicly available to invoke for most registered users in your system. For publicly visible information
+about individual users on the site, check out the _"Profile"_ section above.
+
+

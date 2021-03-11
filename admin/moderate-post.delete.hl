@@ -1,10 +1,10 @@
 
 /*
- * Moderates an existing OP post or comment.
+ * Moderates an existing OP post.
  */
 .arguments
    id:long
-.description:Moderates an existing OP post or comment
+.description:Moderates an existing OP post
 
 
 /*
@@ -32,6 +32,7 @@ data.connect:[generic|anarq]
       where
          and
             id:x:@.arguments/*/id
+            parent.ne
 
 
    /*
