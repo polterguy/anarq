@@ -119,6 +119,18 @@ data.connect:[generic|anarq]
 
 
    /*
+    * Verifying above actually returned anything at all.
+    */
+   if
+      not
+         exists:x:@data.read/*/*
+      .lambda
+         response.status.set:404
+         return-nodes
+            message:"No comments found matching your conditions"
+
+
+   /*
     * Returns result to caller.
     */
    return-nodes:x:@data.read/*

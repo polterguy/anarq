@@ -4,7 +4,7 @@
 AnarQ is an Open Source social media platform that you can install on your local server,
 providing you with feeds, posts, profiles, the ability to moderate posts, etc. Its most basic functionality
 is that of serving as a forum HTTP backend web API, but it goes way beyond the capabilities of a plain
-forum, by including social gaming elements, such as likes, popularity, etc. It's arguably in such a regard
+forum, by including social gaming elements, such as likes, profiles, voting, etc. It's arguably in such a regard
 more a social media platform, than a traditional forum, competing with social media platforms such
 as Reddit, Facebook and Twitter.
 
@@ -39,10 +39,13 @@ In addition AnarQ requires its own configuration settings. You can find an examp
 Paste in the above into your configuration file, just above the `magic` parts, and modify it as needed.
 Modify the actual frontend `url` according to where you have your frontend running.
 
+The system also contains a whole range of email templates, intended for you to edit and modify as you
+see fit, according to your specific needs. These can be found in the folder _"/anarq/data/emails/"_.
+
 ## Profile
 
 This section contains everything related to authentication, registration, and public retrieval of profiles
-for existing registered users in the system.
+for registered users in the system.
 
 ### GET magic/modules/anarq/profile/authenticate
 
@@ -56,7 +59,16 @@ https://your-api-domain.com/magic/modules/anarq/profile/authenticate?username=fo
 The above will return a JWT token back to the caller, without an expiration date, or more specifically an
 expiration date 5 years into the future. This allows you to store the token in your client's persistent storage,
 such as for instance `localStorage` in your browser, and use the token to authorize future requests towards
-your backend.
+your backend. Each consecutive request on behalf of the user needs to associate this token in the HTTP `Authorization`
+header as a _"Bearer"_ token. Below is an example
+
+```
+Authorization: Bearer eyJhbGciOixyz.eyJ1bmlxyz.GAP-Aluxyz
+```
+
+The token returned will not expire before 5 years into the future, allowing you to create clients where you
+don't store usernames and passwords, but rather simply store the token once as the user logs in, for never
+again to ask the user for a password again, before 5 years down the road of course.
 
 This endpoint does not require the user to be authenticated.
 
@@ -84,19 +96,28 @@ can have two different values.
 * web
 * client
 
-The value of `web` implies you have a web based HTML frontend somewhere, where you can accept people
-clicking links towards, somehow resolving to a URL that will invoke the `confirm-email` endpoint as
-the user visits it, being able to retrieve the secret from a QUERY parameter named `secret`.
-
 The default value for `email-type` if omitted is `web`.
 
 #### Web frontends
 
+The value of `web` implies you have a web based HTML frontend somewhere, to where you can lead users,
+somehow resolving to a URL that will invoke the `confirm-email` endpoint as
+the user visits it, being able to retrieve the secret from a QUERY parameter named `secret`. Typically a
+link generated this way will look like the following.
+
+```
+https://your-frontend-domain.com/confirm-email?email=john%40doe.com&secret=345fbacd678e3eed11f
+```
+
+Once the user visits the above link in your frontend, you'll need to extract both the `email` and the `secret`
+QUERY parameters, and transmit these to the `confirm-email` endpoint, to have the user verify his or her email
+address.
+
 The system will attempt to send an email to the registered email address, using configuration settings found
 from your configuration file, allowing the user to confirm his email address. If you wish to edit this
-template email, you can find it in _"/anarq/data/emails/confirm-email.txt"_. In order to send a valid email,
+template email, you can find it in _"/anarq/data/emails/confirm-email.web.txt"_. In order to send a valid email,
 you need to configure your appSettings.json file having a value of anarq/frontend/url pointing to your
-frontend's URL/confirm-email page, and you'll need to have a frontend URL being `/confirm-email`, accepting
+frontend's root URL page, and you'll need to have a frontend URL being `/confirm-email`, accepting
 the following query parameters.
 
 * email
@@ -112,8 +133,8 @@ This endpoint does not require the user to be authenticated.
 If you don't have a web based HTML capable frontend, due to maybe creating only an iOS or Android client -
 Then sending the user a hyperlink he clicks to confirm his email is obviously not a choice. Hence, you can
 therefor use the `client` type of email sent during registrations, which simply sends the user the generated
-secret, allowing him to copy and paste it into your app/client, for then to submit it to your backend somehow
-by invoking the `profile/confirm-email` endpoint from within your app.
+secret, allowing him to copy and paste it into your app/client, for then to submit it to your backend somehow,
+by invoking the `profile/confirm-email` endpoint from within your client app.
 
 ### GET magic/modules/anarq/profile/username-available
 
@@ -134,7 +155,9 @@ If the username is registered from before, the above will result in the followin
 
 If the username is available, the above `result` field will have a value of `true`.
 
-This endpoint does not require the user to be authenticated.
+This endpoint does not require the user to be authenticated. The idea is to invoke this endpoint
+as the user types his or her username, to check if the username is available or not, before
+clicking the _"Register"_ button.
 
 ### GET magic/modules/anarq/profile/email-available
 
@@ -176,13 +199,14 @@ This endpoint does not require the user to be authenticated.
 ### GET magic/modules/anarq/profile/me
 
 This endpoint returns information about the currently authenticated user, and can be used
-to retrieve meta data about the currently logged in user, such as his username, email, full name, etc.
-
-This endpoint requires the user to be authenticated.
+to retrieve meta data about the currently logged in user, such as his username, email, full name, roles,
+etc. This endpoint requires the user to be authenticated, and only returns information about the currently
+authenticated user. Kind of similar to `whoami` on a Linux system.
 
 ## Posts
 
-This section contains everything related to retrieving OP posts from the backend.
+This section contains everything related to retrieving OP posts from the backend, in addition to
+the feeds, and some of the _"gaming parts"_ of the system.
 
 ### GET magic/modules/anarq/posts/feed
 
@@ -190,8 +214,8 @@ Returns the most popular items according to the specified query parameters suppl
 here meaning items having the most likes. The endpoint takes 5 QUERY parameters, all of which are
 optional, and can be ommitted. Below is a list of parameters the endpoint can handle.
 
-* limit - Maximum number of posts to return. If specified this must be in between the range of 0-100.
-* offset - Offset from where to start retrieving items. Combined with the above, this allows you to page items in your frontend as you see fit.
+* limit - Maximum number of posts to return. If specified this must be in between the range of 0-100. The default value if omitted is 25.
+* offset - Offset from where to start retrieving items. Combined with the above limit argument, this allows you to page items as you see fit.
 * topic - Name of topic to return items from within. See sub section topic for an explanation of this.
 * user - User that posted the OP.
 * minutes - Number of minutes to filter by. Notice, can be multiplied with e.g. 86,400 to filter according to days, weeks, etc.
@@ -221,7 +245,7 @@ The endpoint will return something resembling the following.
     "created": "2021-03-09T08:21:46.000Z",
     "user": "peter",
     "visibility": "public",
-    "excerpt": "The vaccine for Covid19 has a higher fatality rate than the disease",
+    "excerpt": "Socially distancing you increases fatality rates for later mutations",
     "likes": 37
   },
 ]
@@ -254,8 +278,8 @@ https://your-api-domain.com/magic/modules/anarq/posts/post?id=3
 }
 ```
 
-Notice, only authenticated users having confirmed their email address can retrieve posts that does not
-have _"public"_ as their `visibility` setting. And posts that have been moderated will only be returned
+Notice, only authenticated users having confirmed their email address can retrieve posts that
+has _"protected"_ as their `visibility` setting. Posts that have been moderated will only be returned
 to users belonging to one of the following roles.
 
 * root
@@ -263,12 +287,13 @@ to users belonging to one of the following roles.
 * moderator
 
 All other users can only see posts that are either _"public"_ or "_protected"_. Protected implies
-only visible for registered users at the site, having confirmed their email address.
+only visible for registered users at the site, having confirmed their email address. In addition,
+there is a status value for deleted posts being _"deleted"_.
 
 ### POST magic/modules/anarq/posts/post
 
-This endpoint creates a new OP post, and requires the user to be authenticated, and having confirmed his email address.
-It takes the following payload.
+This endpoint creates a new OP post, and requires the user to be authenticated, and having confirmed
+his email address. It takes the following payload.
 
 ```json
 {
@@ -283,15 +308,11 @@ typically one of the following values.
 
 * public
 * protected
-* moderated
 
 Public posts are visible to anyone, including users just passing by as visitors, not being authenticated. Protected posts
-are only for users that have registered on the site, and having confirmed their email address. Moderated is typically
-not really interesting when creating a post, but rather applied later by a moderator if he or she chooses to moderate the
-posting for some reasons.
-
-The endpoint will return the ID of the item created, allowing you to for instance instantly navigate to the item, or
-somehow show it to the user as it's created.
+are only for users that have registered on the site, and having confirmed their email address. The endpoint will return
+the ID of the item created, allowing you to for instance instantly navigate to the item, or somehow show it to the user
+as it's created.
 
 ### PUT magic/modules/anarq/posts/post
 
@@ -312,7 +333,7 @@ A user can change both the content of the post, and the visibility of the post u
 
 Deletes a previously created OP post. Notice, endpoint can only be invoked by the user that originally created
 the OP post. And the post is not actually deleted, but only flagged as deleted, making it publicly invisible on
-the site for everyone except root accounts, admin accounts and moderator accounts.
+the site for everyone except root accounts, admin accounts, and moderator accounts.
 
 ### GET magic/modules/anarq/posts/posts-count
 
@@ -333,12 +354,15 @@ rather when the post was created. This allows you to retrieve all posts in the s
 you see fit, sorted by when the posts were created.
 
 Notice, the endpoint will only return public posts unless invoked by an authenticated user having confirmed
-his or her email address. And if invoked by a moderator, admin or root account, the endpoint will return also
-moderated posts.
+his or her email address, at which point the endpoint will also return protected posts. If invoked by a
+moderator, admin, or root account, the endpoint will return also moderated posts.
 
 ## Comments
 
-This section contains everything related to comments.
+This section contains everything related to comments. Comments are stored as materialised paths, allowing you
+to build tree structures of comments in your frontend, to show comments as children of other comments, according
+to how they are created. This can be accomplished by using the _"parent"_ field, and/or the _"path"_ field
+returned by the endpoints used to retrieve comments.
 
 ### POST magic/modules/anarq/comments/comment
 
@@ -378,13 +402,25 @@ authenticated user trying to update it.
 
 This endpoint works similarly to the above PUt equivalent, but instead of changing its visibility, and/or content,
 it marks the comment as deleted. The endpoint can only be invoked by the user originally having created the
-comment.
+comment. The endpoint requires a single QUERY parameter, being the `id` of the post the caller wants to delete.
 
 
 ## Meta
 
 This section contains meta information endpoints, such as listing all topics in the system, allowing
-users to like, and/or unlike existing posts and comments, etc.
+users to like, and/or unlike existing posts, comments, etc.
+
+### POST magic/modules/anarq/meta/like
+
+Creates a like for an OP posting or a comment. The like will automatically be asssociated with the currently
+authenticated user. It requires the `id` to which post or comment you want to associate the like with.
+Each comment and post can only be likes by each user at most once. Below is an example payload.
+
+```json
+{
+  "id": 67777
+}
+```
 
 ### DELETE magic/modules/anarq/meta/like
 
@@ -392,14 +428,9 @@ Deletes a previously created like for either an OP post or a comment. The endpoi
 user having previously liked a comment or an OP post. The endpoint requires one single QUERY parameter
 being `id`, which is the ID for the comment, and/or post the user previously liked.
 
-### POST magic/modules/anarq/meta/like
-
-Creates a like for an OP posting or a comment. The like will automatically be asssociated with the currently
-authenticated user.
-
 ### GET magic/modules/anarq/meta/likers
 
-Returns all usernames for all users that liked a specific comment or an OP posting as a string array.
+Returns all usernames for all users that liked a specific comment or an OP posting as an array of strings.
 
 ### GET magic/modules/anarq/meta/topics
 
