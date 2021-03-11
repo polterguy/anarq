@@ -74,6 +74,9 @@ his or her email address. If the user is a moderator, the roles will contain a _
 if the user is an admin, it will contain the role of _"admin"_. Users not having confirmed their email address
 will belong to _only_ the role of _"unconfirmed"_.
 
+This endpoint allows you to create _"view profile"_ types of endpoint, where users and visitors can see
+individual users on the page, allowing them to peek on users registered at the site.
+
 ### GET magic/modules/anarq/profile/authenticate
 
 This endpoint allows you to authenticate a user with a username/password combination, provided as URL

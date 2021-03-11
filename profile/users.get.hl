@@ -1,0 +1,54 @@
+
+/*
+ * Returns users in the system ordered by karma.
+ */
+.description:Returns users in the system ordered by karma
+.arguments
+   limit:long
+   offset:long
+
+
+/*
+ * Connecting to database
+ */
+data.connect:[generic|anarq]
+   database-type:mysql
+
+
+   /*
+    * Invoking read slot.
+    */
+   data.read
+      database-type:mysql
+      table:user_details
+         as:u
+         join:posts
+            as:p
+            type:left
+            on
+               and
+                  u.user:p.user
+            join:likes
+               as:l
+               type:left
+               on
+                  and
+                     l.post_id:p.id
+      columns
+         u.user
+         count(l.post_id)
+            as:karma
+      group
+         u.user
+      order:karma
+         direction:desc
+      order:p.created
+         direction:desc
+
+
+   /*
+    * Returning results to caller.
+    */
+   add:x:./*/return-nodes
+      get-nodes:x:@data.read/*
+   return-nodes
