@@ -18,6 +18,47 @@ The system is implemented in Hyperlambda, on top of .Net 5, and uses MySQL or Ma
 database. The system is a 100% pure HTML Web API, allowing you to implement any client technology you see fit
 on top of it.
 
+## Endpoints
+
+The system has the following relative endpoints.
+
+* `delete` admin/comment
+* `deletre` admin/moderate-comment
+* `delete` admin/moderate-post
+* `delete` admin/post
+* `delete` admin/topic
+* `post` admin/topic
+* `put` admin/topic
+* `get` admin/user
+* `delete` comments/comment
+* `post` comments/comment
+* `put` comments/comment
+* `get` comments/comments
+* `delete` meta/like
+* `post` meta/like
+* `get` meta/likers
+* `get` meta/topics
+* `get` posts/feed
+* `delete` posts/post
+* `get` posts/post
+* `post` posts/post
+* `put` posts/post
+* `get` posts/posts-count
+* `get` posts/posts
+* `get` profile/authenticate
+* `post` profile/confirm-email
+* `get` profile/email-available
+* `get` profile/me
+* `post` profile/register
+* `get` profile/user
+* `get` profile/username-available
+* `get` profile/users
+* `get` site/page
+* `delete` site/pages
+* `get` site/pages
+* `post` site/pages
+* `put` site/pages
+
 ## Configuring
 
 In order to configure AnarQ you'll need to configure an SMTP server, since the systems frequently sends emails
