@@ -9,7 +9,7 @@ more a social media platform, than a traditional forum, competing with social me
 as Reddit, Facebook and Twitter.
 
 Its name is a play upon the two Greek words _"an"_ and _"archy"_ implying _"no leaders"_ or _"no hierarchy"_,
-adding the Q in its name simply for fun. It's Open Source, but you will need a license
+adding the Q in its name simply for fun. It is Open Source, but you will need a license
 of [Magic](https://github.com/polterguy/magic) to run it.
 
 ## Implementation details
@@ -83,7 +83,7 @@ This endpoint returns users from the system, ordered by karma, which is the numb
 has been given on his or her posts and comments by other users. The can be paged with by using the
 following QUERY parameters.
 
-* limit - Maximum number of items to return. Default to 25 unless explicitly given. Maximum users that can be returned is 100.
+* limit - Maximum number of items to return. Defaults to 25. Maximum users that can be returned is 100.
 * offset - Number of users to skip before start returning users
 
 ### GET magic/modules/anarq/profile/authenticate
