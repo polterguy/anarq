@@ -1,0 +1,45 @@
+
+/*
+ * Creates the slot responsible for verifying that a user has not been blocked,
+ * or in other ways prevented to participate in the site somehow.
+ *
+ * Arguments;
+ *
+ * - user - Username of user you want to check
+ */
+slots.create:anarq.users.verify-access
+
+
+   /*
+    * Opening up database connection.
+    */
+   data.connect:[generic|magic]
+
+
+      /*
+       * Making sure user has not been locked out, or blocked from site somehow.
+       */
+      data.read
+         table:users_roles
+         columns
+            role
+         where
+            and
+               user.eq:x:@.arguments/*/user
+      if
+         not
+            or
+               exists:x:@data.read/*/*/role/=guest
+               exists:x:@data.read/*/*/role/=root
+               exists:x:@data.read/*/*/role/=admin
+               exists:x:@data.read/*/*/role/=moderator
+         .lambda
+            throw:Oops, it seems you have for some reasons been blocked from the site, either temporarily or permanently
+               public:true
+               status:401
+
+
+   /*
+    * Returning success to caller.
+    */
+   return-value:bool:true

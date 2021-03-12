@@ -15,16 +15,19 @@ auth.ticket.verify
 
 
 /*
+ * Verifying user has not been blocked from site.
+ */
+auth.ticket.get
+unwrap:x:+/*
+signal:anarq.users.verify-access
+   user:x:@auth.ticket.get
+
+
+/*
  * Connecting to database.
  */
 data.connect:[generic|anarq]
    database-type:mysql
-
-
-   /*
-    * We only allow users to delete their own posts.
-    */
-   auth.ticket.get
 
 
    /*

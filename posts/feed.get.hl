@@ -20,6 +20,15 @@ validators.integer:x:@.arguments/*/limit
 
 
 /*
+ * Verifying user has not been blocked from site.
+ */
+auth.ticket.get
+unwrap:x:+/*
+signal:anarq.users.verify-access
+   user:x:@auth.ticket.get
+
+
+/*
  * Connecting to database
  */
 data.connect:[generic|anarq]

@@ -17,9 +17,12 @@ auth.ticket.verify
 
 
 /*
- * Needed below to prevent users from liking their own posts and comments.
+ * Verifying user has not been blocked from site.
  */
 auth.ticket.get
+unwrap:x:+/*
+signal:anarq.users.verify-access
+   user:x:@auth.ticket.get
 
 
 /*
