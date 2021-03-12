@@ -33,6 +33,10 @@ data.connect:[generic|anarq]
    /*
     * Invoking read slot.
     */
+   math.subtract
+      date.now
+      time
+         days:30
    data.read
       database-type:mysql
       table:user_details
@@ -53,6 +57,9 @@ data.connect:[generic|anarq]
          u.user
          count(distinct l.user, l.post_id)
             as:karma
+      where
+         and
+            p.created.mt:x:@math.subtract
       group
          user
       order:karma

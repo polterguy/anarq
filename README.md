@@ -80,7 +80,7 @@ individual users on the page, allowing them to peek on users registered at the s
 ### GET magic/modules/anarq/profile/users
 
 This endpoint returns users from the system, ordered by karma, which is the number of likes the user
-has been given on his or her posts and comments by other users. The can be paged with by using the
+has been given on his or her posts and comments by other users. The endpoint can be paged by adding the
 following QUERY parameters.
 
 * limit - Maximum number of items to return. Defaults to 25. Maximum users that can be returned is 100.
@@ -89,7 +89,7 @@ following QUERY parameters.
 ### GET magic/modules/anarq/profile/authenticate
 
 This endpoint allows you to authenticate a user with a username/password combination, provided as URL
-encoded query parameters. Below is an example.
+encoded QUERY parameters. Below is an example.
 
 ```
 https://your-api-domain.com/magic/modules/anarq/profile/authenticate?username=foo4&password=bar
@@ -351,7 +351,7 @@ typically one of the following values.
 Public posts are visible to anyone, including users just passing by as visitors, not being authenticated. Protected posts
 are only for users that have registered on the site, and having confirmed their email address. The endpoint will return
 the ID of the item created, allowing you to for instance instantly navigate to the item, or somehow show it to the user
-as it's created.
+as it is created.
 
 ### PUT magic/modules/anarq/posts/post
 
