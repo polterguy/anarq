@@ -30,13 +30,15 @@ data.connect:[generic|anarq]
 
 
    /*
-    * Sanity checking invocation to make sure users don't like their own posts and comments.
+    * Sanity checking invocation to make sure users don't like their own posts and comments,
+    * or try to like posts that have been moderated or deleted.
     */
    data.read
       database-type:mysql
       table:posts
       columns
          user
+         visibility
       where
          and
             id.eq:x:@.arguments/*/id
@@ -45,9 +47,34 @@ data.connect:[generic|anarq]
          get-value:x:@data.read/*/*/user
          get-value:x:@auth.ticket.get
       .lambda
+
+
+         /*
+          * User tried to like his own post or comment.
+          */
          response.status.set:401
          return-nodes
             result:You cannot like your own posts or comments
+
+   else-if
+      or
+         not
+            eq
+               get-value:x:@data.read/*/*/visibility
+               .:public
+         not
+            eq
+               get-value:x:@data.read/*/*/visibility
+               .:protected
+      .lambda
+
+
+         /*
+          * User tried to like a deleted or moderated post.
+          */
+         response.status.set:404
+         return-nodes
+            result:Item was not found
 
 
    /*
