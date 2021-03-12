@@ -154,8 +154,13 @@ data.connect:[generic|anarq]
 
 
    /*
-    * Retrieving how many likes user has received on his comments, and/or posts.
+    * Retrieving how many likes user has received on his comments, and/or posts, making
+    * sure we only count likes on posts that are more recent than 30 days.
     */
+   math.subtract
+      date.now
+      time
+         days:30
    data.read
       database-type:mysql
       table:likes
@@ -172,6 +177,7 @@ data.connect:[generic|anarq]
       where
          and
             p.user.eq:x:@.arguments/*/user
+            p.created.mt:x:@math.subtract
 
 
    /*

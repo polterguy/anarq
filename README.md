@@ -77,6 +77,10 @@ will belong to _only_ the role of _"unconfirmed"_.
 This endpoint allows you to create _"view profile"_ types of endpoint, where users and visitors can see
 individual users on the page, allowing them to peek on users registered at the site.
 
+Notice, the `karma` above will only be calculated by likes to posts and comments that are more recent than
+30 days, allowing for new users to rapidly rise above users having been registered in the system for a
+long time, without actively having used their profile to create posts and comments.
+
 ### GET magic/modules/anarq/profile/users
 
 This endpoint returns users from the system, ordered by karma, which is the number of likes the user
@@ -85,6 +89,10 @@ following QUERY parameters.
 
 * limit - Maximum number of items to return. Defaults to 25. Maximum users that can be returned is 100.
 * offset - Number of users to skip before start returning users
+
+Notice, the _"karma"_ returned from endpoint will only be calculated from likes given to posts and comments
+that are more recent than 30 days. Implying the system will have a floating karma value for their users,
+allowing newly registered users to rapidly go past users having been on the site for a long time.
 
 ### GET magic/modules/anarq/profile/authenticate
 

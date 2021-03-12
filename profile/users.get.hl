@@ -31,7 +31,8 @@ data.connect:[generic|anarq]
 
 
    /*
-    * Invoking read slot.
+    * Invoking read slot, making sure we only count likes on posts
+    * that are more recent than 30 days.
     */
    math.subtract
       date.now
