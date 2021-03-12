@@ -20,44 +20,49 @@ on top of it.
 
 ## Endpoints
 
-The system has the following relative endpoints.
+The system has the following relative endpoints. Notice, each endpoint is explained in details further down.
 
-* `delete` admin/comment
-* `deletre` admin/moderate-comment
-* `delete` admin/moderate-post
-* `delete` admin/post
-* `delete` admin/topic
-* `post` admin/topic
-* `put` admin/topic
-* `get` admin/user
-* `delete` comments/comment
-* `post` comments/comment
-* `put` comments/comment
-* `get` comments/comments
-* `delete` meta/like
-* `post` meta/like
-* `get` meta/likers
-* `get` meta/topics
-* `get` posts/feed
-* `delete` posts/post
-* `get` posts/post
-* `post` posts/post
-* `put` posts/post
-* `get` posts/posts-count
-* `get` posts/posts
-* `get` profile/authenticate
-* `post` profile/confirm-email
-* `get` profile/email-available
-* `get` profile/me
-* `post` profile/register
-* `get` profile/user
-* `get` profile/username-available
-* `get` profile/users
-* `get` site/page
-* `delete` site/pages
-* `get` site/pages
-* `post` site/pages
-* `put` site/pages
+* `delete` admin/comment - Deletes a comment
+* `delete` admin/moderate-comment - Moderates a comment
+* `delete` admin/moderate-post - Moderates an OP post
+* `delete` admin/post - Deletes an OP post
+* `delete` admin/topic - Deletes a topic
+* `post` admin/topic - Creates a topic
+* `put` admin/topic - Updates an existing topic
+* `get` admin/user - Returns a user
+
+* `delete` comments/comment - Allows a user to soft delete his own comment
+* `post` comments/comment - Allows a user to create a new comment
+* `put` comments/comment - Allows a user to update an existing comment
+* `get` comments/comments - Returns all comments for a specific OP post
+
+* `delete` meta/like - Allows a user to delete a like for an OP post or comment
+* `post` meta/like - Creates a like for a comment or an OP post
+* `get` meta/likers - Returns users that liked a comment or an OP post
+* `get` meta/topics - Returns all topics in the system
+
+* `get` posts/feed - Returns OP posts by popularity within some timespan
+* `delete` posts/post - Allows a user to delete his own OP post
+* `get` posts/post - Returns a single OP post
+* `post` posts/post - Creates a new OP post
+* `put` posts/post - Allows a user to update a previously created OP post
+* `get` posts/posts-count - Return the number of OP posts in the system in total
+* `get` posts/posts - Returns all posts in the system by date created
+
+* `get` profile/authenticate - Logs in a user
+* `post` profile/confirm-email - Confirms user's email address
+* `get` profile/email-available - Returns true if email address is available
+* `get` profile/me - Returns information about the currently authenticated user
+* `post` profile/register - Registers a new user on the site
+* `get` profile/user - Returns profile information about a single user
+* `get` profile/username-available - Returns true if username is available
+* `get` profile/users - Returns lists of all users sorted by karma
+
+* `get` site/page - Returns a single page in the system
+* `delete` site/pages - Deletes a page
+* `get` site/pages - Returns all pages in the system
+* `post` site/pages - Creates a new page in the system
+* `put` site/pages - Updates an existing page in the system
 
 ## Configuring
 
