@@ -15,6 +15,12 @@
 auth.ticket.verify
 validators.mandatory:x:@.arguments/*/parent
 validators.mandatory:x:@.arguments/*/content
+validators.enum:x:@.arguments/*/visibility
+   .:public
+   .:protected
+unwrap:x:+/*
+signal:anarq.html.safeguard
+   content:x:@.arguments/*/content
 
 
 /*

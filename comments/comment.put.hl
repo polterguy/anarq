@@ -16,6 +16,9 @@ validators.mandatory:x:@.arguments/*/id
 validators.enum:x:@.arguments/*/visibility
    .:public
    .:protected
+unwrap:x:+/*
+signal:anarq.html.safeguard
+   content:x:@.arguments/*/content
 auth.ticket.verify
 
 

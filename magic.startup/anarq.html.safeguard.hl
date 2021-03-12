@@ -1,0 +1,31 @@
+
+/*
+ * Creates the slot responsible for verifying no comments or posts are submitted
+ * with HTML content.
+ *
+ * Arguments;
+ *
+ * - content
+ */
+slots.create:anarq.html.safeguard
+
+
+   /*
+    * Checking if content contains HTML, and if so, throwing an exception.
+    */
+   if
+      or
+         strings.contains:x:@.arguments/*/content
+            .:<
+         strings.contains:x:@.arguments/*/content
+            .:>
+      .lambda
+         throw:No HTML content please, which implies no < or > characters
+            public:true
+            status:400
+
+
+   /*
+    * Returning success to caller.
+    */
+   return-value:bool:true
