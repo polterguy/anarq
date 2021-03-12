@@ -570,7 +570,7 @@ Creates a new page in your system. Pass in a payload resembling the following.
 {
   "url": "relative-url",
   "name": "About these forums",
-  "content": "This is the content of your page. This might include Markdown AND HTML, since it's not for anyone but administrators and root accounts to invoke."
+  "content": "This is the content of your page."
 }
 ```
 
@@ -582,7 +582,7 @@ Updates an existing page in your system. The endpoint requires the following pay
 {
   "url": "relative-url",
   "name": "About these forums",
-  "content": "This is the NEW content of your page. This might include Markdown AND HTML, since it's not for anyone but administrators and root accounts to invoke."
+  "content": "This is the NEW content of your page."
 }
 ```
 
