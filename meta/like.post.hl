@@ -17,10 +17,37 @@ auth.ticket.verify
 
 
 /*
+ * Needed below to prevent users from liking their own posts and comments.
+ */
+auth.ticket.get
+
+
+/*
  * Connecting to database.
  */
 data.connect:[generic|anarq]
    database-type:mysql
+
+
+   /*
+    * Sanity checking invocation to make sure users don't like their own posts and comments.
+    */
+   data.read
+      database-type:mysql
+      table:posts
+      columns
+         user
+      where
+         and
+            id.eq:x:@.arguments/*/id
+   if
+      eq
+         get-value:x:@data.read/*/*/user
+         get-value:x:@auth.ticket.get
+      .lambda
+         response.status.set:401
+         return-nodes
+            result:You cannot like your own posts or comments
 
 
    /*
@@ -33,7 +60,7 @@ data.connect:[generic|anarq]
       return-id:bool:false
       values
          user:x:@auth.ticket.get
-         post_id:x:@.arguments/*/id
+         post_id.eq:x:@.arguments/*/id
 
 
    /*

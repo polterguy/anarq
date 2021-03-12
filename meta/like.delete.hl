@@ -17,6 +17,12 @@ auth.ticket.verify
 
 
 /*
+ * Needed below to parametrise read invocation with currently authenticated user.
+ */
+auth.ticket.get
+
+
+/*
  * Connecting to database.
  */
 data.connect:[generic|anarq]
