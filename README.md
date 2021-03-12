@@ -296,6 +296,12 @@ authenticated user. Kind of similar to `whoami` on a Linux system.
 This section contains everything related to retrieving OP posts from the backend, in addition to
 the feeds, and some of the _"gaming parts"_ of the system.
 
+Notice, posts cannot contain HTML, but assuming your client can handle it, Markdown is perfectly
+safe. The backend will validate content submitted as the user tries to create or update a post, and
+if it contains illegal HTML characters, it will reject the insert/update, to avoid compromising other
+users by tricking them into downloading malicious JavaScript snippets, or HTML snippets that might
+contain malware of some sort.
+
 ### GET magic/modules/anarq/posts/feed
 
 Returns the most popular items according to the specified query parameters supplied. Popular
@@ -451,6 +457,12 @@ This section contains everything related to comments. Comments are stored as mat
 to build tree structures of comments in your frontend, to show comments as children of other comments, according
 to how they are created. This can be accomplished by using the _"parent"_ field, and/or the _"path"_ field
 returned by the endpoints used to retrieve comments.
+
+Notice, comments cannot contain HTML, but assuming your client can handle it, Markdown is perfectly
+safe. The backend will validate content submitted as the user tries to create or update a comment, and
+if it contains illegal HTML characters, it will reject the insert/update, to avoid compromising other
+users by tricking them into downloading malicious JavaScript snippets, or HTML snippets that might
+contain malware of some sort.
 
 ### POST magic/modules/anarq/comments/comment
 
