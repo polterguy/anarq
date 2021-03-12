@@ -30,17 +30,14 @@ The system has the following relative endpoints. Notice, each endpoint is explai
 * `post` admin/topic - Creates a topic
 * `put` admin/topic - Updates an existing topic
 * `get` admin/user - Returns a user
-
 * `delete` comments/comment - Allows a user to soft delete his own comment
 * `post` comments/comment - Allows a user to create a new comment
 * `put` comments/comment - Allows a user to update an existing comment
 * `get` comments/comments - Returns all comments for a specific OP post
-
 * `delete` meta/like - Allows a user to delete a like for an OP post or comment
 * `post` meta/like - Creates a like for a comment or an OP post
 * `get` meta/likers - Returns users that liked a comment or an OP post
 * `get` meta/topics - Returns all topics in the system
-
 * `get` posts/feed - Returns OP posts by popularity within some timespan
 * `delete` posts/post - Allows a user to delete his own OP post
 * `get` posts/post - Returns a single OP post
@@ -48,7 +45,6 @@ The system has the following relative endpoints. Notice, each endpoint is explai
 * `put` posts/post - Allows a user to update a previously created OP post
 * `get` posts/posts-count - Return the number of OP posts in the system in total
 * `get` posts/posts - Returns all posts in the system by date created
-
 * `get` profile/authenticate - Logs in a user
 * `post` profile/confirm-email - Confirms user's email address
 * `get` profile/email-available - Returns true if email address is available
@@ -57,7 +53,6 @@ The system has the following relative endpoints. Notice, each endpoint is explai
 * `get` profile/user - Returns profile information about a single user
 * `get` profile/username-available - Returns true if username is available
 * `get` profile/users - Returns lists of all users sorted by karma
-
 * `get` site/page - Returns a single page in the system
 * `delete` site/pages - Deletes a page
 * `get` site/pages - Returns all pages in the system
@@ -666,4 +661,6 @@ This endpoint can only be invoked by an admin account, root account, or moderato
 publicly available to invoke for most registered users in your system. For publicly visible information
 about individual users on the site, check out the _"Profile"_ section above.
 
+## License
 
+AnarQ is licensed under the terms of the MIT license, but you will need a license of Magic to run it.
