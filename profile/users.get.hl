@@ -9,6 +9,14 @@
 
 
 /*
+ * Sanity checking invocation.
+ */
+validators.integer:x:@.arguments/*/limit
+   min:1
+   max:100
+
+
+/*
  * Connecting to database
  */
 data.connect:[generic|anarq]

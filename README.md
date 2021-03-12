@@ -77,6 +77,15 @@ will belong to _only_ the role of _"unconfirmed"_.
 This endpoint allows you to create _"view profile"_ types of endpoint, where users and visitors can see
 individual users on the page, allowing them to peek on users registered at the site.
 
+### GET magic/modules/anarq/profile/users
+
+This endpoint returns users from the system, ordered by karma, which is the number of likes the user
+has been given on his or her posts and comments by other users. The can be paged with by using the
+following QUERY parameters.
+
+* limit - Maximum number of items to return. Default to 25 unless explicitly given. Maximum users that can be returned is 100.
+* offset - Number of users to skip before start returning users
+
 ### GET magic/modules/anarq/profile/authenticate
 
 This endpoint allows you to authenticate a user with a username/password combination, provided as URL
