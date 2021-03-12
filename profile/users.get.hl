@@ -16,6 +16,13 @@ data.connect:[generic|anarq]
 
 
    /*
+    * Parametrising read invocation.
+    */
+   add:x:./*/data.read
+      get-nodes:x:@.arguments/*
+
+
+   /*
     * Invoking read slot.
     */
    data.read
@@ -28,18 +35,18 @@ data.connect:[generic|anarq]
             on
                and
                   u.user:p.user
-            join:likes
-               as:l
-               type:left
-               on
-                  and
-                     l.post_id:p.id
+         join:likes
+            as:l
+            type:left
+            on
+               and
+                  l.post_id:p.id
       columns
          u.user
-         count(l.post_id)
+         count(distinct l.user, l.post_id)
             as:karma
       group
-         u.user
+         user
       order:karma
          direction:desc
       order:p.created
