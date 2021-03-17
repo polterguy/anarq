@@ -25,6 +25,16 @@ data.connect:[generic|anarq]
 
 
    /*
+    * Sanity check that we got a result from above invocation.
+    */
+   if
+      not
+         exists:x:@data.read/*/*
+      .lambda
+         return-value:"[]"
+
+
+   /*
     * Returns result to caller.
     */
    return-nodes:x:@data.read/*
