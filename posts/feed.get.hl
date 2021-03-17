@@ -162,7 +162,7 @@ data.connect:[generic|anarq]
          p.user
             as:user
          p.visibility
-         substring(p.content, 1, 50)
+         substring(p.content, 1, 150)
             as:excerpt
          count(l.post_id)
             as:licks
