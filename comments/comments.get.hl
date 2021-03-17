@@ -78,7 +78,7 @@ data.connect:[generic|anarq]
          .
             or
                visibility.eq:public
-               visibility.eq:protected
+               visibility.eq:friends
 
 
    /*

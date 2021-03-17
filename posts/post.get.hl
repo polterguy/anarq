@@ -51,7 +51,7 @@ data.connect:[generic|anarq]
             .
                or
                   p.visibility.eq:public
-                  p.visibility.eq:protected
+                  p.visibility.eq:friends
 
 
          /*
@@ -97,7 +97,7 @@ data.connect:[generic|anarq]
          p.visibility
          p.content
          count(l.post_id)
-            as:likes
+            as:licks
       where
          and
             p.parent.eq

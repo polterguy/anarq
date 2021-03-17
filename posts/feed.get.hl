@@ -97,7 +97,7 @@ data.connect:[generic|anarq]
             .
                or
                   p.visibility.eq:public
-                  p.visibility.eq:protected
+                  p.visibility.eq:friends
 
 
          /*
