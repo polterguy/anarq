@@ -3,14 +3,14 @@
  * Returns all meta information associated with a user in the system.
  */
 .arguments
-   user:string
+   username:string
 .description:Returns all meta information associated with a user in the system, such as email address, and other fields provided during registration
 
 
 /*
  * Sanity checking invocation.
  */
-validators.mandatory:x:@.arguments/*/user
+validators.mandatory:x:@.arguments/*/username
 auth.ticket.verify:root, admin, moderator
 
 
@@ -41,7 +41,7 @@ data.connect:[generic|anarq]
          content
       where
          and
-            user.eq:x:@.arguments/*/user
+            user.eq:x:@.arguments/*/username
 
 
    /*
@@ -88,14 +88,14 @@ data.connect:[generic|anarq]
             created
          where
             and
-               username.eq:x:@.arguments/*/user
+               username.eq:x:@.arguments/*/username
       data.read
          table:users_roles
          columns
             role
          where
             and
-               user.eq:x:@.arguments/*/user
+               user.eq:x:@.arguments/*/username
 
 
    /*
