@@ -15,7 +15,7 @@
 auth.ticket.verify:root, admin, guest, moderator
 validators.enum:x:@.arguments/*/visibility
    .:public
-   .:protected
+   .:friends
 unwrap:x:+/*
 signal:anarq.html.safeguard
    content:x:@.arguments/*/content

@@ -5,7 +5,6 @@
 .arguments
    parent:long
    content:string
-   visibility:string
 .description:Creates a new comment either for a top level OP post or as a reply to another comment
 
 
@@ -17,7 +16,7 @@ validators.mandatory:x:@.arguments/*/parent
 validators.mandatory:x:@.arguments/*/content
 validators.enum:x:@.arguments/*/visibility
    .:public
-   .:protected
+   .:friends
 unwrap:x:+/*
 signal:anarq.html.safeguard
    content:x:@.arguments/*/content
@@ -58,6 +57,7 @@ data.connect:[generic|anarq]
          columns
             path
             topic
+            visibility
          where
             and
                id:x:@.arguments/*/parent
@@ -100,6 +100,7 @@ data.connect:[generic|anarq]
          values
             user:x:@auth.ticket.get
             topic:x:@data.read/*/*/topic
+            visibility:x:@data.read/*/*/visibility
 
 
       /*

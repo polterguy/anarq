@@ -53,7 +53,7 @@ create table visibility (
  * Inserting default visibility values for posts.
  */
 insert into visibility (name, description) values ('public', 'Publicly visible post, implying anyone can see it');
-insert into visibility (name, description) values ('protected', 'Protected post, implying only authenticated and authorised users can see it');
+insert into visibility (name, description) values ('friends', 'Protected post, implying only authenticated and authorised users can see it');
 insert into visibility (name, description) values ('moderated', 'Moderated post, implying post was explicitly moderated and removed by a moderator');
 insert into visibility (name, description) values ('deleted', 'Deleted post, implying post was explicitly deleted by the user posting it originally');
 

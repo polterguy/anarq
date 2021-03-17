@@ -14,13 +14,10 @@ slots.create:anarq.html.safeguard
     * Checking if content contains HTML, and if so, throwing an exception.
     */
    if
-      or
-         strings.contains:x:@.arguments/*/content
-            .:<
-         strings.contains:x:@.arguments/*/content
-            .:>
+      strings.contains:x:@.arguments/*/content
+         .:<
       .lambda
-         throw:No HTML content please, which implies no < or > characters
+         throw:No HTML content please, which implies no < characters
             public:true
             status:400
 
