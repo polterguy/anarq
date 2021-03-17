@@ -4,7 +4,7 @@
  */
 .arguments
    topic:string
-   user:string
+   username:string
 .description:Counts OP posts in the system according to specified argument(s)
 
 
@@ -28,7 +28,7 @@ data.connect:[generic|anarq]
     * Checking if caller wants to filter according to username.
     */
    if
-      exists:x:@.arguments/*/user
+      exists:x:@.arguments/*/username
       .lambda
 
          /*
@@ -37,7 +37,7 @@ data.connect:[generic|anarq]
          unwrap:x:+/*/*
          add:x:@data.connect/*/data.read/*/where/*/and
             .
-               posts.user.eq:x:@.arguments/*/user
+               posts.user.eq:x:@.arguments/*/username
 
 
    /*

@@ -4,7 +4,7 @@
  */
 .description:Returns profile information for the specified user
 .arguments
-   user:string
+   username:string
 
 
 /*
@@ -25,7 +25,7 @@ data.connect:[generic|anarq]
          content
       where
          and
-            user.eq:x:@.arguments/*/user
+            user.eq:x:@.arguments/*/username
             type.eq:full_name
 
 
@@ -80,7 +80,7 @@ data.connect:[generic|anarq]
             role
          where
             and
-               user.eq:x:@.arguments/*/user
+               user.eq:x:@.arguments/*/username
 
 
    /*
@@ -120,7 +120,7 @@ data.connect:[generic|anarq]
             as:count
       where
          and
-            user.eq:x:@.arguments/*/user
+            user.eq:x:@.arguments/*/username
 
 
    /*
@@ -134,7 +134,7 @@ data.connect:[generic|anarq]
             as:count
       where
          and
-            user.eq:x:@.arguments/*/user
+            user.eq:x:@.arguments/*/username
             parent.eq
 
 
@@ -149,7 +149,7 @@ data.connect:[generic|anarq]
             as:count
       where
          and
-            user.eq:x:@.arguments/*/user
+            user.eq:x:@.arguments/*/username
             parent.eq
 
 
@@ -176,7 +176,7 @@ data.connect:[generic|anarq]
             as:count
       where
          and
-            p.user.eq:x:@.arguments/*/user
+            p.user.eq:x:@.arguments/*/username
             p.created.mt:x:@math.subtract
 
 

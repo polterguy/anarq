@@ -6,7 +6,7 @@
    limit:long
    offset:long
    topic:string
-   user:string
+   username:string
    minutes:int
 .description:Returns all top level posts matching the specified argument(s) to caller allowing caller to page results, sorting according to number of likes, allowing caller to extract posts not older than a specified amount of minutes
 
@@ -47,7 +47,7 @@ data.connect:[generic|anarq]
     * Checking if caller wants to filter according to username.
     */
    if
-      exists:x:@.arguments/*/user
+      exists:x:@.arguments/*/username
       .lambda
 
          /*
@@ -56,7 +56,7 @@ data.connect:[generic|anarq]
          unwrap:x:+/*/*
          add:x:@data.connect/*/data.read/*/where/*/and
             .
-               p.user.eq:x:@.arguments/*/user
+               p.user.eq:x:@.arguments/*/username
 
 
    /*
