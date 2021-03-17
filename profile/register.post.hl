@@ -7,7 +7,7 @@
    password:string
    email:string
    full_name:string
-   email-type:string
+   email_type:string
 .description:Registers a new user on the site. Notice the user will not be allowed to post, comment or vote before he or she has confirmed the email address used to register on the page
 
 
@@ -19,7 +19,7 @@ validators.mandatory:x:@.arguments/*/password
 validators.mandatory:x:@.arguments/*/email
 validators.mandatory:x:@.arguments/*/full_name
 validators.email:x:@.arguments/*/email
-validators.enum:x:@.arguments/*/email-type
+validators.enum:x:@.arguments/*/email_type
    .:web
    .:client
 
@@ -169,7 +169,7 @@ semaphore:anarq.user.create
              * we send a different email, only with the secret.
              */
             .template-file
-            switch:x:@.arguments/*/email-type
+            switch:x:@.arguments/*/email_type
                case:client
                   set-value:x:@.template-file
                      .:/modules/anarq/data/emails/confirm-email.client.html
