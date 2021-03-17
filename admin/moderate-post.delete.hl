@@ -41,7 +41,7 @@ data.connect:[generic|anarq]
       where
          and
             id:x:@.arguments/*/id
-            parent.ne
+            parent
 
 
    /*

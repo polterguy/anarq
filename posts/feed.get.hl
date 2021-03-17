@@ -99,6 +99,17 @@ data.connect:[generic|anarq]
                   p.visibility.eq:public
                   p.visibility.eq:protected
 
+
+         /*
+          * Checking if caller should have access to moderated posts.
+          */
+         if
+            auth.ticket.in-role:root, admin, moderator
+            .lambda
+               add:x:@data.connect/*/data.read/*/where/*/and/*/or
+                  .
+                     p.visibility.eq:moderated
+
    else
 
 
