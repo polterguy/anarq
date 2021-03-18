@@ -59,13 +59,12 @@ data.connect:[generic|anarq]
          count(distinct l.user, l.post_id)
             as:karma
       where
-         and
+         or
             p.created.mt:x:@math.subtract
+            p.created.eq
       group
-         user
+         u.user
       order:karma
-         direction:desc
-      order:p.created
          direction:desc
 
 
