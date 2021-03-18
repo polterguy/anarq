@@ -61,11 +61,11 @@ if
             get-value:x:@signal
 
 
-      /*
-       * Removing [hyperlink] argument to prevent it from being
-       * attempted to be inserted into database.
-       */
-      remove-nodes:x:@.arguments/*/hyperlink
+   /*
+    * Removing [hyperlink] argument to prevent it from being
+    * attempted to be inserted into database.
+    */
+   remove-nodes:x:@.arguments/*/hyperlink
 
 
 /*

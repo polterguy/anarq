@@ -16,10 +16,33 @@ slots.create:anarq.url.get-social-graph
 
 
    /*
-    * Fetching URL and finding Open Graph tags, if existing.
+    * Fetching URL.
+    */
+   http.get:x:@.arguments/*/url
+
+
+   /*
+    * Sanity checking result, to make sure it's HTML.
+    */
+   if
+      not
+         strings.contains:x:@http.get/*/headers/*/Content-Type
+            .:text/html
+      .lambda
+
+
+         /*
+          * Caller tried to add a link to something not being an HTML page.
+          */
+         throw:Only provide links to HTML pages please
+            public:bool:true
+            status:int:400
+
+
+   /*
+    * Checking to see if we can find Open Graph tags.
     */
    .og
-   http.get:x:@.arguments/*/url
    html2lambda:x:@http.get/*/content
    unwrap:x:+/*/*
    add:x:@.og
