@@ -1,0 +1,135 @@
+
+/*
+ * Creates the slot responsible for retrieving Social Graph data from URL.
+ *
+ * Arguments;
+ *
+ * - url
+ */
+slots.create:anarq.url.get-social-graph
+
+
+   /*
+    * Sanity checking invocation.
+    */
+   validators.mandatory:x:@.arguments/*/url
+
+
+   /*
+    * Fetching URL and finding Open Graph tags, if existing.
+    */
+   .og
+   http.get:x:@.arguments/*/url
+   html2lambda:x:@http.get/*/content
+   unwrap:x:+/*/*
+   add:x:@.og
+      .
+         title:x:@"@html2lambda/**/head/**/\@property/""=og:title""/./*/\@content"
+         url:x:@"@html2lambda/**/head/**/\@property/""=og:url""/./*/\@content"
+         description:x:@"@html2lambda/**/head/**/\@property/""=og:description""/./*/\@content"
+         image:x:@"@html2lambda/**/head/**/\@property/""=og:image""/./*/\@content"
+
+
+   /*
+    * HTML to return to caller.
+    */
+   .html:"<!-- Open Graph -->\r\n"
+
+
+   /*
+    * Checking if we found any Open Graph tags.
+    */
+   if
+      exists:x:@.og/*
+      .lambda
+
+
+         /*
+          * We found at least one Open Graph tag in document.
+          * Adding OG card to HTML.
+          */
+         set-value:x:@.html
+            strings.concat
+               get-value:x:@.html
+               .:@"<div class=""card"">"
+
+
+         /*
+          * Adding URL to HTML.
+          */
+         set-value:x:@.html
+            strings.concat
+               get-value:x:@.html
+               .:@"<a href="""
+               get-value:x:@.og/*/url
+               .:@""">"
+
+
+         /*
+          * Appending image tag into HTML.
+          */
+         set-value:x:@.html
+            strings.concat
+               get-value:x:@.html
+               .:@"<img src="""
+               get-value:x:@.og/*/image
+               .:@""">"
+
+
+         /*
+          * Appending title into HTML.
+          */
+         set-value:x:@.html
+            strings.concat
+               get-value:x:@.html
+               .:<h3>
+               get-value:x:@.og/*/title
+               .:</h3>
+
+
+         /*
+          * Appending description into HTML.
+          */
+         set-value:x:@.html
+            strings.concat
+               get-value:x:@.html
+               .:<p>
+               get-value:x:@.og/*/description
+               .:</p>
+
+
+         /*
+          * Appending closing tag into HTML.
+          */
+         set-value:x:@.html
+            strings.concat
+               get-value:x:@.html
+               .:</a></div>
+
+   else
+
+
+      /*
+       * We didn't find any Open Graph tags in document.
+       */
+      set-value:x:@.html
+         strings.concat
+            get-value:x:@.html
+            .:@"<div class=""card"">"
+
+
+      /*
+       * Adding URL to HTML.
+       */
+      set-value:x:@.html
+         strings.concat
+            get-value:x:@.html
+            .:@"<a href="""
+            get-value:x:@.og/*/url
+            .:@""">Read the article here</a></div>"
+
+
+   /*
+    * Returning whatever we found.
+    */
+   return-value:x:@.html

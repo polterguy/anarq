@@ -188,6 +188,46 @@ data.connect:[generic|anarq]
 
 
    /*
+    * Looping through excerpts, trying to intelligently figuring
+    * out what to use as excerpt for post.
+    */
+   for-each:x:@data.read/*/*/excerpt
+
+
+      /*
+       * Splitting on CR/LF.
+       */
+      strings.split:x:@.dp/#
+         .:"\n"
+      set-value:x:@.dp/#
+         get-value:x:@strings.split/0
+
+
+      /*
+       * Removing Markdown header declarations.
+       */
+      set-value:x:@.dp/#
+         strings.trim:x:@.dp/#
+            .:#
+
+
+      /*
+       * Removing trailing white space characters.
+       */
+      set-value:x:@.dp/#
+         strings.trim:x:@.dp/#
+
+
+      /*
+       * Splitting on (.).
+       */
+      strings.split:x:@.dp/#
+         .:"."
+      set-value:x:@.dp/#
+         get-value:x:@strings.split/0
+
+
+   /*
     * Returns result to caller.
     */
    return-nodes:x:@data.read/*

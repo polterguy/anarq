@@ -105,17 +105,6 @@ alter table likes add foreign key(user) references user_details(user) on delete 
 
 
 /*
- * Pages for site.
- */
-create table pages (
-  url varchar(256) not null,
-  name varchar(256) not null,
-  content text not null,
-  primary key (url)
-);
-
-
-/*
  * Adding referential integrity for likes pointing towards posts.
  */
 alter table likes add foreign key(post_id) references posts(id) on delete cascade on update cascade;

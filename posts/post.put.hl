@@ -6,6 +6,7 @@
    id:long
    content:string
    visibility:string
+   hyperlink:string
 .description:Updates an existing OP post according to the specified arguments
 
 
@@ -29,6 +30,43 @@ auth.ticket.get
 unwrap:x:+/*
 signal:anarq.users.verify-access
    user:x:@auth.ticket.get
+
+
+/*
+ * Checking if hyperlink was given, and if so,
+ * retrieving social graph information for URL.
+ */
+if
+   and
+      exists:x:@.arguments/*/hyperlink
+      not
+         eq
+            get-value:x:@.arguments/*/hyperlink
+            .:
+      not
+         eq
+            get-value:x:@.arguments/*/hyperlink
+            .
+   .lambda
+
+
+      /*
+       * Invoking slot responsible for fetching social graph data for URL.
+       */
+      unwrap:x:+/*
+      signal:anarq.url.get-social-graph
+         url:x:@.arguments/*/hyperlink
+      set-value:x:@.arguments/*/content
+         strings.concat
+            get-value:x:@.arguments/*/content
+            get-value:x:@signal
+
+
+      /*
+       * Removing [hyperlink] argument to prevent it from being
+       * attempted to be inserted into database.
+       */
+      remove-nodes:x:@.arguments/*/hyperlink
 
 
 /*
