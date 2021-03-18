@@ -81,6 +81,17 @@ data.connect:[generic|anarq]
                visibility.eq:friends
 
 
+      /*
+       * Checking if caller should have access to moderated posts.
+       */
+      if
+         auth.ticket.in-role:root, admin, moderator
+         .lambda
+            add:x:@data.connect/*/data.read/*/where/*/and/*/or
+               .
+                  visibility.eq:moderated
+
+
    /*
     * Invoking read slot.
     *
@@ -104,6 +115,7 @@ data.connect:[generic|anarq]
          path
          parent
          content
+         visibility
          count(post_id)
             as:licks
       where
