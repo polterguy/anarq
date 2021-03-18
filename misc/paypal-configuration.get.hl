@@ -1,0 +1,13 @@
+
+/*
+ * Returns PayPal configuration from appSettings.json
+ */
+config.get:"magic:paypal:clientId"
+
+
+/*
+ * Returning value to caller.
+ */
+unwrap:x:+/*
+return-nodes
+   result:x:@config.get
