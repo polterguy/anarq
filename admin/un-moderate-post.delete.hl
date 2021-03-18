@@ -1,0 +1,52 @@
+
+/*
+ * Moderates an existing OP post.
+ */
+.arguments
+   id:long
+.description:Un-moderates an existing OP post
+
+
+/*
+ * Sanity checking invocation.
+ */
+validators.mandatory:x:@.arguments/*/id
+auth.ticket.verify:root, admin, moderator
+
+
+/*
+ * Verifying user has not been blocked from site.
+ */
+auth.ticket.get
+unwrap:x:+/*
+signal:anarq.users.verify-access
+   user:x:@auth.ticket.get
+
+
+/*
+ * Connecting to database.
+ */
+data.connect:[generic|anarq]
+   database-type:mysql
+
+
+   /*
+    * Invoking update slot.
+    */
+   data.update
+      database-type:mysql
+      table:posts
+      values
+         visibility:public
+      where
+         and
+            id:x:@.arguments/*/id
+            parent
+
+
+   /*
+    * Returning results to caller.
+    */
+   unwrap:x:+/*
+   return
+      affected:x:@data.update
