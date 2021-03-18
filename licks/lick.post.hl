@@ -60,7 +60,7 @@ data.connect:[generic|anarq]
             result:You cannot like your own posts or comments
 
    else-if
-      or
+      and
          not
             eq
                get-value:x:@data.read/*/*/visibility
@@ -68,7 +68,7 @@ data.connect:[generic|anarq]
          not
             eq
                get-value:x:@data.read/*/*/visibility
-               .:protected
+               .:friends
       .lambda
 
 
@@ -90,7 +90,7 @@ data.connect:[generic|anarq]
       return-id:bool:false
       values
          user:x:@auth.ticket.get
-         post_id.eq:x:@.arguments/*/id
+         post_id:x:@.arguments/*/id
 
 
    /*
