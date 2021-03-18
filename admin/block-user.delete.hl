@@ -1,0 +1,64 @@
+
+/*
+ * Blocks a user from the site.
+ */
+.arguments
+   username:string
+.description:Blocks a user from the site
+
+
+/*
+ * Sanity checking invocation.
+ */
+validators.mandatory:x:@.arguments/*/username
+auth.ticket.verify:root, admin, moderator
+
+
+/*
+ * Verifying user has not been blocked from site.
+ */
+auth.ticket.get
+unwrap:x:+/*
+signal:anarq.users.verify-access
+   user:x:@auth.ticket.get
+
+
+/*
+ * Connecting to database
+ */
+data.connect:[generic|magic]
+
+
+   /*
+    * Making sure we're not trying to block admin or root accounts.
+    */
+   data.read
+      table:users_roles
+      values
+         role
+      where
+         and
+            user:x:@.arguments/*/username
+   if
+      or
+         exists:x:@data.read/*/*/=root
+         exists:x:@data.read/*/*/=admin
+      .lambda
+         response.status.set:401
+         return-nodes
+            message:You cannot block admin or root accounts
+
+
+   /*
+    * De-associating user from all roles and adding to 'blocked' role.
+    */
+   data.delete
+      table:users_roles
+      where
+         and
+            user:x:@.arguments/*/username
+   data.create
+      table:users_roles
+      values
+         user:x:@.arguments/*/username
+         role:blocked

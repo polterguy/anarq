@@ -1,0 +1,13 @@
+
+/*
+ * Returns PayPal configuration from appSettings.json
+ */
+io.file.load:/modules/anarq/data/tnc.md
+
+
+/*
+ * Returning value to caller.
+ */
+unwrap:x:+/*
+return-nodes
+   result:x:@io.file.load
