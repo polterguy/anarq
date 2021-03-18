@@ -227,6 +227,15 @@ data.connect:[generic|anarq]
          get-value:x:@strings.split/0
 
 
+      /*
+       * Splitting on (<) to avoid including Social Graph declarations.
+       */
+      strings.split:x:@.dp/#
+         .:<
+      set-value:x:@.dp/#
+         get-value:x:@strings.split/0
+
+
    /*
     * Returns result to caller.
     */
