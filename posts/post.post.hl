@@ -76,6 +76,66 @@ data.connect:[generic|anarq]
 
 
    /*
+    * Checking that user is not posting too frequently.
+    *
+    * Notice, we allow admins, root accounts, and moderators to
+    * post as frequently as they wish.
+    */
+   config.get:"anarq:cooldown-minutes"
+   if
+      and
+         not
+            eq
+               get-value:x:@config.get
+               .
+         not
+            eq
+               get-value:x:@config.get
+               .:-1
+         not
+            exists:x:@auth.ticket.get/*/roles/*/=root
+         not
+            exists:x:@auth.ticket.get/*/roles/*/=admin
+         not
+            exists:x:@auth.ticket.get/*/roles/*/=moderator
+      .lambda
+
+
+         /*
+          * User is not root, admin or moderator, hence making sure he's not posting
+          * too frequently.
+          */
+         data.read
+            database-type:mysql
+            table:posts
+            columns
+               created
+            where
+               and
+                  parent.eq
+                  user.eq:x:@auth.ticket.get
+            limit:1
+            order:created
+            direction:desc
+         if
+            lt
+               math.subtract
+                  date.now
+                  get-value:x:@data.read/*/*/created
+               time
+                  minutes:x:@config.get
+            .lambda
+               response.status.set:401
+               strings.concat
+                  .:"You can only create one post every "
+                  get-value:x:@config.get
+                  .:" minutes. You can comment as much as you wish though."
+               unwrap:x:+/*
+               return-nodes
+                  message:x:@strings.concat
+
+
+   /*
     * Creating a transation object two wrap both insert and update inside of,
     * to avoid race conditions when trying to retrieve post afterwards, resulting
     * in returning wrong path for post.

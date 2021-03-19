@@ -73,12 +73,15 @@ In addition AnarQ requires its own configuration settings. You can find an examp
   "anarq": {
     "frontend": {
       "url": "https://anarq.org"
-    }
+    },
+    "cooldown-minues": 5
   },
 ```
 
 Paste in the above into your configuration file, just above the `magic` parts, and modify it as needed.
-Modify the actual frontend `url` according to where you have your frontend running.
+Modify the actual frontend `url` according to where you have your frontend running. The `cooldown-minutes`
+part above is the number of minutes users must wait between each OP post they submit to the site. If it
+is -1, users can post as frequently as they wish.
 
 The system also contains a whole range of email templates, intended for you to edit and modify as you
 see fit, according to your specific needs. These can be found in the folder _"/anarq/data/emails/"_.
