@@ -80,6 +80,10 @@ data.connect:[generic|anarq]
     *
     * Notice, we allow admins, root accounts, and moderators to
     * post as frequently as they wish.
+    *
+    * Numbers of minutes user needs to wait between each OP post is retrieved
+    * from configuration settings. If minutes are undefined, or -1, users are
+    * allowed to post as frequently as they wish.
     */
    config.get:"anarq:cooldown-minutes"
    if
@@ -102,8 +106,9 @@ data.connect:[generic|anarq]
 
 
          /*
-          * User is not root, admin or moderator, hence making sure he's not posting
-          * too frequently.
+          * User is not root, admin, or moderator, and site has a cooldown period configured,
+          * hence making sure user is not posting too frequently according to configured cooldown
+          * period.
           */
          data.read
             database-type:mysql
@@ -125,6 +130,12 @@ data.connect:[generic|anarq]
                time
                   minutes:x:@config.get
             .lambda
+
+               /*
+                * User is posting too frequently.
+                *
+                * Returning error to caller explaining situation.
+                */
                response.status.set:401
                strings.concat
                   .:"You can only create one post every "
