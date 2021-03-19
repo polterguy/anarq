@@ -3,6 +3,7 @@
  * Returns PayPal configuration from appSettings.json
  */
 io.file.load:/modules/anarq/data/tnc.md
+.description:Returns the terms and conditions to use the site
 
 
 /*

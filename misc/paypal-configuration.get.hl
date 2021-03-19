@@ -3,6 +3,7 @@
  * Returns PayPal configuration from appSettings.json
  */
 config.get:"magic:paypal:clientId"
+.description:Returns the PayPal client ID for the donations and PayPal configuration
 
 
 /*

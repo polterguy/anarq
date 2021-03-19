@@ -1,0 +1,15 @@
+
+/*
+ * Returns PayPal configuration from appSettings.json.
+ */
+config.get:"magic:paypal:allowDonations"
+.description:Returns true if site has enabled donations
+
+
+/*
+ * Returning value to caller.
+ */
+response.headers.add
+   Content-Type:text/plain
+unwrap:x:+/*
+return-value:x:@config.get
