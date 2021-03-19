@@ -60,6 +60,22 @@ slots.create:anarq.url.get-social-graph
 
 
    /*
+    * Checking if we Open Graph tags contained image.
+    */
+   if
+      or
+         eq
+            get-value:x:@.og/*/image
+            .
+         eq
+            get-value:x:@.og/*/image
+            .:
+      .lambda
+         set-value:x:@.og/*/image
+            .:/assets/image-404.jpg
+
+
+   /*
     * Checking if we found any Open Graph tags.
     */
    if
@@ -89,17 +105,6 @@ slots.create:anarq.url.get-social-graph
 
 
          /*
-          * Appending image tag into HTML.
-          */
-         set-value:x:@.html
-            strings.concat
-               get-value:x:@.html
-               .:@"<img src="""
-               get-value:x:@.og/*/image
-               .:@""">"
-
-
-         /*
           * Appending title into HTML.
           */
          set-value:x:@.html
@@ -108,6 +113,17 @@ slots.create:anarq.url.get-social-graph
                .:<h3>
                get-value:x:@.og/*/title
                .:</h3>
+
+
+         /*
+          * Appending image tag into HTML.
+          */
+         set-value:x:@.html
+            strings.concat
+               get-value:x:@.html
+               .:@"<img src="""
+               get-value:x:@.og/*/image
+               .:@""">"
 
 
          /*
@@ -150,6 +166,15 @@ slots.create:anarq.url.get-social-graph
             .:@"<a href="""
             get-value:x:@.og/*/url
             .:@""">Read the article here</a></div>"
+
+
+   /*
+    * Adding end of Open Graph comment to markdown.
+    */
+   set-value:x:@.html
+      strings.concat
+         get-value:x:@.html
+         .:"<!-- End of Open Graph -->\r\n"
 
 
    /*

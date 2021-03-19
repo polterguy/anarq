@@ -57,8 +57,8 @@ if
          url:x:@.arguments/*/hyperlink
       set-value:x:@.arguments/*/content
          strings.concat
-            get-value:x:@.arguments/*/content
             get-value:x:@signal
+            get-value:x:@.arguments/*/content
 
 
 /*

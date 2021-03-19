@@ -162,7 +162,7 @@ data.connect:[generic|anarq]
          p.user
             as:user
          p.visibility
-         substring(p.content, 1, 150)
+         p.content
             as:excerpt
          count(l.post_id)
             as:licks
@@ -192,6 +192,26 @@ data.connect:[generic|anarq]
     * out what to use as excerpt for post.
     */
    for-each:x:@data.read/*/*/excerpt
+
+
+      /*
+       * Splitting away Open Graph parts.
+       */
+      strings.split:x:@.dp/#
+         .:"<!-- End of Open Graph -->\r\n"
+      if
+         eq
+            get-count:x:@strings.split/*
+            .:int:2
+         .lambda
+
+            /*
+             * Post has Open Graph declaration.
+             */
+            set-value:x:@.dp/#
+               get-value:x:@strings.split/1
+            set-value:x:@.dp/#
+               strings.trim-start:x:@.dp/#
 
 
       /*
@@ -234,6 +254,25 @@ data.connect:[generic|anarq]
          .:<
       set-value:x:@.dp/#
          get-value:x:@strings.split/0
+
+
+      /*
+       * Verifying excerpt is not longer than 150 characters.
+       */
+      if
+         mt
+            strings.length:x:@.dp/#
+            .:int:150
+         .lambda
+
+
+            /*
+             * Only returning first 150 characters.
+             */
+            set-value:x:@.dp/#
+               strings.substring:x:@strings.split/0
+                  .:0
+                  .:150
 
 
    /*
