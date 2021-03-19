@@ -262,17 +262,19 @@ data.connect:[generic|anarq]
       if
          mt
             strings.length:x:@.dp/#
-            .:int:150
+            .:int:80
          .lambda
 
 
             /*
-             * Only returning first 150 characters.
+             * Only returning first 80 characters.
              */
             set-value:x:@.dp/#
-               strings.substring:x:@strings.split/0
-                  .:0
-                  .:150
+               strings.concat
+                  strings.substring:x:@strings.split/0
+                     .:0
+                     .:80
+                  .:" ..."
 
 
    /*
