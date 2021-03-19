@@ -1,7 +1,7 @@
 ### Legal shit
 
 1. You cannot post anything that is in violation of Cypriot law
-2. You are not allowed to bully others here
+2. You are not allowed to bully other members
 3. You might have your content censored
 4. Repeated violations might have your account blocked
 5. Do not publish photos or names of children

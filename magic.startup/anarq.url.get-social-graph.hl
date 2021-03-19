@@ -72,7 +72,7 @@ slots.create:anarq.url.get-social-graph
             .:
       .lambda
          set-value:x:@.og/*/image
-            .:/assets/image-404.jpg
+            .:/assets/anarq.png
 
 
    /*
