@@ -73,7 +73,7 @@ data.connect:[generic|anarq]
             created
          where
             and
-               username.eq:x:@auth.ticket.get
+               username.eq:x:@.arguments/*/username
       data.read
          table:users_roles
          columns
