@@ -125,7 +125,7 @@ semaphore:anarq.user.create
       if
          not
             eq
-               get-value:x:@.config.get
+               get-value:x:@config.get
                .
          .lambda
 
