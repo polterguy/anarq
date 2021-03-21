@@ -125,14 +125,16 @@ data.connect:[generic|magic]
  * making sure we return that token to caller.
  */
 date.min
-unwrap:x:+/*
-signal:magic.auth.authenticate
-   username:x:@.arguments/*/username
-   password:x:@.arguments/*/password
-   expires:x:@date.min
+auth.ticket.create
+   username:x:@.username
+   expires:x:@data.min
+   roles
+      .:guest
 
 
 /*
  * Returns the authentication JWT ticket created above to caller.
  */
-return-nodes:x:@signal/*
+unwrap:x:+/*
+return-nodes
+   ticket:x:@auth.ticket.create
