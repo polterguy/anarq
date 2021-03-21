@@ -187,7 +187,7 @@ semaphore:anarq.user.create
                name:x:@.arguments/*/full_name
                email:x:@.arguments/*/email
                subject:Confirm your email address to AnarQ please
-               mime-type:text/plain
+               mime-type:text/html
                substitutes
                   confirm-url:x:@.confirm-url
                   secret:x:@.secret
