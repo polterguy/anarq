@@ -118,8 +118,21 @@ data.connect:[generic|magic]
          role:guest
 
 
+
+
 /*
- * Returns result to caller.
+ * Invokes [magic.auth.authenticate] to create our JWT token,
+ * making sure we return that token to caller.
  */
-return-nodes
-   result:success
+date.min
+unwrap:x:+/*
+signal:magic.auth.authenticate
+   username:x:@.arguments/*/username
+   password:x:@.arguments/*/password
+   expires:x:@date.min
+
+
+/*
+ * Returns the authentication JWT ticket created above to caller.
+ */
+return-nodes:x:@signal/*
