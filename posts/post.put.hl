@@ -5,6 +5,7 @@
 .arguments
    id:long
    content:string
+   topic:string
    visibility:string
    hyperlink:string
 .description:Updates an existing OP post according to the specified arguments
@@ -82,6 +83,25 @@ data.connect:[generic|anarq]
    add:x:@data.connect/*/data.update/*/values
       get-nodes:x:@.arguments/*/visibility
       get-nodes:x:@.arguments/*/content
+      get-nodes:x:@.arguments/*/topic
+
+
+   /*
+    * Checking if user is not admin, and if so, making sure user can only update
+    * his own posts.
+    */
+   if
+      not
+         auth.ticket.in-role:admin, root, moderator
+      .lambda
+
+
+         /*
+          * Ensuring non-admin/moderator/root users can only update their own posts.
+          */
+         add:x:@data.connect/*/data.update/*/where/*/and
+            .
+               user.eq:x:@auth.ticket.get
 
 
    /*
@@ -94,7 +114,6 @@ data.connect:[generic|anarq]
       where
          and
             id.eq:x:@.arguments/*/id
-            user.eq:x:@auth.ticket.get
 
 
    /*

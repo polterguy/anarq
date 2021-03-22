@@ -174,7 +174,7 @@ slots.create:anarq.url.get-social-graph
    set-value:x:@.html
       strings.concat
          get-value:x:@.html
-         .:"<!-- End of Open Graph -->\r\n"
+         .:"<!-- End of Open Graph -->\r\n\r\n"
 
 
    /*
