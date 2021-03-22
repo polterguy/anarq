@@ -84,7 +84,6 @@ create table posts (
 alter table posts add foreign key(topic) references topics(name) on delete cascade on update cascade;
 alter table posts add foreign key(visibility) references visibility(name) on delete cascade on update cascade;
 alter table posts add foreign key(parent) references posts(id) on delete cascade on update cascade;
-alter table posts add foreign key(user) references user_details(user) on delete cascade on update cascade;
 
 
 /*

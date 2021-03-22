@@ -26,7 +26,9 @@ data.connect:[generic|anarq]
       where
          and
             user.eq:x:@.arguments/*/username
-            type.eq:full_name
+            or
+               type.eq:full_name
+               type.eq:payPalId
 
 
    /*

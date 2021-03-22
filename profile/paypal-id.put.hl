@@ -1,0 +1,69 @@
+
+/*
+ * Saves the user's PayPal ID such that he can get donations.
+ */
+.arguments
+   payPalId:string
+.description:Saves the user's PayPal ID such that he can get donations
+
+
+/*
+ * Verifying user has not been blocked from site.
+ */
+auth.ticket.get
+unwrap:x:+/*
+signal:anarq.users.verify-access
+   user:x:@auth.ticket.get
+
+
+/*
+ * Opening database connection.
+ */
+data.connect:[generic|anarq]
+
+
+   /*
+    * Deleting old PayPal ID.
+    */
+   data.delete
+      database-type:mysql
+      table:user_details
+      where
+         and
+            type.eq:payPalId
+            user.eq:x:@auth.ticket.get
+
+
+   /*
+    * Inserting new PayPal ID, but only if it's not empty or null.
+    */
+   if
+      and
+         not
+            eq
+               get-value:x:@.arguments/*/payPalId
+               .
+         not
+            eq
+               get-value:x:@.arguments/*/payPalId
+               .:
+      .lambda
+
+
+         /*
+          * New PayPal ID was provided.
+          */
+         data.create
+            database-type:mysql
+            table:user_details
+            values
+               type:payPalId
+               user:x:@auth.ticket.get
+               content:x:@.arguments/*/payPalId
+
+
+   /*
+    * Returns result to caller.
+    */
+   return-nodes
+      result:success

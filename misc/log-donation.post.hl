@@ -1,0 +1,28 @@
+
+/*
+ * Logs a donation by specified email address to specified user.
+ */
+.arguments
+   user:string
+   donator:string
+   amount:decimal
+.description:Logs a donation by specified email address to specified user
+
+
+/*
+ * Logging the donation.
+ */
+log.info
+   .:"Donation was sent to user '"
+   get-value:x:@.arguments/*/user
+   .:"' by '"
+   get-value:x:@.arguments/*/donator
+   .:"' for the amount of €"
+   get-value:x:@.arguments/*/amount
+
+
+/*
+ * Returning success to caller.
+ */
+return-nodes
+   result:success
