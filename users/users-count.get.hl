@@ -1,0 +1,29 @@
+
+/*
+ * Counts numbers of users in system in total.
+ */
+.description:Counts numbers of users in system in total
+
+
+/*
+ * Connecting to database.
+ */
+data.connect:[generic|magic]
+
+
+   /*
+    * Invoking read slot.
+    */
+   data.read
+      database-type:mysql
+      table:users
+      columns
+         count(*)
+            as:count
+      limit:long:1
+
+
+   /*
+    * Returning result to caller.
+    */
+   return-nodes:x:-/*/*

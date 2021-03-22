@@ -1,0 +1,118 @@
+
+/*
+ * Counts comments in the system according to specified argument(s).
+ */
+.arguments
+   topic:string
+   username:string
+.description:Counts comments in the system according to specified argument(s)
+
+
+/*
+ * Verifying user has not been blocked from site.
+ */
+auth.ticket.get
+unwrap:x:+/*
+signal:anarq.users.verify-access
+   user:x:@auth.ticket.get
+
+
+/*
+ * Connecting to database.
+ */
+data.connect:[generic|anarq]
+   database-type:mysql
+
+
+   /*
+    * Checking if caller wants to filter according to username.
+    */
+   if
+      exists:x:@.arguments/*/username
+      .lambda
+
+         /*
+          * Username explicitly specified as filtering condition.
+          */
+         unwrap:x:+/*/*
+         add:x:@data.connect/*/data.read/*/where/*/and
+            .
+               posts.user.eq:x:@.arguments/*/username
+
+
+   /*
+    * Checking if caller wants to filter according to topic.
+    */
+   if
+      exists:x:@.arguments/*/topic
+      .lambda
+
+         /*
+          * Topic explicitly specified as filtering condition.
+          */
+         unwrap:x:+/*/*
+         add:x:@data.connect/*/data.read/*/where/*/and
+            .
+               posts.topic.eq:x:@.arguments/*/topic
+
+
+   /*
+    * Checking if user is authenticated and has confirmed his email,
+    * and if not we only return public posts.
+    */
+   if
+      auth.ticket.in-role:root, admin, moderator, guest
+      .lambda
+
+
+         /*
+          * Making sure we return public and protected posts.
+          */
+         add:x:@data.connect/*/data.read/*/where/*/and
+            .
+               or
+                  p.visibility.eq:public
+                  p.visibility.eq:protected
+
+
+         /*
+          * Checking if caller should have access to moderated posts.
+          */
+         if
+            auth.ticket.in-role:root, admin, moderator
+            .lambda
+               add:x:@data.connect/*/data.read/*/where/*/and/*/or
+                  .
+                     p.visibility.eq:moderated
+
+   else
+
+
+      /*
+       * Making sure we only return public and protected posts.
+       */
+      add:x:@data.connect/*/data.read/*/where/*/and
+         .
+            p.visibility.eq:public
+
+
+   /*
+    * Invoking read slot.
+    */
+   data.read
+      database-type:mysql
+      table:posts
+         as:p
+      limit:long:1
+      columns
+         count(*)
+            as:count
+      where
+         and
+            p.parent.neq
+
+
+   /*
+    * Returning results to caller.
+    */
+   return-nodes:x:@data.read/*/*
