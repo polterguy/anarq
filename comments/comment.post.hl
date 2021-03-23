@@ -23,6 +23,19 @@ signal:anarq.html.safeguard
 
 
 /*
+ * We'll need to store ID of post such that we can return it to caller.
+ */
+.id
+
+
+/*
+ * We'll need to store username of OP such that we can send him
+ * email informing him he's got a comment.
+ */
+.op-username
+
+
+/*
  * Verifying user has not been blocked from site.
  */
 auth.ticket.get
@@ -50,7 +63,6 @@ data.connect:[generic|anarq]
       /*
        * Figuring out materialised path for item.
        */
-      .path
       data.read
          database-type:mysql
          table:posts
@@ -58,10 +70,19 @@ data.connect:[generic|anarq]
             path
             topic
             visibility
+            user
          where
             and
-               id:x:@.arguments/*/parent
+               id.eq:x:@.arguments/*/parent
                visibility.neq:moderated
+
+
+      /*
+       * Storing username of OP such that we can send OP an email informing him he's
+       * got a comment on one of his posts.
+       */
+      set-value:x:@.op-username
+         get-value:x:@data.read/*/*/user
 
 
       /*
@@ -104,9 +125,17 @@ data.connect:[generic|anarq]
 
 
       /*
+       * Storing ID of post such that we can return it to caller.
+       */
+      set-value:x:@.id
+         get-value:x:@data.create
+
+
+      /*
        * Making sure path for item is prefixed with parent's path,
        * in addition to its own ID value.
        */
+      .path
       set-value:x:@.path
          strings.concat
             get-value:x:@data.read/*/*/path
@@ -135,9 +164,20 @@ data.connect:[generic|anarq]
          database-type:mysql
 
 
-      /*
-       * Returning results of invocation to caller.
-       */
-      unwrap:x:+/*
-      return
-         id:x:@data.create
+/*
+ * Sending email to OP informing him that he's got a comment on his post.
+ */
+unwrap:x:+/*
+signal:anarq.emails.comment-received
+   comment:x:@.arguments/*/content
+   post:x:@.arguments/*/parent
+   op:x:@.op-username
+   user:x:@auth.ticket.get
+
+
+/*
+ * Returning results of invocation to caller.
+ */
+unwrap:x:+/*
+return
+   id:x:@.id

@@ -1,0 +1,78 @@
+
+/*
+ * Sends an email to OP informing him that he's got a comment on his post.
+ *
+ * Arguments;
+ *
+ * - [comment] - Comment article received
+ * - [post] - Original post comment was posted to
+ * - [op] - Username of OP posting the original article
+ * - [user] - Username of user that commented
+ */
+slots.create:anarq.emails.comment-received
+
+
+   /*
+    * Opening connection to database.
+    */
+   .email
+   .name
+   data.connect:[generic|anarq]
+      database-type:mysql
+
+
+      /*
+       * Selecting email and name from database, such that we know where to
+       * send the email.
+       */
+      data.read
+         database-type:mysql
+         table:user_details
+         columns
+            type
+            content
+         where
+            and
+               user.eq:x:@.arguments/*/op
+               or
+                  type.eq:full_name
+                  type.eq:email
+
+
+      /*
+       * Storing email and username.
+       */
+      set-value:x:@.name
+         get-value:x:@data.read/*/*/type/=full_name/./*/content
+      set-value:x:@.email
+         get-value:x:@data.read/*/*/type/=email/./*/content
+
+
+   /*
+    * We'll need the frontend URL such that we can link to post in email.
+    */
+   config.get:"anarq:frontend:url"
+
+
+   /*
+    * Sending user a braided email.
+    */
+   .template-file:/modules/anarq/data/emails/comment-received.html
+   unwrap:x:+/**
+   signal:magic.emails.send
+      template-file:x:@.template-file
+      name:x:@.name
+      email:x:@.email
+      subject:You just received a comment on your AnarQ post
+      mime-type:text/html
+      substitutes
+         comment:x:@.arguments/*/comment
+         user:x:@.arguments/*/user
+         post:x:@.arguments/*/post
+         frontend-url:x:@config.get
+
+
+   /*
+    * Returning success to caller.
+    */
+   return-value:bool:true
