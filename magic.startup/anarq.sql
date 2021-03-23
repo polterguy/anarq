@@ -79,7 +79,7 @@ create table posts (
 
 
 /*
- * Adding referential integrity for posts pointing towards topics, visibility, user_details, and parent.
+ * Adding referential integrity for posts pointing towards topics, visibility, and parent.
  */
 alter table posts add foreign key(topic) references topics(name) on delete cascade on update cascade;
 alter table posts add foreign key(visibility) references visibility(name) on delete cascade on update cascade;
@@ -97,10 +97,9 @@ create table likes (
 
 
 /*
- * Adding referential integrity for likes pointing towards posts and user_details.
+ * Adding referential integrity for likes pointing towards posts.
  */
 alter table likes add foreign key(post_id) references posts(id) on delete cascade on update cascade;
-alter table likes add foreign key(user) references user_details(user) on delete cascade on update cascade;
 
 
 /*

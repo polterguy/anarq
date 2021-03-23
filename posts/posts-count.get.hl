@@ -12,9 +12,15 @@
  * Verifying user has not been blocked from site.
  */
 auth.ticket.get
-unwrap:x:+/*
-signal:anarq.users.verify-access
-   user:x:@auth.ticket.get
+if
+   not
+      eq
+         get-value:x:@auth.ticket.get
+         .
+   .lambda
+      unwrap:x:+/*
+      signal:anarq.users.verify-access
+         user:x:@auth.ticket.get
 
 
 /*
