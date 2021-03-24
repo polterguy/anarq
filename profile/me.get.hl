@@ -51,6 +51,28 @@ data.connect:[generic|anarq]
 
 
    /*
+    * Making sure we default email_notifications to true, unless explictly set to 'false' (string).
+    */
+   if
+      not
+         exists:x:@data.read/*/*/type/=email_notifications
+      .lambda
+         add:x:@data.read
+            .
+               .
+                  type:email_notifications
+                  content:bool:true
+   else
+
+
+      /*
+       * If value exists at all, it should be boolean false.
+       */
+      set-value:x:@data.read/*/*/type/=email_notifications/./*/content
+         .:bool:false
+
+
+   /*
     * Transforming result of above invocation to key/value collection to reduce bandwith usage,
     * and create a more semantically correct response.
     */

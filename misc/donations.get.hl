@@ -7,9 +7,15 @@ config.get:"magic:paypal:allowDonations"
 
 
 /*
- * Returning value to caller.
+ * Adding HTTP headers to response.
  */
 response.headers.add
    Content-Type:text/plain
+   Cache-Control:public, max-age=3600
+
+
+/*
+ * Returning value to caller.
+ */
 unwrap:x:+/*
 return-value:x:@config.get

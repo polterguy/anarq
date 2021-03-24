@@ -1,10 +1,10 @@
 
 /*
- * Saves the user's PayPal ID such that he can get donations.
+ * Saves the user's email notifications preferences.
  */
 .arguments
-   payPalId:string
-.description:Saves the user's PayPal ID such that he can get donations
+   notifications:bool
+.description:Saves the user's email notifications preferences
 
 
 /*
@@ -29,30 +29,24 @@ data.connect:[generic|anarq]
 
 
    /*
-    * Deleting old PayPal ID.
+    * Deleting old email_notifications ID.
     */
    data.delete
       database-type:mysql
       table:user_details
       where
          and
-            type.eq:payPalId
+            type.eq:email_notifications
             user.eq:x:@auth.ticket.get
 
 
    /*
-    * Inserting new PayPal ID, but only if it's not empty or null.
+    * Inserting new preferences, but only if it's false, since default value if ommitted is true.
     */
    if
-      and
-         not
-            eq
-               get-value:x:@.arguments/*/payPalId
-               .
-         not
-            eq
-               get-value:x:@.arguments/*/payPalId
-               .:
+      eq
+         get-value:x:@.arguments/*/notifications
+         .:bool:false
       .lambda
 
 
@@ -63,9 +57,9 @@ data.connect:[generic|anarq]
             database-type:mysql
             table:user_details
             values
-               type:payPalId
+               type:email_notifications
                user:x:@auth.ticket.get
-               content:x:@.arguments/*/payPalId
+               content:false
 
 
    /*

@@ -7,6 +7,13 @@ config.get:"magic:paypal:clientId"
 
 
 /*
+ * Making sure we add caching HTTP headers.
+ */
+response.headers.add
+   Cache-Control:public, max-age=300
+
+
+/*
  * Returning value to caller.
  */
 unwrap:x:+/*

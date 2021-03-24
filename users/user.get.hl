@@ -183,6 +183,13 @@ data.connect:[generic|anarq]
 
 
    /*
+    * Making sure we add caching HTTP headers.
+    */
+   response.headers.add
+      Cache-Control:public, max-age=600
+
+
+   /*
     * Returning object in its entirety to caller.
     */
    unwrap:x:+/*

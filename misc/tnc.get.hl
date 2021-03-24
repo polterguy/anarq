@@ -7,6 +7,13 @@ io.file.load:/modules/anarq/data/tnc.md
 
 
 /*
+ * Making sure we add caching HTTP headers.
+ */
+response.headers.add
+   Cache-Control:public, max-age=3600
+
+
+/*
  * Returning value to caller.
  */
 unwrap:x:+/*

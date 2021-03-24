@@ -1,6 +1,8 @@
 
 /*
  * Sends an email to OP informing him that he's got a comment on his post.
+ * Returns true if email was sent, false otherwise - Which might be due
+ * to OP user has turned OFF email notifications.
  *
  * Arguments;
  *
@@ -37,6 +39,24 @@ slots.create:anarq.emails.comment-received
                or
                   type.eq:full_name
                   type.eq:email
+                  type.eq:email_notifications
+
+
+      /*
+       * Checking if we should send OP an email, or if he's turned off
+       * email notifications.
+       */
+      if
+         eq
+            get-value:x:@data.read/*/*/type/=email_notifications/./*/content
+            .:false
+         .lambda
+
+
+            /*
+             * User has turned OFF email notifications.
+             */
+            return-value:bool:false
 
 
       /*

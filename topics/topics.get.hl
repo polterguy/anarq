@@ -38,6 +38,13 @@ data.connect:[generic|anarq]
 
 
    /*
+    * Making sure we add caching HTTP headers.
+    */
+   response.headers.add
+      Cache-Control:public, max-age=300
+
+
+   /*
     * Returns results of invocation to caller.
     */
    return-nodes:x:@data.read/*
