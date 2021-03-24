@@ -281,7 +281,7 @@ data.connect:[generic|anarq]
     * Making sure we add caching HTTP headers.
     */
    response.headers.add
-      Cache-Control:public, max-age=300
+      Cache-Control:public, max-age=120
 
 
    /*
