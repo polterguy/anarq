@@ -140,9 +140,11 @@ data.connect:[generic|anarq]
 
    /*
     * Making sure we add caching HTTP headers.
+    * Notice, SHORT cache time, such that user can see his own comment as he or she
+    * is publishing it.
     */
    response.headers.add
-      Cache-Control:public, max-age=15
+      Cache-Control:public, max-age=5
 
 
    /*
