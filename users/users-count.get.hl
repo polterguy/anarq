@@ -24,6 +24,13 @@ data.connect:[generic|magic]
 
 
    /*
+    * Making sure we add caching HTTP headers.
+    */
+   response.headers.add
+      Cache-Control:public, max-age=600
+
+
+   /*
     * Returning result to caller.
     */
-   return-nodes:x:-/*/*
+   return-nodes:x:@data.read/*/*
