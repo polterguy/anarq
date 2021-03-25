@@ -134,10 +134,10 @@ data.connect:[generic|anarq]
          p.user
             as:user
          p.visibility
-         substring(p.content, 1, 50)
+         p.content
             as:excerpt
          count(l.post_id)
-            as:likes
+            as:licks
       where
          and
             p.parent.eq
@@ -154,9 +154,104 @@ data.connect:[generic|anarq]
       not
          exists:x:@data.read/*/*
       .lambda
-         response.status.set:404
-         return-nodes
-            message:"No such posts were found"
+         return-value:"[]"
+
+
+   /*
+    * Looping through excerpts, trying to intelligently figuring
+    * out what to use as excerpt for post.
+    */
+   for-each:x:@data.read/*/*/excerpt
+
+
+      /*
+       * Splitting away Open Graph parts.
+       */
+      strings.split:x:@.dp/#
+         .:"<!-- End of Open Graph -->\r\n"
+      if
+         eq
+            get-count:x:@strings.split/*
+            .:int:2
+         .lambda
+
+            /*
+             * Post has Open Graph declaration.
+             */
+            set-value:x:@.dp/#
+               get-value:x:@strings.split/1
+            set-value:x:@.dp/#
+               strings.trim-start:x:@.dp/#
+
+
+      /*
+       * Splitting on CR/LF.
+       */
+      strings.split:x:@.dp/#
+         .:"\n"
+      set-value:x:@.dp/#
+         get-value:x:@strings.split/0
+
+
+      /*
+       * Removing Markdown header declarations.
+       */
+      set-value:x:@.dp/#
+         strings.trim:x:@.dp/#
+            .:#
+
+
+      /*
+       * Removing trailing white space characters.
+       */
+      set-value:x:@.dp/#
+         strings.trim:x:@.dp/#
+
+
+      /*
+       * Splitting on (.).
+       */
+      strings.split:x:@.dp/#
+         .:"."
+      set-value:x:@.dp/#
+         get-value:x:@strings.split/0
+
+
+      /*
+       * Splitting on (<) to avoid including Social Graph declarations.
+       */
+      strings.split:x:@.dp/#
+         .:<
+      set-value:x:@.dp/#
+         get-value:x:@strings.split/0
+
+
+      /*
+       * Verifying excerpt is not longer than 150 characters.
+       */
+      if
+         mt
+            strings.length:x:@.dp/#
+            .:int:80
+         .lambda
+
+
+            /*
+             * Only returning first 80 characters.
+             */
+            set-value:x:@.dp/#
+               strings.concat
+                  strings.substring:x:@strings.split/0
+                     .:0
+                     .:80
+                  .:" ..."
+
+
+   /*
+    * Making sure we add caching HTTP headers.
+    */
+   response.headers.add
+      Cache-Control:public, max-age=120
 
 
    /*

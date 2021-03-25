@@ -9,7 +9,7 @@ more a social media platform, than a traditional forum, competing with social me
 as Reddit, Facebook and Twitter.
 
 Its name is a play upon the two Greek words _"an"_ and _"archy"_ implying _"no leaders"_ or _"no hierarchy"_,
-adding the Q in its name simply for fun. It is Open Source, but you will need a license
+adding the Q in its name implies U. It is Open Source, but you will need a license
 of [Magic](https://github.com/polterguy/magic) to run it.
 
 ## Implementation details
@@ -54,10 +54,6 @@ The system has the following relative endpoints. Notice, each endpoint is explai
 * `get` profile/username-available - Returns true if username is available
 * `get` profile/users - Returns lists of all users sorted by karma
 * `get` site/page - Returns a single page in the system
-* `delete` site/pages - Deletes a page
-* `get` site/pages - Returns all pages in the system
-* `post` site/pages - Creates a new page in the system
-* `put` site/pages - Updates an existing page in the system
 
 ## Configuring
 
@@ -90,53 +86,6 @@ see fit, according to your specific needs. These can be found in the folder _"/a
 
 This section contains everything related to authentication, registration, and public retrieval of profiles
 for registered users in the system.
-
-### GET magic/modules/anarq/profile/user
-
-This endpoint allows you to retrieve meta data about an individual user. The endpoint does not require
-authentication, but can be invoked anonymously. The endpoint will return a response resembling the following.
-
-```json
-{
-  "karma": 0,
-  "licks": 2,
-  "comments": 0,
-  "posts": 0,
-  "full_name": "Thomas Hansen",
-  "roles": [
-    "guest",
-    "moderator"
-  ]
-}
-```
-
-The `karma` above are how many likes the user has _received_, while the `licks` above is how many likes
-the user has _given_ in total. Comments are how many comments the user has posted, and posts are the number
-of OP posts the user has submitted to the system. The `roles` is the list of roles the user belongs to, and
-typically only contains one value, being _"guest"_, implying a default registered user having confirmed
-his or her email address. If the user is a moderator, the roles will contain a _"moderator"_ value, and
-if the user is an admin, it will contain the role of _"admin"_. Users not having confirmed their email address
-will belong to _only_ the role of _"unconfirmed"_.
-
-This endpoint allows you to create _"view profile"_ types of endpoint, where users and visitors can see
-individual users on the page, allowing them to peek on users registered at the site.
-
-Notice, the `karma` above will only be calculated by likes to posts and comments that are more recent than
-30 days, allowing for new users to rapidly rise above users having been registered in the system for a
-long time, without actively having used their profile to create posts and comments.
-
-### GET magic/modules/anarq/profile/users
-
-This endpoint returns users from the system, ordered by karma, which is the number of likes the user
-has been given on his or her posts and comments by other users. The endpoint can be paged by adding the
-following QUERY parameters.
-
-* limit - Maximum number of items to return. Defaults to 25. Maximum users that can be returned is 100.
-* offset - Number of users to skip before start returning users
-
-Notice, the _"karma"_ returned from endpoint will only be calculated from likes given to posts and comments
-that are more recent than 30 days. Implying the system will have a floating karma value for their users,
-allowing newly registered users to rapidly go past users having been on the site for a long time.
 
 ### GET magic/modules/anarq/profile/authenticate
 
@@ -294,6 +243,29 @@ to retrieve meta data about the currently logged in user, such as his username, 
 etc. This endpoint requires the user to be authenticated, and only returns information about the currently
 authenticated user. Kind of similar to `whoami` on a Linux system.
 
+### PUT magic/modules/anarq/profile/paypal-id
+
+Stores the user's PayPal Client id, allowing user to get PayPal donations for his writing.
+Example payload below.
+
+```
+{
+  "payPalId": "PayPal Client ID goes here ..."
+}
+```
+
+### PUT magic/modules/anarq/profile/email-notifications
+
+Stores the user's email notifications settings. Implying whether or not AnarQ should
+send the user an email when something of interest occurs that the user should be notified about.
+Example payload below.
+
+```
+{
+  "notifications": true
+}
+```
+
 ## Posts
 
 This section contains everything related to retrieving OP posts from the backend, in addition to
@@ -314,7 +286,7 @@ optional, and can be ommitted. Below is a list of parameters the endpoint can ha
 * limit - Maximum number of posts to return. If specified this must be in between the range of 0-100. The default value if omitted is 25.
 * offset - Offset from where to start retrieving items. Combined with the above limit argument, this allows you to page items as you see fit.
 * topic - Name of topic to return items from within. See sub section topic for an explanation of this.
-* user - User that posted the OP.
+* username - User that posted the OP.
 * minutes - Number of minutes to filter by. Notice, can be multiplied with e.g. 86,400 to filter according to days, weeks, etc.
 
 This is the main _"feed"_ endpoint, returning the most popular posts, according to what posts had the most upvotes. It allows you
@@ -334,7 +306,7 @@ The endpoint will return something resembling the following.
     "user": "john",
     "visibility": "protected",
     "excerpt": "Covid19 proven to be an international media hoax",
-    "likes": 54
+    "licks": 54
   },
   {
     "id": 1,
@@ -343,7 +315,7 @@ The endpoint will return something resembling the following.
     "user": "peter",
     "visibility": "public",
     "excerpt": "Socially distancing you increases fatality rates for later mutations",
-    "likes": 37
+    "licks": 37
   },
 ]
 ```
@@ -396,7 +368,8 @@ his email address. It takes the following payload.
 {
   "visibility": "public",
   "topic": "news",
-  "content": "Actual content of your post. Can contain Markdown but NOT HTML"
+  "content": "Actual content of your post. Can contain Markdown but NOT HTML",
+  "hyperlink": "https://foo.bar.com"
 }
 ```
 
@@ -420,7 +393,9 @@ exists such that users can edit their existing posts, after having saved them. A
 {
   "id": 67777,
   "content": "This is the new updated content of the post, and will overwrite existing content",
-  "visibility": "public"
+  "visibility": "public",
+  "topic": "news",
+  "hyperlink": "https://foo.bar.com"
 }
 ```
 
@@ -452,7 +427,13 @@ you see fit, sorted by when the posts were created.
 
 Notice, the endpoint will only return public posts unless invoked by an authenticated user having confirmed
 his or her email address, at which point the endpoint will also return protected posts. If invoked by a
-moderator, admin, or root account, the endpoint will return also moderated posts.
+moderator, admin, or root account, the endpoint will return also moderated posts. Arguments for the endpoint
+are as follows, all arguments are optional.
+
+* topic
+* username
+* limit
+* offset
 
 ## Comments
 
@@ -507,13 +488,45 @@ This endpoint works similarly to the above PUt equivalent, but instead of changi
 it marks the comment as deleted. The endpoint can only be invoked by the user originally having created the
 comment. The endpoint requires a single QUERY parameter, being the `id` of the post the caller wants to delete.
 
+### GET magic/modules/anarq/comments/comments
 
-## Meta
+This endpoint returns comments belonging to a parent OP. It can take the following arguments.
 
-This section contains meta information endpoints, such as listing all topics in the system, allowing
+* parent - Parent OP post
+* limit - Maximum comments to return
+* offset - Offset of where to start returning comments
+
+It will return something resembling the following.
+
+```json
+[
+  {
+    "id":70,
+    "created":"2021-03-25T08:09:28.000Z",
+    "user":"thomas",
+    "path":"/000000067/000000070",
+    "parent":67,
+    "content":"sefpih dfsgoih dfgoih dfg",
+    "visibility":"public",
+    "licks":0
+  }
+]
+```
+
+### GET magic/modules/anarq/comments/comments-count
+
+This endpoint returns the number of comments matching the specified arguments. Legal
+arguments are as follows.
+
+* topic - Topic to filter within
+* username - Username to filter within
+
+## Licks
+
+This section contains endpoints for liking posts and comments, allowing
 users to like, and/or unlike existing posts, comments, etc.
 
-### POST magic/modules/anarq/meta/like
+### POST magic/modules/anarq/licks/lick
 
 Creates a like for an OP posting or a comment. The like will automatically be asssociated with the currently
 authenticated user. It requires the `id` to which post or comment you want to associate the like with.
@@ -525,78 +538,65 @@ Each comment and post can only be likes by each user at most once. Below is an e
 }
 ```
 
-### DELETE magic/modules/anarq/meta/like
+### DELETE magic/modules/anarq/licks/lick
 
 Deletes a previously created like for either an OP post or a comment. The endpoint can only be invoked by a
 user having previously liked a comment or an OP post. The endpoint requires one single QUERY parameter
 being `id`, which is the ID for the comment, and/or post the user previously liked.
 
-### GET magic/modules/anarq/meta/likers
+### GET magic/modules/anarq/licks/likers
 
 Returns all usernames for all users that liked a specific comment or an OP posting as an array of strings.
 
-### GET magic/modules/anarq/meta/topics
+## Topics
+
+This section contains everything related to managing and administrating topics in the system.
+
+### POST magic/modules/anarq/topics/topic
+
+This will create a new topic in your site, and takes a payload resembling the following.
+
+```json
+{
+  "name": "topic_name",
+  "description": "This is the descriptive text explaining what your topic is about"
+}
+```
+
+Name being the primary key for your topic.
+
+### PUT magic/modules/anarq/topics/topic
+
+This will update the description of an existing topic. Notice, you cannot update the name after creating your topic,
+only its description. It requires a payload resembling the following.
+
+```json
+{
+  "name": "foo",
+  "description": "This is the NEW descriptive text explaining what your topic is about"
+}
+```
+
+### DELETE magic/modules/anarq/topics/topic
+
+This will delete an existing topic in the system. Notice, the topic cannot have any posts, or the
+deletion will fail. It takes one single parameter, being the name of the topic.
+
+### GET magic/modules/anarq/topics/topics
 
 Returns all topics that exists in the system, together with how many posts topic has, and when the
-last activity within the topic was.
+last activity within the topic was. Notice, this endpoint is cached, but there's another endpoint
+that is not cached.
 
-## Site
+### GET magic/modules/anarq/topics/topics-no-cache
 
-This section contains the endpoints needed to administrate the pages in the system, that allows you
-to create CMS page types of pages, describing the purpose with your server installation, etc.
-
-### DELETE magic/modules/anarq/site/pages
-
-Deletes the specified page entirely from the system. Notice, this action cannot be undone!
-Pass in `url` as what page to delete. Endpoint can only be invoked by an administrator, and/or a
-root account in the system.
-
-### GET magic/modules/anarq/site/pages
-
-Returns a list of all pages in the system, but not their content, only their names and URLs,
-allowing you to use this endpoint as the foundation for creating a navigation system, allowing
-visiting users to navigate your site. Endpoint does not take any arguments, and will return
-all pages in your system.
-
-To retrieve one specific page, including its content, use the `site/page` endpoint (singular form) instead.
-
-### GET magic/modules/anarq/site/page
-
-Returns one single page from the system back to the caller, as specified by its `url` QUERY parameter.
-This endpoint _also_ returns the content of the page, in addition to its URL and name parts.
-
-### POST magic/modules/anarq/site/pages
-
-Creates a new page in your system. Pass in a payload resembling the following.
-
-```json
-{
-  "url": "relative-url",
-  "name": "About these forums",
-  "content": "This is the content of your page."
-}
-```
-
-### PUT magic/modules/anarq/site/pages
-
-Updates an existing page in your system. The endpoint requires the following payload.
-
-```json
-{
-  "url": "relative-url",
-  "name": "About these forums",
-  "content": "This is the NEW content of your page."
-}
-```
-
-The `url` above will be used to determine which page to update. The endpoint can only be invoked by an admin account or a root account
-in your system. Notice, once created, you _cannot_ change the URL of a page. If you need to do this, you'll have to create a _new_ page,
-and delete the old page.
+Returns all topics that exists in the system, together with how many posts topic has, and when the
+last activity within the topic was. Notice, this endpoint is not cached.
 
 ## Admin
 
-This section contains mostly everything related to administering your site, such as moderating comments, administering your
-topics, etc.
+This section contains parts needed to administrate your backend, such as moderating posts or comments,
+blocking users, etc.
 
 ### DELETE magic/modules/anarq/admin/comment
 
@@ -608,6 +608,11 @@ you want to delete.
 
 **Warning** - Deleting a comment will also recursively _delete all descendant comments_ beneath the comment you're
 currently deleting, while moderating a comment will keep all descendant comments.
+
+### DELETE magic/modules/anarq/admin/post
+
+This endpoint will perform a _hard delete_ of an OP post from your database, and requires one QUERY parameter named `id`.
+The endpoint can only be invoked by an administrator.
 
 ### DELETE magic/modules/anarq/admin/moderate-comment
 
@@ -621,50 +626,49 @@ This endpoint will moderate an OP post, making it invisible on the site, but kee
 only performing a _"soft delete"_. The endpoint requires one QUERY parameter named `id`, being the ID to the
 comment you wish to moderate.
 
-### DELETE magic/modules/anarq/admin/post
+### DELETE magic/modules/anarq/admin/un-moderate-comment
 
-This endpoint will perform a _hard delete_ of an OP post from your database, and requires one QUERY parameter named `id`.
+This endpoint will un-moderate a comment, making it visible on the site. The endpoint requires one QUERY
+parameter named `id`, being the ID to the comment you wish to moderate.
 
-### DELETE magic/modules/anarq/admin/topic
+### DELETE magic/modules/anarq/admin/un-moderate-post
 
-This endpoint will delete a single topic given as a `name` QUERY parameter to its invocation.
+This endpoint will un-moderate an OP post, making it visible on the site. The endpoint requires one QUERY
+parameter named `id`, being the ID to the comment you wish to moderate.
 
-### POST magic/modules/anarq/admin/topic
+### DELETE magic/modules/anarq/admin/block-user
 
-This will create a new topic in your site, and takes a payload resembling the following.
+This endpoint will completely block a user from being able to interact with the backend. It requires
+one QUERY parameter being the username of the user you want to block. Endpoint can only be invoked
+by an admin of the site.
 
-```json
-{
-  "name": "topic_name",
-  "description": "This is the descriptive text explaining what your topic is about"
-}
-```
+### DELETE magic/modules/anarq/admin/un-block-user
 
-Name being the primary key for your topic.
+This endpoint will remove a block on a user from the backend. It requires
+one QUERY parameter being the username of the user you want to un-block. Endpoint can only be invoked
+by an admin of the site.
 
-### PUT magic/modules/anarq/admin/topic
 
-This will update the description of an existing topic. Notice, you cannot update the name after creating your topic,
-only its description. It requires a payload resembling the following.
 
-```json
-{
-  "name": "foo",
-  "description": "This is the NEW descriptive text explaining what your topic is about"
-}
-```
+## User
 
-### GET magic/modules/anarq/admin/user
+This section allows you to admininstrate your users, and retreieve meta information associated
+with users.
 
-This endpoint returns profile information for the specified `user` QUERY parameter. The returned
+### GET magic/modules/anarq/users/user
+
+This endpoint returns profile information for the specified `username` QUERY parameter. The returned
 response might resemble the following.
 
 ```json
 {
-  "email": "thomas@servergardens.com",
-  "full_name": "Thomas Hansen",
-  "locked": false,
+  "comments": 5,
   "created": "2021-03-09T14:14:30.000Z",
+  "full_name": "Thomas Hansen",
+  "karma": 7,
+  "licks": 14,
+  "locked": false,
+  "posts": 21,
   "roles": [
     "guest",
     "root"
@@ -672,9 +676,42 @@ response might resemble the following.
 }
 ```
 
-This endpoint can only be invoked by an admin account, root account, or moderator account, and is not
-publicly available to invoke for most registered users in your system. For publicly visible information
-about individual users on the site, check out the _"Profile"_ section above.
+### GET magic/modules/anarq/users/users
+
+This endpoint lists all users matching the specified QUERY parameters. Parameters you can use are as follows.
+
+* limit
+* offset
+
+### GET magic/modules/anarq/users/users-count
+
+Returns the number of registered users in the system.
+
+## Misc
+
+These are miscelaneous endpoints, for things not specific to any of the above sections.
+
+### GET magic/modules/anarq/misc/donations
+
+Returns true if donations have been turned on for site in general.
+
+### POST magic/modules/anarq/misc/log-donation
+
+Logs a donation in the backend. Requires 3 QUERY parameters.
+
+* user - User that received the donation
+* donator - Email address of person donating
+* amount - Amount that was donated
+
+### GET magic/modules/anarq/misc/paypal-configuration
+
+Returns site wide PayPal configuration. Notice, this is *sitewide* configuration, and
+not for individual users. It will return the PayPal ClientID associated with the site.
+
+### GET magic/modules/anarq/misc/tnc
+
+Returns Terms and Conditions for the site. This is a Markdown document you can find within
+the folder structure of AnarQ module in the backend.
 
 ## License
 

@@ -62,3 +62,10 @@ data.connect:[generic|magic]
       values
          user:x:@.arguments/*/username
          role:blocked
+
+
+   /*
+    * Returning success to caller.
+    */
+   return-nodes
+      result:success

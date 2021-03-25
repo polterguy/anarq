@@ -4,7 +4,7 @@
  */
 .arguments
    id:long
-.description:Deletes the specified comment. The comment must have been created by the same user performing the request.
+.description:Soft deletes the specified comment. The comment must have been created by the same user performing the request.
 
 
 /*

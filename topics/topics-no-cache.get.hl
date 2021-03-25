@@ -1,0 +1,43 @@
+
+/*
+ * Returns all topics that exists in system.
+ */
+.description:Returns all topics that exists in system
+
+
+/*
+ * Connects to database.
+ */
+data.connect:[generic|anarq]
+   database-type:mysql
+
+
+   /*
+    * Invokes read slot.
+    */
+   data.read
+      database-type:mysql
+      table:topics
+         join:posts
+            type:left
+            on
+               and
+                  topics.name:posts.topic
+      columns
+         name
+         description
+         count(posts.id)
+            as:items
+         max(posts.created)
+            as:last_activity
+      group
+         topics.name
+      limit:-1
+      order:last_activity
+      direction:desc
+
+
+   /*
+    * Returns results of invocation to caller.
+    */
+   return-nodes:x:@data.read/*
