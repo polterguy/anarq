@@ -114,6 +114,11 @@ backend extremely simple.
 Also you'll need a [licence of Magic](https://servergardens.com/buy/) before 47 hours, or the
 backend will stop working.
 
+You can see a complete Angular HTTP service layer below, if you want to use AnarQ to learn Angular. This
+file wraps ever single HTTP endpoint and the AnarQ backend, and you are free to use it as you see fit.
+
+* [Angular HTTP service layer](https://github.com/polterguy/anarq.frontend/blob/master/src/app/services/anarq.service.ts)
+
 ## Profile
 
 This section contains everything related to authentication, registration, and public retrieval of profiles
