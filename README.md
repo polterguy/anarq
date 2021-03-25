@@ -45,6 +45,75 @@ is -1, users can post as frequently as they wish.
 The system also contains a whole range of email templates, intended for you to edit and modify as you
 see fit, according to your specific needs. These can be found in the folder _"/anarq/data/emails/"_.
 
+You can see a complete example configuration file below.
+
+```json
+{
+  "anarq": {
+    "frontend": {
+      "url": "https://anarq.org"
+    },
+    "cooldown-minues": 15
+  },
+  "magic": {
+    "smtp": {
+      "host": "smtp.sendgrid.net",
+      "port": 465,
+      "secure": true,
+      "username": "apikey",
+      "password": "SG.dsf345asddfguh345.dsfouhg435ysSDFtrDFGsdf",
+      "from": {
+        "name": "John Doe",
+        "address": "john@doe.com"
+      }
+    },
+    "paypal": {
+      "clientId": "AYXmWWv-OKV_RFjcksDoK4nJ0djwlhCmXp0h9staoD4U9dsY0oKfw8PBPH9TJ68s0SHjqGzWJNOT0inv",
+      "allowDonations": "true"
+    },
+    "databases": {
+      "mysql": {
+        "generic": "Server=db;Database={database};Uid=root;Pwd=ThisIsNotAGoodPassword;SslMode=Preferred;Old Guids=true;"
+      },
+      "mssql": {
+        "generic": "Server=localhost\\SQLEXPRESS;Database={database};Trusted_Connection=True;"
+      },
+      "default": "mysql"
+    },
+    "auth": {
+      "secret": "asdfoih234gefhdudfu345o3i4uhfsduofdshou345togyguSDFGDSAHsadfoug435",
+      "https-only": false,
+      "valid-minutes": 120,
+      "registration": {
+        "allow": true,
+        "confirm-email": null
+      }
+    },
+    "io": {
+      "root-folder": "~/files/"
+    },
+    "endpoint": {
+      "root-folder": "~/files/"
+    },
+    "license": "TRIAL-VERSION"
+  }
+}
+```
+
+The things you'll need to change in the above configuration file is as follows.
+
+* auth/secret - You'll need a new JWT auth secret
+* paypal/clientId - You'll need to provide your own PayPal ClientID here
+* smtp/password - If you're using SendGrid to send emails you can use your own API key password here
+* anarq/frontend/url - You'll need to provide the domain for where you intend to install AnarQ here
+
+However, if you change the above parts, you can use the above appSettings.json file as is as you
+configure Magic. This allows you to use the Docker images for Magic, making installation of the
+backend extremely simple.
+
+Also you'll need a [licence of Magic](https://servergardens.com/buy/) before 47 hours, or the
+backend will stop working.
+
 ## Profile
 
 This section contains everything related to authentication, registration, and public retrieval of profiles
