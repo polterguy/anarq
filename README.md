@@ -102,10 +102,10 @@ You can see a complete example configuration file below.
 
 The things you'll need to change in the above configuration file is as follows.
 
-* auth/secret - You'll need a new JWT auth secret
-* paypal/clientId - You'll need to provide your own PayPal ClientID here
-* smtp/password - If you're using SendGrid to send emails you can use your own API key password here
-* anarq/frontend/url - You'll need to provide the domain for where you intend to install AnarQ here
+* __magic/auth/secret__ - You'll need a new JWT auth secret
+* __magic/paypal/clientId__ - You'll need to provide your own PayPal ClientID here
+* __magic/smtp/password__ - If you're using SendGrid to send emails you can use your own API key password here
+* __anarq/frontend/url__ - You'll need to provide the domain for where you intend to install AnarQ here
 
 However, if you change the above parts, you can use the above appSettings.json file as is as you
 configure Magic. This allows you to use the Docker images for Magic, making installation of the
