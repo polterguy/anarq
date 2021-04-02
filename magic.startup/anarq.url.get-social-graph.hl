@@ -47,10 +47,10 @@ slots.create:anarq.url.get-social-graph
    unwrap:x:+/*/*
    add:x:@.og
       .
-         title:x:@"@html2lambda/**/head/**/\@property/""=og:title""/./*/\@content"
-         url:x:@"@html2lambda/**/head/**/\@property/""=og:url""/./*/\@content"
-         description:x:@"@html2lambda/**/head/**/\@property/""=og:description""/./*/\@content"
-         image:x:@"@html2lambda/**/head/**/\@property/""=og:image""/./*/\@content"
+         title:x:@"@html2lambda/**/head/**/\@property/""=og:title""/./*/\@content/[0,1]"
+         url:x:@"@html2lambda/**/head/**/\@property/""=og:url""/./*/\@content/[0,1]"
+         description:x:@"@html2lambda/**/head/**/\@property/""=og:description""/./*/\@content/[0,1]"
+         image:x:@"@html2lambda/**/head/**/\@property/""=og:image""/./*/\@content/[0,1]"
 
 
    /*
