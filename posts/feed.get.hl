@@ -137,9 +137,13 @@ data.connect:[generic|anarq]
             time
                minutes:x:@.arguments/*/minutes
          unwrap:x:+/*/*
-         add:x:@data.connect/*/data.read/*/where/*/and
+         add:x:@data.connect/*/data.read/*/table/*/join/*/on/*/and
             .
-               p.created.mt:x:@math.subtract
+               l.created.mt:@math.subtract
+         unwrap:x:+/*/*
+         add:x:@data.connect/*/data.read
+            .
+               @math.subtract:x:@math.subtract
 
 
    /*
