@@ -1,6 +1,7 @@
 
 /*
- * Runs during startup of Magic, and basically just ensures the anarq database exists.
+ * Runs during startup of Magic, and basically just ensures the anarq database exists,
+ * and is updated by running migration scripts after attempting to create the database.
  * If the database doesn't exist, it will create it.
  */
 
@@ -22,7 +23,7 @@ try
           */
          log.info:Creating AnarQ database
          io.file.load:/modules/anarq/magic.startup/anarq.sql
-         mysql.connect:magic
+         mysql.connect:sys
             mysql.execute:x:@io.file.load
          log.info:AnarQ database successfully created
 
@@ -45,3 +46,58 @@ try
          get-value:x:@.arguments/*/message
    .catch
       .do-nothing
+
+
+/*
+ * Afterwards we'll need to run all migration scripts in case database
+ * already existed but was not up to date in regards to any changes.
+ */
+
+
+/*
+ * List all migration SQL scripts found in migration folder.
+ */
+io.file.list:/modules/anarq/magic.startup/db-migrations/
+
+
+/*
+ * Open a database connection to database.
+ */
+mysql.connect:anarq
+
+
+   /*
+    * Sequentially runs through all migration script files and executes them.
+    */
+   for-each:x:@io.file.list/*
+
+
+      /*
+       * Verifying currently iterated file is an SQL file.
+       */
+      if
+         strings.ends-with:x:@.dp/#
+            .:.sql
+         .lambda
+
+
+            /*
+             * Making sure we trap exceptions, to avoid one erronous migration script
+             * from preventing all other migration scripts from running.
+             */
+            try
+
+
+               /*
+                * Loading SQL migration script and executing it.
+                */
+               io.file.load:x:@.dp/#
+               mysql.execute:x:@io.file.load
+
+            .catch
+
+
+               /*
+                * Logging error.
+                */
+               log.error:x:@.arguments/*/message
